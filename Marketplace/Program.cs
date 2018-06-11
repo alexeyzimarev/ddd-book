@@ -7,10 +7,11 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Marketplace
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
