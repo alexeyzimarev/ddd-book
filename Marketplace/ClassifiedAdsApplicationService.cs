@@ -7,7 +7,7 @@ namespace Marketplace
     {
         public void CreateClassifiedAd(Guid id, Guid ownerId)
         {
-            var classifiedAd = new ClassifiedAd(id, new UserId(ownerId));
+            var classifiedAd = new ClassifiedAd(new ClassifiedAdId(id), new UserId(ownerId));
             
             // store the entity somehow
         }
