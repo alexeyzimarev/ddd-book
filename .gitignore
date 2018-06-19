@@ -247,3 +247,4 @@ ModelManifest.xml
 
 tests/
 .vscode/
+.idea/
