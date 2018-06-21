@@ -7,65 +7,65 @@
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
         {
             Id = id;
-            _ownerId = ownerId;
-            _state = ClassifiedAdState.Inactive;
+            OwnerId = ownerId;
+            State = ClassifiedAdState.Inactive;
             EnsureValidState();
         }
 
         public void SetTitle(ClassifiedAdTitle title)
         {
-            _title = title;
+            Title = title;
             EnsureValidState();
         }
 
         public void UpdateText(ClassifiedAdText text)
         {
-            _text = text;
+            Text = text;
             EnsureValidState();
         }
 
         public void UpdatePrice(Price price)
         {
-            _price = price;
+            Price = price;
             EnsureValidState();
         }
 
         public void RequestToPublish()
         {
-            _state = ClassifiedAdState.PendingReview;
+            State = ClassifiedAdState.PendingReview;
             EnsureValidState();
         }
 
         private void EnsureValidState()
         {
-            bool valid = Id != null && _ownerId != null;
-            switch (_state)
+            bool valid = Id != null && OwnerId != null;
+            switch (State)
             {
                 case ClassifiedAdState.PendingReview:
                     valid = valid 
-                            && _title != null 
-                            && _text != null 
-                            && _price.Amount > 0;
+                            && Title != null 
+                            && Text != null 
+                            && Price?.Amount > 0;
                     break;
                 case ClassifiedAdState.Active:
                     valid = valid 
-                            && _title != null 
-                            && _text != null 
-                            && _price.Amount > 0
-                            && _approvedBy != null;
+                            && Title != null 
+                            && Text != null 
+                            && Price?.Amount > 0
+                            && ApprovedBy != null;
                     break;
             }
 
             if (!valid)
-                throw new InvalidEntityStateException(this, $"Post-checks failed in state {_state}");
+                throw new InvalidEntityStateException(this, $"Post-checks failed in state {State}");
         }
 
-        private UserId _ownerId;
-        private ClassifiedAdTitle _title;
-        private ClassifiedAdText _text;
-        private Price _price;
-        private ClassifiedAdState _state;
-        private UserId _approvedBy;
+        public UserId OwnerId { get; }
+        public ClassifiedAdTitle Title { get; private set; }
+        public ClassifiedAdText Text { get; private set; }
+        public Price Price { get; private set; }
+        public ClassifiedAdState State { get; private set; }
+        public UserId ApprovedBy { get; private set; }
 
         public enum ClassifiedAdState
         {

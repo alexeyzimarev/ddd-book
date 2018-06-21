@@ -8,7 +8,7 @@ namespace Marketplace.Domain
 
         private ClassifiedAdText(string text) => Value = text;
         
-        public ClassifiedAdText FromString(string text) =>
+        public static ClassifiedAdText FromString(string text) =>
             new ClassifiedAdText(text);
     }
 }
