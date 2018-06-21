@@ -5,8 +5,6 @@ namespace Marketplace.Domain
 {
     public class Money : Value<Money>
     {
-        public static string DefaultCurrency = "EUR";
-        
         public static Money FromDecimal(decimal amount, string currency, 
             ICurrencyLookup currencyLookup) =>
             new Money(amount, currency, currencyLookup);
@@ -34,7 +32,7 @@ namespace Marketplace.Domain
             Currency = currency;
         }
 
-        private Money(decimal amount, CurrencyDetails currency)
+        protected Money(decimal amount, CurrencyDetails currency)
         {
             Amount = amount;
             Currency = currency;

@@ -26,6 +26,7 @@ namespace Marketplace.Domain
         {
             public Guid Id { get; set; }
             public decimal Price { get; set; }
+            public string CurrencyCode { get; set; }
         }
 
         public class ClassidiedAdSentForReview
