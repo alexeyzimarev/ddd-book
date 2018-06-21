@@ -17,6 +17,8 @@ namespace Marketplace.Framework
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
+            var members = Members;
+
             return other.GetType() == typeof(T) && Members.All(m =>
             {
                 var otherValue = m.GetValue(other);

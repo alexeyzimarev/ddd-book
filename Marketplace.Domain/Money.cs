@@ -30,35 +30,35 @@ namespace Marketplace.Domain
                     nameof(amount),
                     $"Amount in {currencyCode} cannot have more than {currency.DecimalPlaces} decimals");
 
-            _amount = amount;
-            _currency = currency;
+            Amount = amount;
+            Currency = currency;
         }
 
         private Money(decimal amount, CurrencyDetails currency)
         {
-            _amount = amount;
-            _currency = currency;
+            Amount = amount;
+            Currency = currency;
         }
 
-        protected readonly decimal _amount;
-        protected readonly CurrencyDetails _currency;
+        public decimal Amount { get; }
+        public CurrencyDetails Currency { get; }
 
         public Money Add(Money summand)
         {
-            if (_currency != summand._currency)
+            if (Currency != summand.Currency)
                 throw new CurrencyMismatchException(
                     "Cannot sum amounts with different currencies");
 
-            return new Money(_amount + summand._amount, _currency);
+            return new Money(Amount + summand.Amount, Currency);
         }
 
         public Money Subtract(Money subtrahend)
         {
-            if (_currency != subtrahend._currency)
+            if (Currency != subtrahend.Currency)
                 throw new CurrencyMismatchException(
                     "Cannot subtract amounts with different currencies");
 
-            return new Money(_amount - subtrahend._amount, _currency);
+            return new Money(Amount - subtrahend.Amount, Currency);
         }
 
         public static Money operator +(Money summand1, Money summand2) =>
@@ -66,6 +66,8 @@ namespace Marketplace.Domain
 
         public static Money operator -(Money minuend, Money subtrahend) =>
             minuend.Subtract(subtrahend);
+
+        public override string ToString() => $"{Currency.CurrencyCode} {Amount}";
     }
 
     public class CurrencyMismatchException : Exception

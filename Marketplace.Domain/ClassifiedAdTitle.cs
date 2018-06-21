@@ -19,7 +19,7 @@ namespace Marketplace.Domain
             return new ClassifiedAdTitle(Regex.Replace(supportedTagsReplaced, "<.*?>", string.Empty));
         }
 
-        private readonly string _value;
+        public string Value { get; }
 
         private ClassifiedAdTitle(string value)
         {
@@ -28,10 +28,10 @@ namespace Marketplace.Domain
                     "Title cannot be longer that 100 characters",
                     nameof(value));
 
-            _value = value;
+            Value = value;
         }
 
         public static implicit operator string(ClassifiedAdTitle title) =>
-            title._value;
+            title.Value;
     }
 }
