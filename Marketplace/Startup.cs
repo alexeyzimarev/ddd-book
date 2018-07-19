@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using static System.Environment;
+
 // ReSharper disable UnusedMember.Global
 
 namespace Marketplace
@@ -24,13 +28,15 @@ namespace Marketplace
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {
-                c.IncludeXmlComments($"{CurrentDirectory}/Marketplace.xml");
                 c.SwaggerDoc("v1",
                     new Info
                     {
                         Title = "ClassifiedAds",
                         Version = "v1"
                     });
+
+                var xmlPath = Path.Combine(CurrentDirectory, "Marketplace.xml");
+                c.IncludeXmlComments(xmlPath);
             });
         }
 
