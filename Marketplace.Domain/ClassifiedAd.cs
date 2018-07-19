@@ -62,7 +62,7 @@ namespace Marketplace.Domain
                 case Events.ClassifiedAdPriceUpdated e:
                     Price = new Price(e.Price, e.CurrencyCode);
                     break;
-                case Events.ClassidiedAdSentForReview e:
+                case Events.ClassidiedAdSentForReview _:
                     State = ClassifiedAdState.PendingReview;
                     break;
             }

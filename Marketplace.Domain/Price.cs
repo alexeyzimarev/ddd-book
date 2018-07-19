@@ -13,7 +13,7 @@ namespace Marketplace.Domain
                     nameof(amount));
         }
 
-        internal Price(decimal amount, string currencyCode) 
+        internal Price(decimal amount, string currencyCode)
             : base(amount, new CurrencyDetails{CurrencyCode = currencyCode})
         {
         }
