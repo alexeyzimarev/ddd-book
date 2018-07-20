@@ -29,8 +29,6 @@ namespace Marketplace
             => new WebHostBuilder()
                 .UseStartup<Startup>()
                 .UseConfiguration(configuration)
-                .ConfigureServices(services =>
-                    services.AddSingleton(configuration))
                 .UseContentRoot(CurrentDirectory)
                 .UseKestrel();
     }

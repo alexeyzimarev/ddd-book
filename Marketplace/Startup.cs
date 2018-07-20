@@ -1,12 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
+﻿using Marketplace.Api;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
-using static System.Environment;
 
 // ReSharper disable UnusedMember.Global
 
@@ -25,6 +22,8 @@ namespace Marketplace
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(new ClassifiedAdsApplicationService());
+
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {
@@ -34,9 +33,6 @@ namespace Marketplace
                         Title = "ClassifiedAds",
                         Version = "v1"
                     });
-
-                var xmlPath = Path.Combine(CurrentDirectory, "Marketplace.xml");
-                c.IncludeXmlComments(xmlPath);
             });
         }
 
