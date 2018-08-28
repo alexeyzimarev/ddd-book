@@ -4,9 +4,10 @@ using System.Linq;
 
 namespace Marketplace.Framework
 {
-    public abstract class Aggregate
+    public abstract class Aggregate<T>
     {
-        public 
+        public T Id { get; protected set; }
+        public int Version { get; private set; }
         
         private readonly List<object> _events;
 

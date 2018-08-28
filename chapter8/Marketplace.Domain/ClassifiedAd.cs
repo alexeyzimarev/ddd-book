@@ -2,9 +2,8 @@
 
 namespace Marketplace.Domain
 {
-    public class ClassifiedAd : Aggregate
+    public class ClassifiedAd : Aggregate<ClassifiedAdId>
     {
-        public ClassifiedAdId Id { get; private set; }
         public UserId OwnerId { get; private set; }
         public ClassifiedAdTitle Title { get; private set; }
         public ClassifiedAdText Text { get; private set; }
