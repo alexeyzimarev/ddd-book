@@ -22,6 +22,15 @@ namespace Marketplace.Framework
 
         protected abstract void When(object @event);
 
+        public void Load(IEnumerable<object> history)
+        {
+            foreach (var e in history)
+            {
+                When(e);
+                Version++;
+            }
+        }
+
         public IEnumerable<object> GetChanges() => _events.AsEnumerable();
 
         public void ClearChanges() => _events.Clear();

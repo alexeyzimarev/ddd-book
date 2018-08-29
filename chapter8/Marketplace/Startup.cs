@@ -1,9 +1,13 @@
-﻿using Marketplace.Api;
+﻿using EventStore.ClientAPI;
+using Marketplace.Api;
+using Marketplace.Framework;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 // ReSharper disable UnusedMember.Global
 
@@ -22,8 +26,17 @@ namespace Marketplace
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var esConnection = EventStoreConnection.Create(
+                Configuration["eventStore:connectionString"],
+                ConnectionSettings.Create().KeepReconnecting(),
+                Environment.ApplicationName);
+
+            services.AddSingleton(esConnection);
+            services.AddSingleton<IAggregateStore>(new EsAggregateStore(esConnection));
+
             services.AddSingleton(new ClassifiedAdsApplicationService());
 
+            services.AddScoped<IHostedService, HostedService>();
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {

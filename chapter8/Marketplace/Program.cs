@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using static System.Environment;
 using static System.Reflection.Assembly;
 
@@ -22,6 +21,7 @@ namespace Marketplace
         private static IConfiguration BuildConfiguration(string[] args)
             => new ConfigurationBuilder()
                 .SetBasePath(CurrentDirectory)
+                .AddJsonFile("appsettings.json", false, false)
                 .Build();
 
         private static IWebHostBuilder ConfigureWebHost(
