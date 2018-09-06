@@ -4,15 +4,15 @@ namespace Marketplace.Domain
 {
     public interface ICurrencyLookup
     {
-        CurrencyDetails FindCurrency(string currencyCode);
+        Currency FindCurrency(string currencyCode);
     }
 
-    public class CurrencyDetails : Value<CurrencyDetails>
+    public class Currency : Value<Currency>
     {
         public string CurrencyCode { get; set; }
         public bool InUse { get; set; }
         public int DecimalPlaces { get; set; }
 
-        public static CurrencyDetails None = new CurrencyDetails {InUse = false};
+        public static Currency None = new Currency {InUse = false};
     }
 }

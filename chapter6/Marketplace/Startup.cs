@@ -1,9 +1,11 @@
-﻿using Marketplace.Api;
+﻿using System.Threading.Tasks;
+using Marketplace.Api;
 using Marketplace.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Raven.Client;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Swashbuckle.AspNetCore.Swagger;
@@ -28,8 +30,15 @@ namespace Marketplace
             var store = new DocumentStore
               {
                   Urls = new[] {"http://localhost:8080"},
-                  Database = "Marketplace_Chapter6"
-              }.Initialize();
+                  Database = "Marketplace_Chapter6",
+                  Conventions =
+                  {
+                      FindIdentityProperty = m => m.Name == "_databaseId"
+                  }
+              };
+            store.Conventions.RegisterAsyncIdConvention<ClassifiedAd>(
+                (dbName, entity) => Task.FromResult("ClassifiedAd/" + entity.Id.ToString()));
+            store.Initialize();
 
             services.AddTransient(c => store.OpenAsyncSession());
             services.AddSingleton<ICurrencyLookup, FixedCurrencyLookup>();

@@ -4,7 +4,8 @@ namespace Marketplace.Domain
 {
     public class ClassifiedAd : Entity<ClassifiedAdId>
     {
-        public ClassifiedAdId Id { get; private set; }
+        private string _databaseId { get; set; }
+        
         public UserId OwnerId { get; private set; }
         public ClassifiedAdTitle Title { get; private set; }
         public ClassifiedAdText Text { get; private set; }

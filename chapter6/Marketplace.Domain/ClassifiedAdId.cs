@@ -4,28 +4,28 @@ namespace Marketplace.Domain
 {
     public class ClassifiedAdId : IEquatable<ClassifiedAdId>
     {
-        private readonly Guid _value;
+        private Guid Value { get; }
 
         public ClassifiedAdId(Guid value)
         {
             if (value == default)
                 throw new ArgumentNullException(nameof(value), "Classified Ad id cannot be empty");
             
-            _value = value;
+            Value = value;
         }
 
-        public static implicit operator Guid(ClassifiedAdId self) => self._value;
+        public static implicit operator Guid(ClassifiedAdId self) => self.Value;
         
         public static implicit operator ClassifiedAdId(string value) 
             => new ClassifiedAdId(Guid.Parse(value));
 
-        public override string ToString() => _value.ToString();
+        public override string ToString() => Value.ToString();
 
         public bool Equals(ClassifiedAdId other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return _value.Equals(other._value);
+            return Value.Equals(other.Value);
         }
 
         public override bool Equals(object obj)
@@ -38,7 +38,7 @@ namespace Marketplace.Domain
 
         public override int GetHashCode()
         {
-            return _value.GetHashCode();
+            return Value.GetHashCode();
         }
     }
 }
