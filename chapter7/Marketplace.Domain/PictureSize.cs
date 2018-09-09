@@ -5,8 +5,8 @@ namespace Marketplace.Domain
 {
     public class PictureSize : Value<PictureSize>
     {
-        public int Width { get; }
-        public int Height { get; }
+        public int Width { get; internal set; }
+        public int Height { get; internal set; }
 
         public PictureSize(int width, int height)
         {

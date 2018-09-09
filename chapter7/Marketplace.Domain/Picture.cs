@@ -1,50 +1,41 @@
 using System;
-using System.Collections.Generic;
 using Marketplace.Framework;
 
 namespace Marketplace.Domain
 {
     public class Picture : Entity<PictureId>
     {
+        internal PictureSize Size { get; private set; }
+        internal Uri Location { get; private set; }
+        internal int Order { get; private set; }
+
         protected override void When(object @event)
         {
             switch (@event)
             {
                 case Events.PictureAddedToAClassifiedAd e:
                     Id = new PictureId(e.PictureId);
-                    _images.Add(new ImageDetails(
-                        new PictureSize(e.Height, e.Width),
-                        new Uri(e.Url),
-                        0));
+                    Location = new Uri(e.Url);
+                    Size = new PictureSize {Height = e.Height, Width = e.Width};
+                    Order = e.Order;
+                    break;
+                case Events.ClassifiedAdPictureResized e:
+                    Size = new PictureSize{Height = e.Height, Width = e.Width};
                     break;
             }
         }
 
-        internal int Order { get; private set; }
-        private readonly List<ImageDetails> _images;
+        public void Resize(PictureSize newSize)
+            => Apply(new Events.ClassifiedAdPictureResized
+            {
+                PictureId = Id.Value,
+//                ClassigiedAdId = ,
+                Height = newSize.Width,
+                Width = newSize.Width
+            });
 
         public Picture(Action<object> applier) : base(applier)
         {
-            _images = new List<ImageDetails>();
-        }
-
-        public void AddResizedImage()
-        {
-            
-        }
-
-        private struct ImageDetails
-        {
-            public ImageDetails(PictureSize size, Uri location, int order)
-            {
-                Size = size;
-                Location = location;
-                Order = order;
-            }
-
-            internal PictureSize Size { get; set; }
-            internal Uri Location { get; set; }
-            internal int Order { get; set; }
         }
     }
 

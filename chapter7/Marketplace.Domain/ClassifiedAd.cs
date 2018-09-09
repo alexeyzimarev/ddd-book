@@ -63,19 +63,13 @@ namespace Marketplace.Domain
                 Order = Pictures.Max(x => x.Order)
             });
 
-        public void AddPictureSize(PictureId pictureId, Uri pictureUri, PictureSize size)
+        public void ResizePicture(PictureId pictureId, PictureSize newSize)
         {
-            if (Pictures.All(x => x.Id != pictureId))
-                throw new InvalidOperationException("Picture with the specified id is not found");
+            var picture = FindPicture(pictureId);
+            if (picture == null)
+                throw new InvalidOperationException("Cannot resize a picture that I don't have");
             
-            Apply(new Events.PictureSizeAddedToAPicture
-            {
-                PictureId = pictureId.Value,
-                ClassigiedAdId = Id,
-                Url = pictureUri.ToString(),
-                Height = size.Height,
-                Width = size.Width
-            });
+            picture.Resize(newSize);
         }
 
         protected override void When(object @event)
@@ -108,12 +102,17 @@ namespace Marketplace.Domain
                     ApplyToEntity(picture, e);
                     Pictures.Add(picture);
                     break;
-                case Events.PictureSizeAddedToAPicture e:
-                    picture = Pictures.FirstOrDefault(x => x.Id == new PictureId(e.PictureId));
+                case Events.ClassifiedAdPictureResized e:
+                    picture = FindPicture(new PictureId(e.PictureId));
                     ApplyToEntity(picture, @event);
                     break;
             }
         }
+
+        private Picture FindPicture(PictureId id)
+            => Pictures.FirstOrDefault(x => x.Id == id);
+
+        private Picture FirstPicture => Pictures.OrderBy(x => x.Order).FirstOrDefault();
 
         protected override void EnsureValidState()
         {
@@ -124,13 +123,15 @@ namespace Marketplace.Domain
                     valid = valid
                             && Title != null
                             && Text != null
-                            && Price?.Amount > 0;
+                            && Price?.Amount > 0
+                            && FirstPicture.HasCorrectSize();
                     break;
                 case ClassifiedAdState.Active:
                     valid = valid
                             && Title != null
                             && Text != null
                             && Price?.Amount > 0
+                            && FirstPicture.HasCorrectSize()
                             && ApprovedBy != null;
                     break;
             }
