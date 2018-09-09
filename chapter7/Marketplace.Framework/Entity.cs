@@ -1,30 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Marketplace.Framework
 {
-    public abstract class Entity<TId> where TId : IEquatable<TId>
+    public abstract class Entity<TId> : IInternalEventHandler
+        where TId : Value<TId>
     {
-        public TId Id { get; set; }
+        private readonly Action<object> _applier;
+        
+        public TId Id { get; protected set; }
 
-        private readonly List<object> _events;
+        protected Entity(Action<object> applier) => _applier = applier;
 
-        protected Entity() => _events = new List<object>();
+        protected abstract void When(object @event);
 
         protected void Apply(object @event)
         {
             When(@event);
-            EnsureValidState();
-            _events.Add(@event);
+            _applier(@event);
         }
 
-        protected abstract void When(object @event);
-
-        public IEnumerable<object> GetChanges() => _events.AsEnumerable();
-
-        public void ClearChanges() => _events.Clear();
-
-        protected abstract void EnsureValidState();
+        void IInternalEventHandler.Handle(object @event) => When(@event);
     }
 }

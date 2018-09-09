@@ -1,8 +1,11 @@
-﻿using Marketplace.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Marketplace.Framework;
 
 namespace Marketplace.Domain
 {
-    public class ClassifiedAd : Entity<ClassifiedAdId>
+    public class ClassifiedAd : AggregateRoot<ClassifiedAdId>
     {
         private string _databaseId { get; set; }
         
@@ -12,13 +15,17 @@ namespace Marketplace.Domain
         public Price Price { get; private set; }
         public ClassifiedAdState State { get; private set; }
         public UserId ApprovedBy { get; private set; }
+        public List<Picture> Pictures { get; private set; }
 
-        public ClassifiedAd(ClassifiedAdId id, UserId ownerId) =>
+        public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
+        {
+            Pictures = new List<Picture>();
             Apply(new Events.ClassifiedAdCreated
             {
                 Id = id,
                 OwnerId = ownerId
             });
+        }
 
         public void SetTitle(ClassifiedAdTitle title) =>
             Apply(new Events.ClassifiedAdTitleChanged
@@ -44,9 +51,37 @@ namespace Marketplace.Domain
 
         public void RequestToPublish() =>
             Apply(new Events.ClassidiedAdSentForReview {Id = Id});
+        
+        public void AddPicture(Uri pictureUri, PictureSize size) =>
+            Apply(new Events.PictureAddedToAClassifiedAd
+            {
+                PictureId = new Guid(),
+                ClassifiedAdId = Id,
+                Url = pictureUri.ToString(),
+                Height = size.Height,
+                Width = size.Width,
+                Order = Pictures.Max(x => x.Order)
+            });
+
+        public void AddPictureSize(PictureId pictureId, Uri pictureUri, PictureSize size)
+        {
+            if (Pictures.All(x => x.Id != pictureId))
+                throw new InvalidOperationException("Picture with the specified id is not found");
+            
+            Apply(new Events.PictureSizeAddedToAPicture
+            {
+                PictureId = pictureId.Value,
+                ClassigiedAdId = Id,
+                Url = pictureUri.ToString(),
+                Height = size.Height,
+                Width = size.Width
+            });
+        }
 
         protected override void When(object @event)
         {
+            Picture picture;
+            
             switch (@event)
             {
                 case Events.ClassifiedAdCreated e:
@@ -65,6 +100,17 @@ namespace Marketplace.Domain
                     break;
                 case Events.ClassidiedAdSentForReview _:
                     State = ClassifiedAdState.PendingReview;
+                    break;
+                
+                // picture
+                case Events.PictureAddedToAClassifiedAd e:
+                    picture = new Picture(Apply);
+                    ApplyToEntity(picture, e);
+                    Pictures.Add(picture);
+                    break;
+                case Events.PictureSizeAddedToAPicture e:
+                    picture = Pictures.FirstOrDefault(x => x.Id == new PictureId(e.PictureId));
+                    ApplyToEntity(picture, @event);
                     break;
             }
         }
