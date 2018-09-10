@@ -5,6 +5,7 @@ namespace Marketplace.Domain
 {
     public class Picture : Entity<PictureId>
     {
+        internal ClassifiedAdId ParentId { get; private set; }
         internal PictureSize Size { get; private set; }
         internal Uri Location { get; private set; }
         internal int Order { get; private set; }
@@ -14,6 +15,7 @@ namespace Marketplace.Domain
             switch (@event)
             {
                 case Events.PictureAddedToAClassifiedAd e:
+                    ParentId = new ClassifiedAdId(e.ClassifiedAdId);
                     Id = new PictureId(e.PictureId);
                     Location = new Uri(e.Url);
                     Size = new PictureSize {Height = e.Height, Width = e.Width};
@@ -24,12 +26,12 @@ namespace Marketplace.Domain
                     break;
             }
         }
-
+        
         public void Resize(PictureSize newSize)
             => Apply(new Events.ClassifiedAdPictureResized
             {
                 PictureId = Id.Value,
-//                ClassigiedAdId = ,
+                ClassifiedAdId = ParentId.Value,
                 Height = newSize.Width,
                 Width = newSize.Width
             });
