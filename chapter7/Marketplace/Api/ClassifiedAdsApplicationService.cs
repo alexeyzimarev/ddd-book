@@ -30,7 +30,7 @@ namespace Marketplace.Api
                         new ClassifiedAdId(cmd.Id),
                         new UserId(cmd.OwnerId));
 
-                    await _repository.Save(classifiedAd);
+//                    await _repository.Save(classifiedAd);
                     break;
 
                 case ClassifiedAds.V1.SetTitle cmd:
@@ -67,7 +67,7 @@ namespace Marketplace.Api
 
             operation(classifiedAd);
 
-            await _repository.Save(classifiedAd);
+//            await _repository.Save(classifiedAd);
         }
     }
 }

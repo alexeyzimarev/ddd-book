@@ -12,7 +12,12 @@ namespace Marketplace
         public ClassifiedAdRepository(IAsyncDocumentSession session) 
             => _session = session;
 
-        public Task<bool> Exists(ClassifiedAdId id) 
+        public Task Add(ClassifiedAd entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> Exists(ClassifiedAdId id)
             => _session.Advanced.ExistsAsync(EntityId(id));
 
         public Task<ClassifiedAd> Load(ClassifiedAdId id)

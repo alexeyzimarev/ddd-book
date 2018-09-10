@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using static System.Environment;
 using static System.Reflection.Assembly;
 
@@ -14,6 +15,11 @@ namespace Marketplace
 
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .MinimumLevel.Debug()
+                .CreateLogger();
+
             var configuration = BuildConfiguration(args);
 
             ConfigureWebHost(configuration).Build().Run();
@@ -30,6 +36,7 @@ namespace Marketplace
                 .UseStartup<Startup>()
                 .UseConfiguration(configuration)
                 .UseContentRoot(CurrentDirectory)
+                .UseSerilog()
                 .UseKestrel();
     }
 }

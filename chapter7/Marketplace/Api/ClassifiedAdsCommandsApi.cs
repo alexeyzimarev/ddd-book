@@ -13,6 +13,9 @@ namespace Marketplace.Api
             ClassifiedAdsApplicationService applicationService)
             => _applicationService = applicationService;
 
+        [HttpGet]
+        public object Get() => new {Something = "whatever"};
+
         [HttpPost]
         public async Task<IActionResult> Post(ClassifiedAds.V1.Create request)
         {
