@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Marketplace.Api;
 using Marketplace.Domain;
+using Marketplace.Framework;
+using Marketplace.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -40,10 +42,11 @@ namespace Marketplace
                 (dbName, entity) => Task.FromResult("ClassifiedAd/" + entity.Id.ToString()));
             store.Initialize();
 
-            services.AddTransient(c => store.OpenAsyncSession());
             services.AddSingleton<ICurrencyLookup, FixedCurrencyLookup>();
+            services.AddScoped(c => store.OpenAsyncSession());
+            services.AddScoped<IUnitOfWork, RavenDbUnitOfWork>();
             services.AddScoped<IClassifiedAdRepository, ClassifiedAdRepository>();
-            services.AddSingleton<ClassifiedAdsApplicationService>();
+            services.AddScoped<ClassifiedAdsApplicationService>();
 
             services.AddMvc();
             services.AddSwaggerGen(c =>
