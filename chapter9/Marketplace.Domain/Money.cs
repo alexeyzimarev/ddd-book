@@ -32,14 +32,14 @@ namespace Marketplace.Domain
             Currency = currency;
         }
 
-        protected Money(decimal amount, Currency currency)
+        protected Money(decimal amount, CurrencyDetails currency)
         {
             Amount = amount;
             Currency = currency;
         }
 
         public decimal Amount { get; }
-        public Currency Currency { get; }
+        public CurrencyDetails Currency { get; }
 
         public Money Add(Money summand)
         {

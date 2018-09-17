@@ -1,16 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using EventStore.ClientAPI;
 using Marketplace.Api;
-using Marketplace.Domain;
 using Marketplace.Framework;
-using Marketplace.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Raven.Client;
-using Raven.Client.Documents;
-using Raven.Client.Documents.Session;
+using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 // ReSharper disable UnusedMember.Global
 
@@ -29,25 +26,17 @@ namespace Marketplace
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var store = new DocumentStore
-              {
-                  Urls = new[] {"http://localhost:8080"},
-                  Database = "Marketplace_Chapter6",
-                  Conventions =
-                  {
-                      FindIdentityProperty = m => m.Name == "_databaseId"
-                  }
-              };
-            store.Conventions.RegisterAsyncIdConvention<ClassifiedAd>(
-                (dbName, entity) => Task.FromResult("ClassifiedAd/" + entity.Id.ToString()));
-            store.Initialize();
+            var esConnection = EventStoreConnection.Create(
+                Configuration["eventStore:connectionString"],
+                ConnectionSettings.Create().KeepReconnecting(),
+                Environment.ApplicationName);
 
-            services.AddSingleton<ICurrencyLookup, FixedCurrencyLookup>();
-            services.AddScoped(c => store.OpenAsyncSession());
-            services.AddScoped<IUnitOfWork, RavenDbUnitOfWork>();
-            services.AddScoped<IClassifiedAdRepository, ClassifiedAdRepository>();
-            services.AddScoped<ClassifiedAdsApplicationService>();
+            services.AddSingleton(esConnection);
+            services.AddSingleton<IAggregateStore>(new EsAggregateStore(esConnection));
 
+            services.AddSingleton(new ClassifiedAdsApplicationService());
+
+            services.AddScoped<IHostedService, HostedService>();
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {

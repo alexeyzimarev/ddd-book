@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Marketplace.Domain;
 
-namespace Marketplace.Tests
+namespace Marketplace
 {
-    public class FakeCurrencyLookup : ICurrencyLookup
+    public class FixedCurrencyLookup : ICurrencyLookup
     {
         private static readonly IEnumerable<Currency> _currencies =
             new[]
@@ -20,18 +20,6 @@ namespace Marketplace.Tests
                     CurrencyCode = "USD",
                     DecimalPlaces = 2,
                     InUse = true
-                },
-                new Currency
-                {
-                    CurrencyCode = "JPY",
-                    DecimalPlaces = 0,
-                    InUse = true
-                },
-                new Currency
-                {
-                    CurrencyCode = "DEM",
-                    DecimalPlaces = 2,
-                    InUse = false
                 }
             };
 

@@ -1,7 +1,6 @@
-using System.Text;
 using System.Threading.Tasks;
+using Marketplace.Contracts;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace Marketplace.Api
 {
@@ -14,14 +13,45 @@ namespace Marketplace.Api
             ClassifiedAdsApplicationService applicationService)
             => _applicationService = applicationService;
 
+        [HttpGet]
+        public object Get() => new {Something = "whatever"};
+
         [HttpPost]
-        public async Task<IActionResult> Post(
-            Contracts.ClassifiedAds.V1.Create request)
+        public async Task<IActionResult> Post(ClassifiedAds.V1.Create request)
         {
             await _applicationService.Handle(request);
+            return Ok();
+        }
 
-            Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
-            
+        [Route("name")]
+        [HttpPut]
+        public async Task<IActionResult> Put(ClassifiedAds.V1.SetTitle request)
+        {
+            await _applicationService.Handle(request);
+            return Ok();
+        }
+
+        [Route("text")]
+        [HttpPut]
+        public async Task<IActionResult> Put(ClassifiedAds.V1.UpdateText request)
+        {
+            await _applicationService.Handle(request);
+            return Ok();
+        }
+
+        [Route("price")]
+        [HttpPut]
+        public async Task<IActionResult> Put(ClassifiedAds.V1.UpdatePrice request)
+        {
+            await _applicationService.Handle(request);
+            return Ok();
+        }
+
+        [Route("publish")]
+        [HttpPut]
+        public async Task<IActionResult> Put(ClassifiedAds.V1.RequestToPublish request)
+        {
+            await _applicationService.Handle(request);
             return Ok();
         }
     }
