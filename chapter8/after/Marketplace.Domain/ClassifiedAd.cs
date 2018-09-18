@@ -7,15 +7,13 @@ namespace Marketplace.Domain
 {
     public class ClassifiedAd : AggregateRoot<ClassifiedAdId>
     {
-        private string _databaseId { get; set; }
-        
         public UserId OwnerId { get; private set; }
         public ClassifiedAdTitle Title { get; private set; }
         public ClassifiedAdText Text { get; private set; }
         public Price Price { get; private set; }
         public ClassifiedAdState State { get; private set; }
         public UserId ApprovedBy { get; private set; }
-        public List<Picture> Pictures { get; private set; }
+        public List<Picture> Pictures { get; }
 
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
         {

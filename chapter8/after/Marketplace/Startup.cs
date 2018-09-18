@@ -32,14 +32,8 @@ namespace Marketplace
             var store = new DocumentStore
               {
                   Urls = new[] {"http://localhost:8080"},
-                  Database = "Marketplace_Chapter6",
-                  Conventions =
-                  {
-                      FindIdentityProperty = m => m.Name == "_databaseId"
-                  }
+                  Database = "Marketplace_Chapter8",
               };
-            store.Conventions.RegisterAsyncIdConvention<ClassifiedAd>(
-                (dbName, entity) => Task.FromResult("ClassifiedAd/" + entity.Id.ToString()));
             store.Initialize();
 
             services.AddSingleton<ICurrencyLookup, FixedCurrencyLookup>();
