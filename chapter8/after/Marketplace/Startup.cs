@@ -33,6 +33,10 @@ namespace Marketplace
               {
                   Urls = new[] {"http://localhost:8080"},
                   Database = "Marketplace_Chapter8",
+                  Conventions =
+                  {
+                      FindIdentityProperty = x => x.Name == "DbId"
+                  }
               };
             store.Initialize();
 
@@ -56,11 +60,6 @@ namespace Marketplace
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
             app.UseMvcWithDefaultRoute();
             app.UseSwagger();
             app.UseSwaggerUI(c =>

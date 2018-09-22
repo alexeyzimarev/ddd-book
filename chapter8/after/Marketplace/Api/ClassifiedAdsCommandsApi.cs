@@ -1,6 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using Marketplace.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace Marketplace.Api
 {
@@ -8,28 +10,20 @@ namespace Marketplace.Api
     public class ClassifiedAdsCommandsApi : Controller
     {
         private readonly ClassifiedAdsApplicationService _applicationService;
+        private static ILogger Log = Serilog.Log.ForContext<ClassifiedAdsCommandsApi>();
 
         public ClassifiedAdsCommandsApi(
             ClassifiedAdsApplicationService applicationService)
             => _applicationService = applicationService;
 
-        [HttpGet]
-        public object Get() => new {Something = "whatever"};
-
         [HttpPost]
-        public async Task<IActionResult> Post(ClassifiedAds.V1.Create request)
-        {
-            await _applicationService.Handle(request);
-            return Ok();
-        }
+        public Task<IActionResult> Post(ClassifiedAds.V1.Create request)
+            => HandleRequest(request, _applicationService.Handle);
 
         [Route("name")]
         [HttpPut]
-        public async Task<IActionResult> Put(ClassifiedAds.V1.SetTitle request)
-        {
-            await _applicationService.Handle(request);
-            return Ok();
-        }
+        public Task<IActionResult> Put(ClassifiedAds.V1.SetTitle request)
+            => HandleRequest(request, _applicationService.Handle);
 
         [Route("text")]
         [HttpPut]
@@ -53,6 +47,21 @@ namespace Marketplace.Api
         {
             await _applicationService.Handle(request);
             return Ok();
+        }
+
+        private async Task<IActionResult> HandleRequest<T>(T request, Func<T, Task> handler)
+        {
+            try
+            {
+                Log.Debug("Handling HTTP request of type {type}", typeof(T).Name);
+                await handler(request);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error handling the request", e);
+                return new BadRequestObjectResult(new {error = e.Message, stackTrace = e.StackTrace});
+            }
         }
     }
 }
