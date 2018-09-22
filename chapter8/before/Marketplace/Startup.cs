@@ -56,11 +56,6 @@ namespace Marketplace
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
             app.UseMvcWithDefaultRoute();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
