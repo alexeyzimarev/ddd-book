@@ -10,3 +10,11 @@ services:
     environment:
       - RAVEN_Security_UnsecuredAccessAllowed=PublicNetwork
       - RAVEN_ARGS="--Setup.Mode=None"
+
+  postgres:
+    container_name: marketplace-postgres
+    image: postgres
+    ports:
+    - 5432:5432
+    volumes:
+    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
