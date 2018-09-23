@@ -8,6 +8,8 @@ namespace Marketplace.Domain
         public int Width { get; internal set; }
         public int Height { get; internal set; }
 
+        internal PictureSize() { }
+
         public PictureSize(int width, int height)
         {
             if (Width <= 0)
@@ -23,7 +25,5 @@ namespace Marketplace.Domain
             Width = width;
             Height = height;
         }
-
-        internal PictureSize() { }
     }
 }
