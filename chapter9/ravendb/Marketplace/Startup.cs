@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Marketplace.Api;
 using Marketplace.Domain;
+using Marketplace.Domain.ClassifiedAd;
+using Marketplace.Domain.Shared;
 using Marketplace.Framework;
 using Marketplace.Infrastructure;
 using Microsoft.AspNetCore.Builder;

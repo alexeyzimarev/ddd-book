@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Marketplace.Domain.Shared;
 using Marketplace.Framework;
 
-namespace Marketplace.Domain
+namespace Marketplace.Domain.ClassifiedAd
 {
     public class ClassifiedAd : AggregateRoot<ClassifiedAdId>
     {
@@ -143,7 +144,7 @@ namespace Marketplace.Domain
             }
 
             if (!valid)
-                throw new InvalidEntityStateException(this, $"Post-checks failed in state {State}");
+                throw new DomainExceptions.InvalidEntityState(this, $"Post-checks failed in state {State}");
         }
 
         public enum ClassifiedAdState

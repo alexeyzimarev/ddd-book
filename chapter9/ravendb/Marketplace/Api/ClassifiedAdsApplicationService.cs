@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Marketplace.Contracts;
 using Marketplace.Domain;
+using Marketplace.Domain.ClassifiedAd;
+using Marketplace.Domain.Shared;
 using Marketplace.Framework;
 
 namespace Marketplace.Api

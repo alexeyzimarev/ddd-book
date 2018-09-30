@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Marketplace.Domain
+namespace Marketplace.Domain.ClassifiedAd
 {
     public interface IClassifiedAdRepository
     {

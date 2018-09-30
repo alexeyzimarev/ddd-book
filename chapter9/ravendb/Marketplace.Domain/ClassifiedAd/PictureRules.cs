@@ -1,4 +1,4 @@
-namespace Marketplace.Domain
+namespace Marketplace.Domain.ClassifiedAd
 {
     public static class PictureRules
     {

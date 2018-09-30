@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Marketplace.Domain;
+using Marketplace.Domain.ClassifiedAd;
 using Raven.Client.Documents.Session;
 
 namespace Marketplace.Infrastructure
