@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Marketplace.Api;
+using Marketplace.ClassifiedAd;
 using Marketplace.Domain;
 using Marketplace.Domain.ClassifiedAd;
 using Marketplace.Domain.Shared;

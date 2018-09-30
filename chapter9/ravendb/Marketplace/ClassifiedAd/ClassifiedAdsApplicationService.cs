@@ -1,12 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using Marketplace.Contracts;
-using Marketplace.Domain;
 using Marketplace.Domain.ClassifiedAd;
 using Marketplace.Domain.Shared;
 using Marketplace.Framework;
 
-namespace Marketplace.Api
+namespace Marketplace.ClassifiedAd
 {
     public class ClassifiedAdsApplicationService : IApplicationService
     {
@@ -27,11 +25,11 @@ namespace Marketplace.Api
         {
             switch (command)
             {
-                case ClassifiedAds.V1.Create cmd:
+                case Contracts.V1.Create cmd:
                     if (await _repository.Exists(cmd.Id.ToString()))
                         throw new InvalidOperationException($"Entity with id {cmd.Id} already exists");
 
-                    var classifiedAd = new ClassifiedAd(
+                    var classifiedAd = new Domain.ClassifiedAd.ClassifiedAd(
                         new ClassifiedAdId(cmd.Id),
                         new UserId(cmd.OwnerId));
 
@@ -39,22 +37,22 @@ namespace Marketplace.Api
                     await _unitOfWork.Commit();
                     break;
 
-                case ClassifiedAds.V1.SetTitle cmd:
+                case Contracts.V1.SetTitle cmd:
                     await HandleUpdate(cmd.Id,
                         c => c.SetTitle(ClassifiedAdTitle.FromString(cmd.Title)));
                     break;
 
-                case ClassifiedAds.V1.UpdateText cmd:
+                case Contracts.V1.UpdateText cmd:
                     await HandleUpdate(cmd.Id,
                         c => c.UpdateText(ClassifiedAdText.FromString(cmd.Text)));
                     break;
 
-                case ClassifiedAds.V1.UpdatePrice cmd:
+                case Contracts.V1.UpdatePrice cmd:
                     await HandleUpdate(cmd.Id,
                         c => c.UpdatePrice(Price.FromDecimal(cmd.Price, cmd.Currency, _currencyLookup)));
                     break;
 
-                case ClassifiedAds.V1.RequestToPublish cmd:
+                case Contracts.V1.RequestToPublish cmd:
                     await HandleUpdate(cmd.Id,
                         c => c.RequestToPublish());
                     break;
@@ -65,7 +63,7 @@ namespace Marketplace.Api
             }
         }
 
-        private async Task HandleUpdate(Guid classifiedAdId, Action<ClassifiedAd> operation)
+        private async Task HandleUpdate(Guid classifiedAdId, Action<Domain.ClassifiedAd.ClassifiedAd> operation)
         {
             var classifiedAd = await _repository.Load(classifiedAdId.ToString());
             if (classifiedAd == null)

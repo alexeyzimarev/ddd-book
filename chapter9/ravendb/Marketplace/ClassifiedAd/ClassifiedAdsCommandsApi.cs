@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using Marketplace.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
-namespace Marketplace.Api
+namespace Marketplace.ClassifiedAd
 {
     [Route("/ad")]
     public class ClassifiedAdsCommandsApi : Controller
@@ -17,37 +16,28 @@ namespace Marketplace.Api
             => _applicationService = applicationService;
 
         [HttpPost]
-        public Task<IActionResult> Post(ClassifiedAds.V1.Create request)
+        public Task<IActionResult> Post(Contracts.V1.Create request)
             => HandleRequest(request, _applicationService.Handle);
 
         [Route("name")]
         [HttpPut]
-        public Task<IActionResult> Put(ClassifiedAds.V1.SetTitle request)
+        public Task<IActionResult> Put(Contracts.V1.SetTitle request)
             => HandleRequest(request, _applicationService.Handle);
 
         [Route("text")]
         [HttpPut]
-        public async Task<IActionResult> Put(ClassifiedAds.V1.UpdateText request)
-        {
-            await _applicationService.Handle(request);
-            return Ok();
-        }
+        public Task<IActionResult> Put(Contracts.V1.UpdateText request)
+            => HandleRequest(request, _applicationService.Handle);
 
         [Route("price")]
         [HttpPut]
-        public async Task<IActionResult> Put(ClassifiedAds.V1.UpdatePrice request)
-        {
-            await _applicationService.Handle(request);
-            return Ok();
-        }
+        public Task<IActionResult> Put(Contracts.V1.UpdatePrice request)
+            => HandleRequest(request, _applicationService.Handle);
 
         [Route("publish")]
         [HttpPut]
-        public async Task<IActionResult> Put(ClassifiedAds.V1.RequestToPublish request)
-        {
-            await _applicationService.Handle(request);
-            return Ok();
-        }
+        public Task<IActionResult> Put(Contracts.V1.RequestToPublish request)
+            => HandleRequest(request, _applicationService.Handle);
 
         private async Task<IActionResult> HandleRequest<T>(T request, Func<T, Task> handler)
         {

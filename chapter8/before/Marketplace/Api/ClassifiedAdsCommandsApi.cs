@@ -27,27 +27,18 @@ namespace Marketplace.Api
 
         [Route("text")]
         [HttpPut]
-        public async Task<IActionResult> Put(ClassifiedAds.V1.UpdateText request)
-        {
-            await _applicationService.Handle(request);
-            return Ok();
-        }
+        public Task<IActionResult> Put(ClassifiedAds.V1.UpdateText request)
+            => HandleRequest(request, _applicationService.Handle);
 
         [Route("price")]
         [HttpPut]
-        public async Task<IActionResult> Put(ClassifiedAds.V1.UpdatePrice request)
-        {
-            await _applicationService.Handle(request);
-            return Ok();
-        }
+        public Task<IActionResult> Put(ClassifiedAds.V1.UpdatePrice request)
+            => HandleRequest(request, _applicationService.Handle);
 
         [Route("publish")]
         [HttpPut]
-        public async Task<IActionResult> Put(ClassifiedAds.V1.RequestToPublish request)
-        {
-            await _applicationService.Handle(request);
-            return Ok();
-        }
+        public Task<IActionResult> Put(ClassifiedAds.V1.RequestToPublish request)
+            => HandleRequest(request, _applicationService.Handle);
 
         private async Task<IActionResult> HandleRequest<T>(T request, Func<T, Task> handler)
         {

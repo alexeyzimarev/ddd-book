@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using Marketplace.Domain;
 using Marketplace.Domain.Shared;
 
-namespace Marketplace
+namespace Marketplace.Infrastructure
 {
     public class FixedCurrencyLookup : ICurrencyLookup
     {
-        private static readonly IEnumerable<Currency> _currencies =
+        private static readonly IEnumerable<Currency> Currencies =
             new[]
             {
                 new Currency
@@ -26,7 +25,7 @@ namespace Marketplace
 
         public Currency FindCurrency(string currencyCode)
         {
-            var currency = _currencies.FirstOrDefault(x => x.CurrencyCode == currencyCode);
+            var currency = Currencies.FirstOrDefault(x => x.CurrencyCode == currencyCode);
             return currency ?? Currency.None;
         }
     }
