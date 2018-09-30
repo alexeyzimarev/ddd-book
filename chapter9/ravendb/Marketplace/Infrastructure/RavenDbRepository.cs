@@ -2,10 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Marketplace.Framework;
 using Raven.Client.Documents.Session;
+
 namespace Marketplace.Infrastructure
 {
     public class RavenDbRepository<T, TId>
-        where T: AggregateRoot<TId> 
+        where T : AggregateRoot<TId>
         where TId : Value<TId>
     {
         private readonly IAsyncDocumentSession _session;
@@ -19,10 +20,10 @@ namespace Marketplace.Infrastructure
             _entityId = entityId;
         }
 
-        public Task Add(T entity) 
+        public Task Add(T entity)
             => _session.StoreAsync(entity, _entityId(entity.Id));
 
-        public Task<bool> Exists(TId id) 
+        public Task<bool> Exists(TId id)
             => _session.Advanced.ExistsAsync(_entityId(id));
 
         public Task<T> Load(TId id)
