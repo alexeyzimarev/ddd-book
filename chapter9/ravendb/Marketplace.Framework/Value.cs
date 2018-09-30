@@ -119,8 +119,5 @@ namespace Marketplace.Framework
                 }
             }
         }
-        
-        // Make Json.Net happy
-        protected Value() { }
     }
 }

@@ -20,7 +20,7 @@ namespace Marketplace.Domain.UserProfile
         public static implicit operator string(FullName fullName)
             => fullName.Value;
         
-        // serialization concern
+        // Satisfy the serialization requirements
         protected FullName() { }
     }
 }

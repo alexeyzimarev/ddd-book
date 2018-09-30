@@ -66,6 +66,9 @@ namespace Marketplace.Domain.Shared
             minuend.Subtract(subtrahend);
 
         public override string ToString() => $"{Currency.CurrencyCode} {Amount}";
+        
+        // Satisfy the serialization requirements
+        protected Money() { }
     }
 
     public class CurrencyMismatchException : Exception

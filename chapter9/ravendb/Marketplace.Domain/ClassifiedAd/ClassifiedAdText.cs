@@ -13,5 +13,8 @@ namespace Marketplace.Domain.ClassifiedAd
         
         public static implicit operator string(ClassifiedAdText text) =>
             text.Value;
+        
+        // Satisfy the serialization requirements 
+        protected ClassifiedAdText() { }
     }
 }

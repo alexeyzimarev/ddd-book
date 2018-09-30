@@ -12,12 +12,12 @@ namespace Marketplace.Domain.UserProfile
 
         public static DisplayName FromString(
             string displayName,
-            CheckTextForProfanity ensureGoodText)
+            CheckTextForProfanity hasProfanity)
         {
             if (displayName.IsEmpty())
                 throw new ArgumentNullException(nameof(FullName));
             
-            if (!ensureGoodText(displayName))
+            if (hasProfanity(displayName))
                 throw new DomainExceptions.ProfanityFound(displayName);
 
             return new DisplayName(displayName);
@@ -25,5 +25,8 @@ namespace Marketplace.Domain.UserProfile
 
         public static implicit operator string(DisplayName displayName)
             => displayName.Value;
+        
+        // Satisfy the serialization requirements
+        protected DisplayName() { }
     }
 }

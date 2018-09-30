@@ -22,5 +22,8 @@ namespace Marketplace.Domain.ClassifiedAd
         public new static Price FromDecimal(decimal amount, string currency,
             ICurrencyLookup currencyLookup) =>
             new Price(amount, currency, currencyLookup);
+        
+        // Satisfy the serialization requirements
+        protected Price() { }
     }
 }
