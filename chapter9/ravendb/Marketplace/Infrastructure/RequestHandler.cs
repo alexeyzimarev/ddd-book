@@ -22,6 +22,5 @@ namespace Marketplace.Infrastructure
                 return new BadRequestObjectResult(new {error = e.Message, stackTrace = e.StackTrace});
             }
         }
-        
     }
 }

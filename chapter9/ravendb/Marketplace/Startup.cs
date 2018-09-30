@@ -33,7 +33,6 @@ namespace Marketplace
 
         public void ConfigureServices(IServiceCollection services)
         {
-            
             var store = new DocumentStore
               {
                   Urls = new[] {"http://localhost:8080"},

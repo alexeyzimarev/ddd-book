@@ -3,7 +3,7 @@ version: '3.5'
 services:
 
   ravendb:
-    container_name: marketplace-ravendb
+    container_name: marketplace-ch8-ravendb
     image: ravendb/ravendb
     ports:
       - 8080:8080
@@ -12,7 +12,7 @@ services:
       - RAVEN_ARGS="--Setup.Mode=None"
 
   postgres:
-    container_name: marketplace-postgres
+    container_name: marketplace-ch8-postgres
     image: postgres
     ports:
     - 5432:5432
