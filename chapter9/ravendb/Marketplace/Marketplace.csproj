@@ -14,10 +14,6 @@
     <ItemGroup>
         <ProjectReference Include="..\Marketplace.Domain\Marketplace.Domain.csproj" />
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Api" />
-      <Folder Include="UserProfile" />
-    </ItemGroup>
 
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>

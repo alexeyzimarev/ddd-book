@@ -1,10 +1,11 @@
 ﻿using System;
+using Marketplace.Framework;
 
 namespace Marketplace.Domain.Shared
 {
-    public class UserId
+    public class UserId : Value<UserId>
     {
-        private Guid Value { get; set; }
+        public Guid Value { get; private set; }
 
         public UserId(Guid value)
         {

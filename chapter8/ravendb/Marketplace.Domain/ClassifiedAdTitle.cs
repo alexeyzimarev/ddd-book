@@ -40,5 +40,8 @@ namespace Marketplace.Domain
                     "Title cannot be longer that 100 characters",
                     nameof(value));
         }
+
+        // Satisfy the serialization requirements
+        protected ClassifiedAdTitle() { }
     }
 }

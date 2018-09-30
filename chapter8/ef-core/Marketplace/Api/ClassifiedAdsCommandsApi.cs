@@ -50,7 +50,7 @@ namespace Marketplace.Api
             }
             catch (Exception e)
             {
-                Log.Error("Error handling the request", e);
+                Log.Error(e, "Error handling the request");
                 return new BadRequestObjectResult(new {error = e.Message, stackTrace = e.StackTrace});
             }
         }

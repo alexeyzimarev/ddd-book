@@ -7,7 +7,7 @@ namespace Marketplace.Domain.UserProfile
     {
         public string Value { get; }
 
-        internal FullName(string fullName) => Value = fullName;
+        internal FullName(string value) => Value = value;
 
         public static FullName FromString(string fullName)
         {
@@ -19,5 +19,8 @@ namespace Marketplace.Domain.UserProfile
 
         public static implicit operator string(FullName fullName)
             => fullName.Value;
+        
+        // serialization concern
+        protected FullName() { }
     }
 }

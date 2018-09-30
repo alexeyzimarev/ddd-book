@@ -1,14 +1,15 @@
 using System;
+using Marketplace.Domain.Shared;
 using Marketplace.Framework;
 
 namespace Marketplace.Domain.UserProfile
 {
-    public class UserProfile : AggregateRoot<UserProfileId>
+    public class UserProfile : AggregateRoot<UserId>
     {
         // Properties to handle the persistence
         private string DbId
         {
-            get => $"ClassifiedAd/{Id.Value}";
+            get => $"UserProfile/{Id.Value}";
             set {}
         }
         
@@ -17,7 +18,7 @@ namespace Marketplace.Domain.UserProfile
         public DisplayName DisplayName { get; private set; }
         public string PhotoUrl { get; private set; }
 
-        public UserProfile(UserProfileId id, FullName fullName, DisplayName displayName)
+        public UserProfile(UserId id, FullName fullName, DisplayName displayName)
             => Apply(new Events.UserRegistered
             {
                 UserId = id,
@@ -51,6 +52,7 @@ namespace Marketplace.Domain.UserProfile
             switch (@event)
             {
                 case Events.UserRegistered e:
+                    Id = new UserId(e.UserId);
                     FullName = new FullName(e.FullName);
                     DisplayName = new DisplayName(e.DisplayName);
                     break;
