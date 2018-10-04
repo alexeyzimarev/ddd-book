@@ -34,9 +34,14 @@ namespace Marketplace.ClassifiedAd
         public Task<IActionResult> Put(Contracts.V1.UpdatePrice request)
             => RequestHandler.HandleRequest(request, _applicationService.Handle, Log);
 
-        [Route("publish")]
+        [Route("requestpublish")]
         [HttpPut]
         public Task<IActionResult> Put(Contracts.V1.RequestToPublish request)
+            => RequestHandler.HandleRequest(request, _applicationService.Handle, Log);
+
+        [Route("publish")]
+        [HttpPut]
+        public Task<IActionResult> Put(Contracts.V1.Publish request)
             => RequestHandler.HandleRequest(request, _applicationService.Handle, Log);
     }
 }

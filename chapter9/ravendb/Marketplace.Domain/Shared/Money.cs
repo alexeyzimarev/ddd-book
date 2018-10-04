@@ -38,8 +38,8 @@ namespace Marketplace.Domain.Shared
             Currency = currency;
         }
 
-        public decimal Amount { get; }
-        public Currency Currency { get; }
+        public decimal Amount { get; private set; }
+        public Currency Currency { get; private set; }
 
         public Money Add(Money summand)
         {

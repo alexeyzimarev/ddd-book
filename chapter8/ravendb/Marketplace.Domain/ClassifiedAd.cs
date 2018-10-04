@@ -21,7 +21,7 @@ namespace Marketplace.Domain
         public Price Price { get; private set; }
         public ClassifiedAdState State { get; private set; }
         public UserId ApprovedBy { get; private set; }
-        public List<Picture> Pictures { get; }
+        public List<Picture> Pictures { get; private set; }
 
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
         {
@@ -153,5 +153,8 @@ namespace Marketplace.Domain
             Inactive,
             MarkedAsSold
         }
+        
+        // For persistence
+        protected ClassifiedAd() { }
     }
 }

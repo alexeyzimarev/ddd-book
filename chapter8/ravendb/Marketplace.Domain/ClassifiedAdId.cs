@@ -5,7 +5,7 @@ namespace Marketplace.Domain
 {
     public class ClassifiedAdId : Value<ClassifiedAdId>
     {
-        public Guid Value { get; }
+        public Guid Value { get; private set; }
 
         public ClassifiedAdId(Guid value)
         {
@@ -21,5 +21,8 @@ namespace Marketplace.Domain
             => new ClassifiedAdId(Guid.Parse(value));
 
         public override string ToString() => Value.ToString();
+        
+        // Serialization requirement
+        protected ClassifiedAdId() { }
     }
 }

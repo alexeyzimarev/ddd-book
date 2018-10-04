@@ -56,6 +56,10 @@ namespace Marketplace.ClassifiedAd
                     await HandleUpdate(cmd.Id,
                         c => c.RequestToPublish());
                     break;
+                
+                case Contracts.V1.Publish cmd:
+                    await HandleUpdate(cmd.Id, c => c.Publish(new UserId(cmd.ApprovedBy)));
+                    break;
 
                 default:
                     throw new InvalidOperationException(

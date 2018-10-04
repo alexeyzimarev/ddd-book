@@ -5,10 +5,10 @@ namespace Marketplace.Domain.ClassifiedAd
 {
     public class Picture : Entity<PictureId>
     {
-        internal ClassifiedAdId ParentId { get; private set; }
-        internal PictureSize Size { get; private set; }
-        internal Uri Location { get; private set; }
-        internal int Order { get; private set; }
+        public ClassifiedAdId ParentId { get; private set; }
+        public PictureSize Size { get; private set; }
+        public Uri Location { get; private set; }
+        public int Order { get; private set; }
 
         protected override void When(object @event)
         {
