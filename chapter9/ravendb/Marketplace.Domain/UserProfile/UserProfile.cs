@@ -68,8 +68,9 @@ namespace Marketplace.Domain.UserProfile
             }
         }
 
-        protected override void EnsureValidState()
-        {
-        }
+        protected override void EnsureValidState() { }
+        
+        // Satisfy the serialization requirements
+        protected UserProfile() { }
     }
 }

@@ -16,21 +16,21 @@ namespace Marketplace.UserProfile
 
         [HttpPost]
         public Task<IActionResult> Post(Contracts.V1.RegisterUser request)
-            => RequestHandler.HandleRequest(request, _applicationService.Handle, Log);
+            => RequestHandler.HandleCommand(request, _applicationService.Handle, Log);
         
         [Route("fullname")]
         [HttpPut]
         public Task<IActionResult> Put(Contracts.V1.UpdateUserFullName request)
-            => RequestHandler.HandleRequest(request, _applicationService.Handle, Log);
+            => RequestHandler.HandleCommand(request, _applicationService.Handle, Log);
         
         [Route("displayname")]
         [HttpPut]
         public Task<IActionResult> Put(Contracts.V1.UpdateUserDisplayName request)
-            => RequestHandler.HandleRequest(request, _applicationService.Handle, Log);
+            => RequestHandler.HandleCommand(request, _applicationService.Handle, Log);
         
         [Route("photo")]
         [HttpPut]
         public Task<IActionResult> Put(Contracts.V1.UpdateUserProfilePhoto request)
-            => RequestHandler.HandleRequest(request, _applicationService.Handle, Log);
+            => RequestHandler.HandleCommand(request, _applicationService.Handle, Log);
     }
 }
