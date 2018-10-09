@@ -1,7 +1,7 @@
 using System;
 using Marketplace.Framework;
 
-namespace Marketplace.Domain
+namespace Marketplace.Domain.ClassifiedAd
 {
     public class PictureSize : Value<PictureSize>
     {

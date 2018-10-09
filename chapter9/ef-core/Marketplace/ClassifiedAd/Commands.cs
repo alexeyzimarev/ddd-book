@@ -1,8 +1,8 @@
 using System;
 
-namespace Marketplace.Contracts
+namespace Marketplace.ClassifiedAd
 {
-    public static class ClassifiedAds
+    public static class Commands
     {
         public static class V1
         {
@@ -34,6 +34,12 @@ namespace Marketplace.Contracts
             public class RequestToPublish
             {
                 public Guid Id { get; set; }
+            }
+            
+            public class Publish
+            {
+                public Guid Id { get; set; }
+                public Guid ApprovedBy { get; set; }
             }
         }
     }

@@ -1,4 +1,4 @@
-using Marketplace.Domain;
+using Marketplace.Domain.ClassifiedAd;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -7,19 +7,20 @@ using Microsoft.Extensions.Logging;
 
 namespace Marketplace.Infrastructure
 {
-    public class ClassifiedAdDbContext : DbContext
+    public class MarketplaceDbContext : DbContext
     {
         private readonly ILoggerFactory _loggerFactory;
 
-        public ClassifiedAdDbContext(
-            DbContextOptions<ClassifiedAdDbContext> options,
+        public MarketplaceDbContext(
+            DbContextOptions<MarketplaceDbContext> options,
             ILoggerFactory loggerFactory)
             : base(options)
         {
             _loggerFactory = loggerFactory;
         }
 
-        public DbSet<ClassifiedAd> ClassifiedAds { get; set; }
+        public DbSet<Domain.ClassifiedAd.ClassifiedAd> ClassifiedAds { get; set; }
+        public DbSet<Domain.UserProfile.UserProfile> UserProfiles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -31,12 +32,13 @@ namespace Marketplace.Infrastructure
         {
             modelBuilder.ApplyConfiguration(new ClassifiedAdEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new PictureEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new UserProfileEntityTypeConfiguration());
         }
     }
 
-    public class ClassifiedAdEntityTypeConfiguration : IEntityTypeConfiguration<ClassifiedAd>
+    public class ClassifiedAdEntityTypeConfiguration : IEntityTypeConfiguration<Domain.ClassifiedAd.ClassifiedAd>
     {
-        public void Configure(EntityTypeBuilder<ClassifiedAd> builder)
+        public void Configure(EntityTypeBuilder<Domain.ClassifiedAd.ClassifiedAd> builder)
         {
             builder.HasKey(x => x.ClassifiedAdId);
             builder.OwnsOne(x => x.Id);
@@ -59,14 +61,14 @@ namespace Marketplace.Infrastructure
         }
     }
 
-    public static class AppBuilderDatabaseExtensions
+    public class UserProfileEntityTypeConfiguration : IEntityTypeConfiguration<Domain.UserProfile.UserProfile>
     {
-        public static void EnsureDatabase(this IApplicationBuilder app)
+        public void Configure(EntityTypeBuilder<Domain.UserProfile.UserProfile> builder)
         {
-            var context = app.ApplicationServices.GetService<ClassifiedAdDbContext>();
-
-            if (!context.Database.EnsureCreated())
-                context.Database.Migrate();
+            builder.HasKey(x => x.UserProfileId);
+            builder.OwnsOne(x => x.Id);
+            builder.OwnsOne(x => x.DisplayName);
+            builder.OwnsOne(x => x.FullName);
         }
     }
 }

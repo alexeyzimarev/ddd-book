@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Marketplace.Domain;
+using Marketplace.Domain.Shared;
 
-namespace Marketplace
+namespace Marketplace.Infrastructure
 {
     public class FixedCurrencyLookup : ICurrencyLookup
     {

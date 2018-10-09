@@ -5,9 +5,9 @@ namespace Marketplace.Infrastructure
 {
     public class EfCoreUnitOfWork : IUnitOfWork
     {
-        private readonly ClassifiedAdDbContext _dbContext;
+        private readonly MarketplaceDbContext _dbContext;
 
-        public EfCoreUnitOfWork(ClassifiedAdDbContext dbContext)
+        public EfCoreUnitOfWork(MarketplaceDbContext dbContext)
             => _dbContext = dbContext;
 
         public Task Commit() => _dbContext.SaveChangesAsync();

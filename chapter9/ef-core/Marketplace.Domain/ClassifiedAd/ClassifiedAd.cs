@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Marketplace.Domain.Shared;
 using Marketplace.Framework;
 
-namespace Marketplace.Domain
+namespace Marketplace.Domain.ClassifiedAd
 {
     public class ClassifiedAd : AggregateRoot<ClassifiedAdId>
     {
@@ -56,6 +57,9 @@ namespace Marketplace.Domain
         public void RequestToPublish() =>
             Apply(new Events.ClassidiedAdSentForReview {Id = Id});
         
+        public void Publish(UserId userId) =>
+            Apply(new Events.ClassifiedAdPublished {Id = Id, ApprovedBy = userId});
+        
         public void AddPicture(Uri pictureUri, PictureSize size) =>
             Apply(new Events.PictureAddedToAClassifiedAd
             {
@@ -106,6 +110,10 @@ namespace Marketplace.Domain
                 case Events.ClassidiedAdSentForReview _:
                     State = ClassifiedAdState.PendingReview;
                     break;
+                case Events.ClassifiedAdPublished e:
+                    ApprovedBy = new UserId(e.ApprovedBy);
+                    State = ClassifiedAdState.Active;
+                    break;
                 
                 // picture
                 case Events.PictureAddedToAClassifiedAd e:
@@ -148,7 +156,7 @@ namespace Marketplace.Domain
             }
 
             if (!valid)
-                throw new InvalidEntityStateException(this, $"Post-checks failed in state {State}");
+                throw new DomainExceptions.InvalidEntityState(this, $"Post-checks failed in state {State}");
         }
 
         public enum ClassifiedAdState

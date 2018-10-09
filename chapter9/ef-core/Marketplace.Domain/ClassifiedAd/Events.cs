@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Marketplace.Domain
+namespace Marketplace.Domain.ClassifiedAd
 {
     public static class Events
     {
@@ -34,6 +34,12 @@ namespace Marketplace.Domain
             public Guid Id { get; set; }
         }
 
+        public class ClassifiedAdPublished
+        {
+            public Guid Id { get; set; }
+            public Guid ApprovedBy { get; set; }
+        }
+        
         public class PictureAddedToAClassifiedAd
         {
             public Guid ClassifiedAdId { get; set; }
