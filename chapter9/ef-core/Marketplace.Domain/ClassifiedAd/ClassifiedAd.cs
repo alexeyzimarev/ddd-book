@@ -161,10 +161,10 @@ namespace Marketplace.Domain.ClassifiedAd
 
         public enum ClassifiedAdState
         {
-            PendingReview,
-            Active,
-            Inactive,
-            MarkedAsSold
+            PendingReview = 1,
+            Active = 2,
+            Inactive = 3,
+            MarkedAsSold = 4
         }
     }
 }
