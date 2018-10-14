@@ -1,10 +1,10 @@
 ﻿using Marketplace.Framework;
 
-namespace Marketplace.Domain
+namespace Marketplace.Domain.ClassifiedAd
 {
     public class ClassifiedAdText : Value<ClassifiedAdText>
     {
-        public string Value { get; }
+        public string Value { get; private set; }
 
         internal ClassifiedAdText(string text) => Value = text;
         
@@ -13,5 +13,8 @@ namespace Marketplace.Domain
         
         public static implicit operator string(ClassifiedAdText text) =>
             text.Value;
+        
+        // Satisfy the serialization requirements 
+        protected ClassifiedAdText() { }
     }
 }

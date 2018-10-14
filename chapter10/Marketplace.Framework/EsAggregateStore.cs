@@ -17,7 +17,7 @@ namespace Marketplace.Framework
             _connection = connection;
         }
 
-        public async Task Save<T, TId>(T aggregate) where T : Aggregate<TId>
+        public async Task Save<T, TId>(T aggregate) where T : AggregateRoot<TId>
         {
             if (aggregate == null)
                 throw new ArgumentNullException(nameof(aggregate));
@@ -39,20 +39,21 @@ namespace Marketplace.Framework
                 streamName,
                 aggregate.Version,
                 changes);
+
+            aggregate.ClearChanges();
         }
 
-        public async Task<T> Load<T, TId>(string aggregateId)
-            where T : Aggregate<TId>, new()
+        public async Task<T> Load<T, TId>(TId aggregateId)
+            where T : AggregateRoot<TId>
         {
-            if (IsNullOrWhiteSpace(aggregateId))
-                throw new ArgumentException("Value cannot be null or whitespace.", 
-                    nameof(aggregateId));
+            if (aggregateId == null)
+                throw new ArgumentNullException(nameof(aggregateId));
 
-            var stream = GetStreamName<T>(aggregateId);
-            var aggregate = new T();
+            var stream = GetStreamName<T, TId>(aggregateId);
+            var aggregate = (T) Activator.CreateInstance(typeof(T), true);
 
             var page = await _connection.ReadStreamEventsForwardAsync(
-                stream, 0, int.MaxValue, false);
+                stream, 0, 1024, false);
 
             aggregate.Load(page.Events.Select(resolvedEvent =>
             {
@@ -65,10 +66,18 @@ namespace Marketplace.Framework
             return aggregate;
         }
 
-        private static string GetStreamName<T>(string aggregateId)
-            => $"{typeof(T).Name}-{aggregateId}";
+        public async Task<bool> Exists<T, TId>(TId aggregateId)
+        {
+            var stream = GetStreamName<T, TId>(aggregateId);
+            var result = await _connection.ReadEventAsync(stream, 1, false);
+            return result.Status != EventReadStatus.NoStream;
+        }
 
-        private static string GetStreamName<T, TId>(T aggregate) where T : Aggregate<TId>
+        private static string GetStreamName<T, TId>(TId aggregateId)
+            => $"{typeof(T).Name}-{aggregateId.ToString()}";
+
+        private static string GetStreamName<T, TId>(T aggregate)
+            where T : AggregateRoot<TId>
             => $"{typeof(T).Name}-{aggregate.Id.ToString()}";
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Marketplace.Framework;
 
-namespace Marketplace.Domain
+namespace Marketplace.Domain.Shared
 {
     public class Money : Value<Money>
     {
@@ -32,14 +32,14 @@ namespace Marketplace.Domain
             Currency = currency;
         }
 
-        protected Money(decimal amount, CurrencyDetails currency)
+        protected Money(decimal amount, Currency currency)
         {
             Amount = amount;
             Currency = currency;
         }
 
-        public decimal Amount { get; }
-        public CurrencyDetails Currency { get; }
+        public decimal Amount { get; private set; }
+        public Currency Currency { get; private set; }
 
         public Money Add(Money summand)
         {
@@ -66,6 +66,9 @@ namespace Marketplace.Domain
             minuend.Subtract(subtrahend);
 
         public override string ToString() => $"{Currency.CurrencyCode} {Amount}";
+        
+        // Satisfy the serialization requirements
+        protected Money() { }
     }
 
     public class CurrencyMismatchException : Exception

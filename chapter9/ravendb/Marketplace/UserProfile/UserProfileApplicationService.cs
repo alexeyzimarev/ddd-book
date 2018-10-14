@@ -58,11 +58,11 @@ namespace Marketplace.UserProfile
         
         private async Task HandleUpdate(Guid userProfileId, Action<Domain.UserProfile.UserProfile> operation)
         {
-            var classifiedAd = await _repository.Load(new UserId(userProfileId));
-            if (classifiedAd == null)
+            var userProfile = await _repository.Load(new UserId(userProfileId));
+            if (userProfile == null)
                 throw new InvalidOperationException($"Entity with id {userProfileId} cannot be found");
 
-            operation(classifiedAd);
+            operation(userProfile);
 
             await _unitOfWork.Commit();
         }

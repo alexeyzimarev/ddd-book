@@ -1,6 +1,8 @@
 ﻿using EventStore.ClientAPI;
-using Marketplace.Api;
+using Marketplace.ClassifiedAd;
 using Marketplace.Framework;
+using Marketplace.Infrastructure;
+using Marketplace.UserProfile;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -30,11 +32,15 @@ namespace Marketplace
                 Configuration["eventStore:connectionString"],
                 ConnectionSettings.Create().KeepReconnecting(),
                 Environment.ApplicationName);
+            var store = new EsAggregateStore(esConnection);
+            var purgomalumClient = new PurgomalumClient();
 
             services.AddSingleton(esConnection);
             services.AddSingleton<IAggregateStore>(new EsAggregateStore(esConnection));
 
-            services.AddSingleton(new ClassifiedAdsApplicationService());
+            services.AddSingleton(new ClassifiedAdsApplicationService(new FixedCurrencyLookup(), store));
+            services.AddSingleton(new UserProfileApplicationService(store, 
+                t => purgomalumClient.CheckForProfanity(t)));
 
             services.AddScoped<IHostedService, HostedService>();
             services.AddMvc();

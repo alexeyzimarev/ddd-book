@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using Marketplace.Framework;
 
-namespace Marketplace.Domain
+namespace Marketplace.Domain.ClassifiedAd
 {
     public class ClassifiedAdTitle : Value<ClassifiedAdTitle>
     {
@@ -26,7 +26,7 @@ namespace Marketplace.Domain
             return new ClassifiedAdTitle(value);
         }
 
-        public string Value { get; }
+        public string Value { get; private set; }
 
         internal ClassifiedAdTitle(string value) => Value = value;
 
@@ -40,5 +40,8 @@ namespace Marketplace.Domain
                     "Title cannot be longer that 100 characters",
                     nameof(value));
         }
+        
+        // Satisfy the serialization requirements 
+        protected ClassifiedAdTitle() { }
     }
 }

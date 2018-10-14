@@ -1,6 +1,7 @@
 ﻿using System;
+using Marketplace.Domain.Shared;
 
-namespace Marketplace.Domain
+namespace Marketplace.Domain.ClassifiedAd
 {
     public class Price : Money
     {
@@ -14,12 +15,15 @@ namespace Marketplace.Domain
         }
 
         internal Price(decimal amount, string currencyCode)
-            : base(amount, new CurrencyDetails{CurrencyCode = currencyCode})
+            : base(amount, new Currency{CurrencyCode = currencyCode})
         {
         }
 
-        public static Price FromDecimal(decimal amount, string currency,
+        public new static Price FromDecimal(decimal amount, string currency,
             ICurrencyLookup currencyLookup) =>
             new Price(amount, currency, currencyLookup);
+        
+        // Satisfy the serialization requirements
+        protected Price() { }
     }
 }
