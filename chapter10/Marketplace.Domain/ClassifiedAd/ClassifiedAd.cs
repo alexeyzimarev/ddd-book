@@ -15,7 +15,7 @@ namespace Marketplace.Domain.ClassifiedAd
         public Price Price { get; private set; }
         public ClassifiedAdState State { get; private set; }
         public UserId ApprovedBy { get; private set; }
-        public List<Picture> Pictures { get; }
+        public List<Picture> Pictures { get; private set; }
 
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
         {
@@ -85,6 +85,7 @@ namespace Marketplace.Domain.ClassifiedAd
                     Id = new ClassifiedAdId(e.Id);
                     OwnerId = new UserId(e.OwnerId);
                     State = ClassifiedAdState.Inactive;
+                    Pictures = new List<Picture>();
                     break;
                 case Events.ClassifiedAdTitleChanged e:
                     Title = new ClassifiedAdTitle(e.Title);

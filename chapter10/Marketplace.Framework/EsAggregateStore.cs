@@ -27,8 +27,8 @@ namespace Marketplace.Framework
                     eventId: Guid.NewGuid(),
                     type: @event.GetType().Name,
                     isJson: true,
-                    data: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(@event)),
-                    metadata: null))
+                    data: Serialize(@event),
+                    metadata: Serialize(new EventMetadata{ClrType = @event.GetType().AssemblyQualifiedName})))
                 .ToArray();
 
             if (!changes.Any()) return;
@@ -57,7 +57,9 @@ namespace Marketplace.Framework
 
             aggregate.Load(page.Events.Select(resolvedEvent =>
             {
-                var dataType = Type.GetType(resolvedEvent.Event.EventType);
+                var meta = JsonConvert.DeserializeObject<EventMetadata>(
+                    Encoding.UTF8.GetString(resolvedEvent.Event.Metadata));
+                var dataType = Type.GetType(meta.ClrType);
                 var jsonData = Encoding.UTF8.GetString(resolvedEvent.Event.Data);
                 var data = JsonConvert.DeserializeObject(jsonData, dataType);
                 return data;
@@ -73,11 +75,19 @@ namespace Marketplace.Framework
             return result.Status != EventReadStatus.NoStream;
         }
 
+        private static byte[] Serialize(object data)
+            => Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
+
         private static string GetStreamName<T, TId>(TId aggregateId)
             => $"{typeof(T).Name}-{aggregateId.ToString()}";
 
         private static string GetStreamName<T, TId>(T aggregate)
             where T : AggregateRoot<TId>
             => $"{typeof(T).Name}-{aggregate.Id.ToString()}";
+
+        private class EventMetadata
+        {
+            public string ClrType { get; set; }
+        }
     }
 }
