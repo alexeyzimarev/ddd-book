@@ -12,7 +12,7 @@ namespace Marketplace.ClassifiedAd
         private readonly IAggregateStore _store;
 
         public ClassifiedAdsApplicationService(
-            ICurrencyLookup currencyLookup, IAggregateStore store)
+            IAggregateStore store, ICurrencyLookup currencyLookup)
         {
             _currencyLookup = currencyLookup;
             _store = store;

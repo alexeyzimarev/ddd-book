@@ -36,13 +36,14 @@ namespace Marketplace
             var purgomalumClient = new PurgomalumClient();
 
             services.AddSingleton(esConnection);
-            services.AddSingleton<IAggregateStore>(new EsAggregateStore(esConnection));
+            services.AddSingleton<IAggregateStore>(store);
 
-            services.AddSingleton(new ClassifiedAdsApplicationService(new FixedCurrencyLookup(), store));
-            services.AddSingleton(new UserProfileApplicationService(store, 
-                t => purgomalumClient.CheckForProfanity(t)));
+            services.AddSingleton(new ClassifiedAdsApplicationService(
+                store, new FixedCurrencyLookup()));
+            services.AddSingleton(new UserProfileApplicationService(
+                store, t => purgomalumClient.CheckForProfanity(t)));
 
-            services.AddScoped<IHostedService, HostedService>();
+            services.AddSingleton<IHostedService, HostedService>();
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {

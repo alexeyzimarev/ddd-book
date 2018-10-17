@@ -3,10 +3,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
+using Marketplace.Framework;
 using Newtonsoft.Json;
-using static System.String;
 
-namespace Marketplace.Framework
+namespace Marketplace.Infrastructure
 {
     public class EsAggregateStore : IAggregateStore
     {
@@ -23,12 +23,15 @@ namespace Marketplace.Framework
                 throw new ArgumentNullException(nameof(aggregate));
 
             var changes = aggregate.GetChanges()
-                .Select(@event => new EventData(
-                    eventId: Guid.NewGuid(),
-                    type: @event.GetType().Name,
-                    isJson: true,
-                    data: Serialize(@event),
-                    metadata: Serialize(new EventMetadata{ClrType = @event.GetType().AssemblyQualifiedName})))
+                .Select(@event =>
+                    new EventData(
+                        eventId: Guid.NewGuid(),
+                        type: @event.GetType().Name,
+                        isJson: true,
+                        data: Serialize(@event),
+                        metadata: Serialize(new EventMetadata
+                            {ClrType = @event.GetType().AssemblyQualifiedName})
+                    ))
                 .ToArray();
 
             if (!changes.Any()) return;
