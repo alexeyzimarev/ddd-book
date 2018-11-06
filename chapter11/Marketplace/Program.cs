@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Serilog;
+using Serilog.Core;
 using static System.Environment;
 using static System.Reflection.Assembly;
 
@@ -13,6 +15,11 @@ namespace Marketplace
 
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .CreateLogger();
+            
             var configuration = BuildConfiguration(args);
 
             ConfigureWebHost(configuration).Build().Run();

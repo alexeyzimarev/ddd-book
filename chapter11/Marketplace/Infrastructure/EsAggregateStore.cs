@@ -58,15 +58,8 @@ namespace Marketplace.Infrastructure
             var page = await _connection.ReadStreamEventsForwardAsync(
                 stream, 0, 1024, false);
 
-            aggregate.Load(page.Events.Select(resolvedEvent =>
-            {
-                var meta = JsonConvert.DeserializeObject<EventMetadata>(
-                    Encoding.UTF8.GetString(resolvedEvent.Event.Metadata));
-                var dataType = Type.GetType(meta.ClrType);
-                var jsonData = Encoding.UTF8.GetString(resolvedEvent.Event.Data);
-                var data = JsonConvert.DeserializeObject(jsonData, dataType);
-                return data;
-            }).ToArray());
+            aggregate.Load(page.Events.Select(
+                resolvedEvent => resolvedEvent.Deserialzie()).ToArray());
 
             return aggregate;
         }
@@ -87,10 +80,5 @@ namespace Marketplace.Infrastructure
         private static string GetStreamName<T, TId>(T aggregate)
             where T : AggregateRoot<TId>
             => $"{typeof(T).Name}-{aggregate.Id.ToString()}";
-
-        private class EventMetadata
-        {
-            public string ClrType { get; set; }
-        }
     }
 }
