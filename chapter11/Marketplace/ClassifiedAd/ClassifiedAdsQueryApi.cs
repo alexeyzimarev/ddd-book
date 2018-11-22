@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Marketplace.Infrastructure;
+using Marketplace.Projections;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 

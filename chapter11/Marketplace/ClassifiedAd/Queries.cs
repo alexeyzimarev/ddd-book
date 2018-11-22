@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Marketplace.Projections;
 
 namespace Marketplace.ClassifiedAd
 {

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using EventStore.ClientAPI;
 using Marketplace.ClassifiedAd;
+using Marketplace.Domain;
 using Marketplace.Framework;
 using Marketplace.Infrastructure;
+using Marketplace.Projections;
 using Marketplace.UserProfile;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -44,11 +46,17 @@ namespace Marketplace
             services.AddSingleton(new UserProfileApplicationService(
                 store, t => purgomalumClient.CheckForProfanity(t)));
 
-            var items = new List<ReadModels.ClassifiedAdDetails>();
-            services.AddSingleton<IEnumerable<ReadModels.ClassifiedAdDetails>>(items);
+            var classifiedAdDetails = new List<ReadModels.ClassifiedAdDetails>();
+            services.AddSingleton<IEnumerable<ReadModels.ClassifiedAdDetails>>(classifiedAdDetails);
+            var userDetails = new List<ReadModels.UserDetails>();
+            services.AddSingleton<IEnumerable<ReadModels.UserDetails>>(userDetails);
             
-            var subscription = new EsSubscription(esConnection, items);
-            services.AddSingleton<IHostedService>(new EventStoreService(esConnection, subscription));
+            var projectionManager = new ProjectionManager(esConnection, 
+                new ClassifiedAdDetailsProjection(classifiedAdDetails),
+                new UserDetailsProjection(userDetails));
+            
+            services.AddSingleton<IHostedService>(
+                new EventStoreService(esConnection, projectionManager));
             
             services.AddMvc();
             services.AddSwaggerGen(c =>
