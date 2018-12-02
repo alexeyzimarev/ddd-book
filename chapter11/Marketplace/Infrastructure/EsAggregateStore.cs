@@ -22,26 +22,10 @@ namespace Marketplace.Infrastructure
             if (aggregate == null)
                 throw new ArgumentNullException(nameof(aggregate));
 
-            var changes = aggregate.GetChanges()
-                .Select(@event =>
-                    new EventData(
-                        eventId: Guid.NewGuid(),
-                        type: @event.GetType().Name,
-                        isJson: true,
-                        data: Serialize(@event),
-                        metadata: Serialize(new EventMetadata
-                            {ClrType = @event.GetType().AssemblyQualifiedName})
-                    ))
-                .ToArray();
-
-            if (!changes.Any()) return;
-
             var streamName = GetStreamName<T, TId>(aggregate);
+            var changes = aggregate.GetChanges().ToArray();
 
-            await _connection.AppendToStreamAsync(
-                streamName,
-                aggregate.Version,
-                changes);
+            await _connection.AppendEvents(streamName, aggregate.Version, changes);
 
             aggregate.ClearChanges();
         }

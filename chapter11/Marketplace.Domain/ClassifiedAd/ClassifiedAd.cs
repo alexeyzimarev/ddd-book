@@ -53,7 +53,12 @@ namespace Marketplace.Domain.ClassifiedAd
             Apply(new Events.ClassidiedAdSentForReview {Id = Id});
         
         public void Publish(UserId userId) =>
-            Apply(new Events.ClassifiedAdPublished {Id = Id, ApprovedBy = userId});
+            Apply(new Events.ClassifiedAdPublished
+            {
+                Id = Id, 
+                ApprovedBy = userId,
+                OwnerId = OwnerId
+            });
         
         public void AddPicture(Uri pictureUri, PictureSize size) =>
             Apply(new Events.PictureAddedToAClassifiedAd

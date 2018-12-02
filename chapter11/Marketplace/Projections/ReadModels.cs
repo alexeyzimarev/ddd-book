@@ -13,6 +13,7 @@ namespace Marketplace.Projections
             public string Description { get; set; }
             public Guid SellerId { get; set; }
             public string SellersDisplayName { get; set; }
+            public string SellersPhotoUrl { get; set; }
             public string[] PhotoUrls { get; set; }
         }
 
@@ -20,6 +21,7 @@ namespace Marketplace.Projections
         {
             public Guid UserId { get; set; }
             public string DisplayName { get; set; }
+            public string PhotoUrl { get; set; }
         }
     }
 }
