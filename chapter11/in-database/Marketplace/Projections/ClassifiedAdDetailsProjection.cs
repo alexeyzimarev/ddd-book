@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Marketplace.Domain.ClassifiedAd;
-using Marketplace.Framework;
 using Marketplace.Infrastructure;
 using Raven.Client.Documents.Session;
 

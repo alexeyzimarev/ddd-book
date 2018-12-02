@@ -1,11 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Marketplace.Domain.UserProfile;
-using Marketplace.Framework;
 using Marketplace.Infrastructure;
-using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 
 namespace Marketplace.Projections

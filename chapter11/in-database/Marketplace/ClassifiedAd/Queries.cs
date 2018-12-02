@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Marketplace.Projections;
-using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 
 namespace Marketplace.ClassifiedAd

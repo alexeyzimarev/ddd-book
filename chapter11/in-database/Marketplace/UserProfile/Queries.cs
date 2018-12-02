@@ -13,6 +13,5 @@ namespace Marketplace.UserProfile
             using (var session = getSession())
                 return session.LoadAsync<ReadModels.UserDetails>(id.ToString());
         }
-
     }
 }
