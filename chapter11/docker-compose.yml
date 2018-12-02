@@ -11,3 +11,12 @@ services:
     environment:
       - EVENTSTORE_EXT_HTTP_PORT=2113
       - EVENTSTORE_EXT_TCP_PORT=1113
+
+  ravendb:
+    container_name: marketplace-ch11-ravendb
+    image: ravendb/ravendb
+    ports:
+      - 8080:8080
+    environment:
+      - RAVEN_Security_UnsecuredAccessAllowed=PublicNetwork
+      - RAVEN_ARGS="--Setup.Mode=None"

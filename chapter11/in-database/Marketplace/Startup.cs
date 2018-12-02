@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using EventStore.ClientAPI;
 using Marketplace.ClassifiedAd;
@@ -12,6 +13,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
+using Raven.Client.ServerWide;
+using Raven.Client.ServerWide.Operations;
 using Swashbuckle.AspNetCore.Swagger;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
@@ -38,6 +43,11 @@ namespace Marketplace
                 Environment.ApplicationName);
             var store = new EsAggregateStore(esConnection);
             var purgomalumClient = new PurgomalumClient();
+            var documentStore = ConfigureRavenDb(Configuration.GetSection("ravenDb"));
+
+            Func<IAsyncDocumentSession> getSession = () => documentStore.OpenAsyncSession();
+
+            services.AddTransient(c => getSession());
 
             services.AddSingleton(esConnection);
             services.AddSingleton<IAggregateStore>(store);
@@ -47,21 +57,17 @@ namespace Marketplace
             services.AddSingleton(new UserProfileApplicationService(
                 store, t => purgomalumClient.CheckForProfanity(t)));
 
-            var classifiedAdDetails = new List<ReadModels.ClassifiedAdDetails>();
-            services.AddSingleton<IEnumerable<ReadModels.ClassifiedAdDetails>>(classifiedAdDetails);
-            var userDetails = new List<ReadModels.UserDetails>();
-            services.AddSingleton<IEnumerable<ReadModels.UserDetails>>(userDetails);
-            
-            var projectionManager = new ProjectionManager(esConnection, 
-                new ClassifiedAdDetailsProjection(classifiedAdDetails, 
-                    userId => userDetails.FirstOrDefault(x => x.UserId == userId)?.DisplayName),
-                new UserDetailsProjection(userDetails),
+            var projectionManager = new ProjectionManager(esConnection,
+                new RavenDbCheckpointStore(getSession, "readmodels"),
+                new ClassifiedAdDetailsProjection(getSession,
+                    async userId => (await getSession.GetUserDetails(userId))?.DisplayName),
                 new ClassifiedAdUpcasters(esConnection,
-                    userId => userDetails.FirstOrDefault(x => x.UserId == userId)?.PhotoUrl));
-            
+                    async userId => (await getSession.GetUserDetails(userId))?.PhotoUrl),
+                new UserDetailsProjection(getSession));
+
             services.AddSingleton<IHostedService>(
                 new EventStoreService(esConnection, projectionManager));
-            
+
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {
@@ -85,6 +91,25 @@ namespace Marketplace
             app.UseSwagger();
             app.UseSwaggerUI(c =>
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "ClassifiedAds v1"));
+        }
+
+        private static IDocumentStore ConfigureRavenDb(IConfiguration configuration)
+        {
+            var store = new DocumentStore
+            {
+                Urls = new[] {configuration["server"]},
+                Database = configuration["database"]
+            };
+            store.Initialize();
+            var record = store.Maintenance.Server.Send(
+                new GetDatabaseRecordOperation(store.Database));
+            if (record == null)
+            {
+                store.Maintenance.Server.Send(
+                    new CreateDatabaseOperation(new DatabaseRecord(store.Database)));
+            }
+
+            return store;
         }
     }
 }

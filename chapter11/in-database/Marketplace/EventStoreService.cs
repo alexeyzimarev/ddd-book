@@ -20,7 +20,7 @@ namespace Marketplace
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             await _esConnection.ConnectAsync();
-            _projectionManager.Start();
+            await _projectionManager.Start();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
