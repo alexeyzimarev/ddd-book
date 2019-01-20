@@ -15,11 +15,12 @@ namespace Marketplace.ClassifiedAds.Domain.ClassifiedAd
         public Price Price { get; private set; }
         public ClassifiedAdState State { get; private set; }
         public UserId ApprovedBy { get; private set; }
-        public List<Picture> Pictures { get; private set; }
+        public IEnumerable<Picture> Pictures => _pictures;
+
+        private List<Picture> _pictures;
 
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
         {
-            Pictures = new List<Picture>();
             Apply(new Events.ClassifiedAdCreated
             {
                 Id = id,
@@ -90,7 +91,7 @@ namespace Marketplace.ClassifiedAds.Domain.ClassifiedAd
                     Id = new ClassifiedAdId(e.Id);
                     OwnerId = new UserId(e.OwnerId);
                     State = ClassifiedAdState.Inactive;
-                    Pictures = new List<Picture>();
+                    _pictures = new List<Picture>();
                     break;
                 case Events.ClassifiedAdTitleChanged e:
                     Title = new ClassifiedAdTitle(e.Title);
@@ -113,7 +114,7 @@ namespace Marketplace.ClassifiedAds.Domain.ClassifiedAd
                 case Events.PictureAddedToAClassifiedAd e:
                     picture = new Picture(Apply);
                     ApplyToEntity(picture, e);
-                    Pictures.Add(picture);
+                    _pictures.Add(picture);
                     break;
                 case Events.ClassifiedAdPictureResized e:
                     picture = FindPicture(new PictureId(e.PictureId));
@@ -125,7 +126,7 @@ namespace Marketplace.ClassifiedAds.Domain.ClassifiedAd
         private Picture FindPicture(PictureId id)
             => Pictures.FirstOrDefault(x => x.Id == id);
 
-        private Picture FirstPicture => Pictures.OrderBy(x => x.Order).FirstOrDefault();
+        private Picture FirstPicture => _pictures.OrderBy(x => x.Order).FirstOrDefault();
 
         protected override void EnsureValidState()
         {
