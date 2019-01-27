@@ -10,6 +10,7 @@ using Marketplace.Infrastructure.Currency;
 using Marketplace.Infrastructure.EventStore;
 using Marketplace.Infrastructure.Profanity;
 using Marketplace.Infrastructure.RavenDb;
+using Marketplace.Infrastructure.Vue;
 using Marketplace.Projections;
 using Marketplace.UserProfile;
 using Microsoft.AspNetCore.Builder;
@@ -73,6 +74,7 @@ namespace Marketplace
                 new EventStoreService(esConnection, projectionManager));
 
             services.AddMvc();
+            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1",
@@ -90,8 +92,21 @@ namespace Marketplace
             {
                 app.UseDeveloperExceptionPage();
             }
+            
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
 
             app.UseMvcWithDefaultRoute();
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseVueDevelopmentServer(npmScript: "serve:bs");
+                }
+            });
+            
             app.UseSwagger();
             app.UseSwaggerUI(c =>
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "ClassifiedAds v1"));
