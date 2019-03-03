@@ -41,7 +41,7 @@ namespace Marketplace.Domain
             if (Text == null)
                 throw new InvalidEntityStateException(this, "text cannot be empty");
 
-            if (Price?.Amount == 0)
+            if (Price == null || Price.Amount == 0)
                 throw new InvalidEntityStateException(this, "price cannot be zero");
             
             Apply(new Events.ClassidiedAdSentForReview {Id = Id});

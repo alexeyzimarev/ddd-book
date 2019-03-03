@@ -20,5 +20,6 @@ namespace Marketplace.Framework
 
         public IEnumerable<object> GetChanges() => _events.AsEnumerable();
 
-        public void ClearChanges() => _events.Clear();    }
+        public void ClearChanges() => _events.Clear();
+    }
 }
