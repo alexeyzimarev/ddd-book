@@ -67,6 +67,32 @@ namespace Marketplace.Domain
                     break;
             }
         }
+
+        protected override void EnsureValidState()
+        {
+            bool valid = Id != null && OwnerId != null;
+            switch (State)
+            {
+                case ClassifiedAdState.PendingReview:
+                    valid = valid
+                            && Title != null
+                            && Text != null
+                            && Price?.Amount > 0;
+                    break;
+                case ClassifiedAdState.Active:
+                    valid = valid
+                            && Title != null
+                            && Text != null
+                            && Price?.Amount > 0
+                            && ApprovedBy != null;
+                    break;
+            }
+
+            if (!valid)
+                throw new InvalidEntityStateException(this,
+                    $"Post-checks failed in state {State}");
+        }
+
         public enum ClassifiedAdState
         {
             PendingReview,
