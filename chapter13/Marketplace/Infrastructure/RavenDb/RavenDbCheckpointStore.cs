@@ -1,7 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
-using Marketplace.Framework;
+using Marketplace.EventSourcing;
+using Marketplace.Infrastructure.EventStore;
 using Raven.Client.Documents.Session;
 
 namespace Marketplace.Infrastructure.RavenDb

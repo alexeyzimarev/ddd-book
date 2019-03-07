@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using EventStore.ClientAPI;
-using Marketplace.ClassifiedAd;
-using Marketplace.ClassifiedAds.Domain;
-using Marketplace.Framework;
-using Marketplace.Infrastructure;
 using Marketplace.Infrastructure.Currency;
 using Marketplace.Infrastructure.EventStore;
 using Marketplace.Infrastructure.Profanity;
 using Marketplace.Infrastructure.RavenDb;
 using Marketplace.Infrastructure.Vue;
-using Marketplace.Projections;
-using Marketplace.UserProfile;
+using Marketplace.Modules.ClassifiedAds;
+using Marketplace.Modules.Projections;
+using Marketplace.Modules.UserProfile;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -52,15 +48,10 @@ namespace Marketplace
 
             Func<IAsyncDocumentSession> getSession = () => documentStore.OpenAsyncSession();
 
-            services.AddTransient(c => getSession());
-
-            services.AddSingleton(esConnection);
-            services.AddSingleton<IAggregateStore>(store);
-
-            services.AddSingleton(new ClassifiedAdsApplicationService(
-                store, new FixedCurrencyLookup()));
-            services.AddSingleton(new UserProfileApplicationService(
-                store, t => purgomalumClient.CheckForProfanity(t)));
+            services.AddSingleton(
+                new ClassifiedAdsApplicationService(store, new FixedCurrencyLookup()));
+            services.AddSingleton(
+                new UserProfileApplicationService(store, t => purgomalumClient.CheckForProfanity(t)));
 
             var projectionManager = new ProjectionManager(esConnection,
                 new RavenDbCheckpointStore(getSession, "readmodels"),
@@ -73,17 +64,14 @@ namespace Marketplace
             services.AddSingleton<IHostedService>(
                 new EventStoreService(esConnection, projectionManager));
 
-            services.AddMvc();
+            services
+                .AddMvcCore()
+                .AddJsonFormatters()
+                .AddApiExplorer()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1",
-                    new Info
-                    {
-                        Title = "ClassifiedAds",
-                        Version = "v1"
-                    });
-            });
+            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "ClassifiedAds", Version = "v1" }));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -108,8 +96,7 @@ namespace Marketplace
             });
             
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ClassifiedAds v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ClassifiedAds v1"));
         }
 
         private static IDocumentStore ConfigureRavenDb(IConfiguration configuration)

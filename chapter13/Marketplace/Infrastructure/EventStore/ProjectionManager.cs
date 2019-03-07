@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
-using Marketplace.Framework;
+using Marketplace.EventSourcing;
 using Serilog;
 using Serilog.Events;
 

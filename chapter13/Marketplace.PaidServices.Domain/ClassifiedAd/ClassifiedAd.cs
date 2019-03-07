@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Marketplace.Framework;
+using Marketplace.EventSourcing;
 using Marketplace.PaidServices.Domain.PaidService;
 
 namespace Marketplace.PaidServices.Domain.ClassifiedAd

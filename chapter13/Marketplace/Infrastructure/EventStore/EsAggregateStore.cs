@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
-using Marketplace.Framework;
+using Marketplace.EventSourcing;
 using Newtonsoft.Json;
 
 namespace Marketplace.Infrastructure.EventStore
