@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.EventSourcing",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.PaidServices.Domain", "Marketplace.PaidServices.Domain\Marketplace.PaidServices.Domain.csproj", "{5B72EA27-0DE0-45C9-80C1-17A3F30DB6E5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libraries", "libraries", "{B8B2A008-6E95-4BEE-9BE3-DC621B4DC4EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{11ACA044-780C-4C71-A6F7-ECFB6B26B9E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,9 @@ Global
 		{5B72EA27-0DE0-45C9-80C1-17A3F30DB6E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B72EA27-0DE0-45C9-80C1-17A3F30DB6E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B72EA27-0DE0-45C9-80C1-17A3F30DB6E5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F682B8F9-A43B-4D6D-BECE-4F45767A026A} = {11ACA044-780C-4C71-A6F7-ECFB6B26B9E7}
+		{FEE71FF8-559C-40CC-9AF5-1E4051EE9C7C} = {B8B2A008-6E95-4BEE-9BE3-DC621B4DC4EC}
 	EndGlobalSection
 EndGlobal
