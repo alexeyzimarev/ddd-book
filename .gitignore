@@ -245,7 +245,6 @@ ModelManifest.xml
 .fake/
 /src/.idea
 
-tests/
 .vscode/
 .idea/
 
