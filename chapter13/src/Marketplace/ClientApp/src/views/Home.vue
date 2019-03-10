@@ -1,13 +1,13 @@
 <template>
-  <HelloWorld />
+  <AdsList />
 </template>
 
 <script>
-  import HelloWorld from '../components/HelloWorld'
+  import AdsList from '../components/AdsList'
 
   export default {
     components: {
-      HelloWorld
+      AdsList
     }
   }
 </script>

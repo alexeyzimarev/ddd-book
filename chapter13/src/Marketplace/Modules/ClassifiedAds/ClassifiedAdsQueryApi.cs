@@ -6,17 +6,17 @@ using Serilog;
 
 namespace Marketplace.Modules.ClassifiedAds
 {
-    [Route("/ad")]
-    public class ClassifiedAdsQueryApi : Controller
+    [ApiController, Route("/ad")]
+    public class ClassifiedAdsQueryApi : ControllerBase
     {
         private readonly IAsyncDocumentSession _session;
-        private static ILogger _log = Log.ForContext<ClassifiedAdsQueryApi>();
-        
-        public ClassifiedAdsQueryApi(IAsyncDocumentSession session) => 
-            _session = session;
+        private static readonly ILogger Log = Serilog.Log.ForContext<ClassifiedAdsQueryApi>();
+
+        public ClassifiedAdsQueryApi(IAsyncDocumentSession session)
+            => _session = session;
 
         [HttpGet]
         public Task<IActionResult> Get(QueryModels.GetPublicClassifiedAd request)
-            => RequestHandler.HandleQuery(() => _session.Query(request), _log);
+            => RequestHandler.HandleQuery(() => _session.Query(request), Log);
     }
 }

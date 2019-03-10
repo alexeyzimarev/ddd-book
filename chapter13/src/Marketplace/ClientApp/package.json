@@ -9,11 +9,15 @@
     "serve:bs": "vue-cli-service serve:bs"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "material-design-icons-iconfont": "^3.0.3",
     "roboto-fontface": "*",
     "vue": "^2.5.21",
+    "vue-axios": "^2.1.4",
     "vue-router": "^3.0.1",
+    "vue-uuid": "^1.1.1",
     "vuetify": "^1.5.5",
+    "vuetify-image-input": "^18.15.1",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

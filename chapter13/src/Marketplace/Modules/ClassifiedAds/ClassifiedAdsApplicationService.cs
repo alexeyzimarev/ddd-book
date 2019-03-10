@@ -5,14 +5,14 @@ using Marketplace.EventSourcing;
 namespace Marketplace.Modules.ClassifiedAds
 {
     public class ClassifiedAdsApplicationService :
-        ApplicationService<Ads.Domain.ClassifiedAds.ClassifiedAd, ClassifiedAdId>
+        ApplicationService<ClassifiedAd, ClassifiedAdId>
     {
         public ClassifiedAdsApplicationService(
             IAggregateStore store, ICurrencyLookup currencyLookup) : base(store)
         {
             CreateWhen<Contracts.V1.Create>(
                 cmd => new ClassifiedAdId(cmd.Id),
-                (cmd, id) => new Ads.Domain.ClassifiedAds.ClassifiedAd(
+                (cmd, id) => new ClassifiedAd(
                     id, new UserId(cmd.OwnerId)));
             
             UpdateWhen<Contracts.V1.SetTitle>(

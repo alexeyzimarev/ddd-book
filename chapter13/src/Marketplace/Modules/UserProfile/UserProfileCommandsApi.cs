@@ -5,8 +5,8 @@ using Serilog;
 
 namespace Marketplace.Modules.UserProfile
 {
-    [Route("/profile")]
-    public class UserProfileCommandsApi : Controller
+    [ApiController, Route("api/profile")]
+    public class UserProfileCommandsApi : ControllerBase
     {
         private readonly UserProfileApplicationService _applicationService;
         private static readonly ILogger Log = Serilog.Log.ForContext<UserProfileCommandsApi>();

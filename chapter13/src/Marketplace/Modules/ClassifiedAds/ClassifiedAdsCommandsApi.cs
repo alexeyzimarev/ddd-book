@@ -1,47 +1,46 @@
 using System.Threading.Tasks;
+using Marketplace.Ads.Domain.ClassifiedAds;
+using Marketplace.EventSourcing;
 using Marketplace.Infrastructure.WebApi;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 
 namespace Marketplace.Modules.ClassifiedAds
 {
-    [Route("/ad")]
-    public class ClassifiedAdsCommandsApi : Controller
+    [ApiController, Route("api/ad"), Authorize]
+    public class ClassifiedAdsCommandsApi : BaseController<ClassifiedAd, ClassifiedAdId>
     {
-        private readonly ClassifiedAdsApplicationService _applicationService;
-        private static readonly ILogger Log = Serilog.Log.ForContext<ClassifiedAdsCommandsApi>();
-
         public ClassifiedAdsCommandsApi(
-            ClassifiedAdsApplicationService applicationService)
-            => _applicationService = applicationService;
+            ApplicationService<ClassifiedAd, ClassifiedAdId> applicationService) 
+            : base(applicationService) { }
 
         [HttpPost]
-        public Task<IActionResult> Post(Contracts.V1.Create request)
-            => RequestHandler.HandleCommand(request, _applicationService.Handle, Log);
+        public Task<IActionResult> Post(Contracts.V1.Create command)
+            => HandleCommand(command, cmd => cmd.OwnerId = GetUserId());
 
         [Route("name")]
         [HttpPut]
-        public Task<IActionResult> Put(Contracts.V1.SetTitle request)
-            => RequestHandler.HandleCommand(request, _applicationService.Handle, Log);
+        public Task<IActionResult> Put(Contracts.V1.SetTitle command)
+            => HandleCommand(command);
 
         [Route("text")]
         [HttpPut]
-        public Task<IActionResult> Put(Contracts.V1.UpdateText request)
-            => RequestHandler.HandleCommand(request, _applicationService.Handle, Log);
+        public Task<IActionResult> Put(Contracts.V1.UpdateText command)
+            => HandleCommand(command);
 
         [Route("price")]
         [HttpPut]
-        public Task<IActionResult> Put(Contracts.V1.UpdatePrice request)
-            => RequestHandler.HandleCommand(request, _applicationService.Handle, Log);
+        public Task<IActionResult> Put(Contracts.V1.UpdatePrice command)
+            => HandleCommand(command);
 
         [Route("requestpublish")]
         [HttpPut]
-        public Task<IActionResult> Put(Contracts.V1.RequestToPublish request)
-            => RequestHandler.HandleCommand(request, _applicationService.Handle, Log);
+        public Task<IActionResult> Put(Contracts.V1.RequestToPublish command)
+            => HandleCommand(command);
 
         [Route("publish")]
         [HttpPut]
-        public Task<IActionResult> Put(Contracts.V1.Publish request)
-            => RequestHandler.HandleCommand(request, _applicationService.Handle, Log);
+        public Task<IActionResult> Put(Contracts.V1.Publish command)
+            => HandleCommand(command);
     }
 }
