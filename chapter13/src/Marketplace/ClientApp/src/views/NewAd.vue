@@ -10,20 +10,9 @@
             <v-layout wrap>
                 <v-form>
                     <v-flex md12>
-                        <v-text-field
-                                v-model="title"
-                                label="Title"
-                                @blur="setTitle"
-                        />
-                        <!--:rules="updateTitle"-->
-                        <!--validate-on-blur-->
-                        <v-textarea
-                                v-model="description"
-                                label="Description"
-                                :rules="updateDescription"
-                                validate-on-blur
-                        />
-                        <v-text-field v-model="title" label="Price"></v-text-field>
+                        <AdTitle/>
+                        <AdText/>
+                        <AdPrice/>
                         <v-image-input
                                 v-model="imageData"
                                 :image-quality="0.85"
@@ -44,36 +33,31 @@
 
 <script>
     import VImageInput from 'vuetify-image-input';
-    import {mapGetters, mapState} from "vuex";
-    import {uuid} from 'vue-uuid';
-    import {CreateAd, RenameAd, UpdateAdText} from "../store/actions.type";
+    import {mapGetters} from "vuex";
+    import {uuid} from "vue-uuid";
+    import {CreateAd, DeleteAdIfEmpty} from "../store/actions.type";
+    import AdTitle from "../components/AdTitle";
+    import AdText from "../components/AdText";
+    import AdPrice from "../components/AdPrice";
     import store from "../store";
 
     export default {
         components: {
             [VImageInput.name]: VImageInput,
+            AdTitle,
+            AdText,
+            AdPrice
         },
         data: () => ({
-            title: null,
-            description: null,
-            imageData: null,
-            snackBar: {},
-            updateTitle: [(title) => {
-                if (!title) return false;
-            }],
-            updateDescription: [
-                // async (text) => await store.dispatch(UpdateAdText, text) 
-            ]
+            imageData: "",
+            snackBar: {}
         }),
         computed: {
             ...mapGetters(["currentAd"])
         },
         methods: {
-            async setTitle() {
-                await store.dispatch(RenameAd, title);
-            },
             add() {
-                
+
             }
         },
         async beforeRouteEnter(to, from, next) {
@@ -81,8 +65,8 @@
             await store.dispatch(CreateAd, adId);
             return next();
         },
-        beforeRouteUpdate(to, from, next) {
-            console.log("enter");
+        async beforeRouteLeave(to, from, next) {
+            await store.dispatch(DeleteAdIfEmpty, this.currentAd.id);
             next();
         }
     }

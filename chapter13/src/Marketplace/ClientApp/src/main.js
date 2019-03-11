@@ -1,16 +1,18 @@
-import Vue from 'vue'
-import './plugins/vuetify'
-import App from './App.vue'
-import router from './router'
-import store from './store'
-import UUID from 'vue-uuid';
-import 'roboto-fontface/css/roboto/roboto-fontface.css'
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import Vue from "vue";
+import "./plugins/vuetify";
+import App from "./App.vue";
+import router from "./router";
+import store from "./store";
+import UUID from "vue-uuid";
+import Vuelidate from "vuelidate";
+import "roboto-fontface/css/roboto/roboto-fontface.css";
+import "material-design-icons-iconfont/dist/material-design-icons.css";
 import {CheckAuth} from "./store/actions.type";
 import ApiService from "./common/api.service";
 
 Vue.config.productionTip = false;
 Vue.use(UUID);
+Vue.use(Vuelidate);
 
 ApiService.init();
 

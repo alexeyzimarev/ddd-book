@@ -41,6 +41,11 @@ namespace Marketplace.Modules.ClassifiedAds
                 public Guid Id { get; set; }
                 public Guid ApprovedBy { get; set; }
             }
+
+            public class Delete
+            {
+                public Guid Id { get; set; }
+            }
         }
     }
 }

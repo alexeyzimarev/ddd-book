@@ -20,6 +20,7 @@ namespace Marketplace.EventSourcing
         {
             if (!_handlers.TryGetValue(typeof(TCommand), out var handler))
                 throw new InvalidOperationException($"No registered handler for command {typeof(TCommand).Name}");
+            _log.DebugFormat("Handling command: {command}", command.ToString());
             return handler(command);
         }
 

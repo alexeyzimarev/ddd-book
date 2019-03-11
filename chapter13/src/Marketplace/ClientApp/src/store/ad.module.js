@@ -1,13 +1,16 @@
 import ApiService from "../common/api.service";
 import {
-    CreateAd,
+    CreateAd, DeleteAdIfEmpty,
     RenameAd,
+    UpdateAdPrice,
     UpdateAdText
 } from "./actions.type";
 import {
     AdCreated, 
+    AdPriceUpdated,
     AdRenamed,
-    AdTextUpdated
+    AdTextUpdated,
+    CurrentAdCleared
 } from "./mutation.type";
 
 const state = {
@@ -37,8 +40,22 @@ const actions = {
         if (description === context.state.ad.description) return;
         await ApiService.put(
             "/ad/text",
-            {id: context.state.id, title: description});
+            {id: context.state.ad.id, text: description});
         context.commit(AdTextUpdated, description);
+    },
+    async [UpdateAdPrice](context, price) {
+        if (price === context.state.ad.price) return;
+        await ApiService.put(
+            "/ad/price",
+            {id: context.state.ad.id, price: price});
+        context.commit(AdPriceUpdated, price);
+    },
+    async [DeleteAdIfEmpty](context, adId) {
+        let {id, ...content} = context.state.ad;
+        if (adId !== id) return;
+        if (Object.keys(content).length === 0) {
+            await ApiService.post("/ad/delete", {id});
+        }
     }
 };
 
@@ -48,11 +65,15 @@ const mutations = {
     },
     [AdRenamed](state, title) {
         state.ad.title = title;
-        state.notification.show = true;
-        state.notification.text = "Title updated";
     },
     [AdTextUpdated](state, description) {
         state.ad.description = description;
+    },
+    [AdPriceUpdated](state, price) {
+        state.ad.price = price;
+    },
+    [CurrentAdCleared](state) {
+        state.ad = {};
     }
 };
 

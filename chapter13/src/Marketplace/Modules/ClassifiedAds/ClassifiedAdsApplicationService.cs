@@ -35,6 +35,10 @@ namespace Marketplace.Modules.ClassifiedAds
             UpdateWhen<Contracts.V1.Publish>(
                 cmd => new ClassifiedAdId(cmd.Id), 
                 (ad, cmd) => ad.Publish(new UserId(cmd.ApprovedBy)));
+            
+            UpdateWhen<Contracts.V1.Delete>(
+                cmd => new ClassifiedAdId(cmd.Id), 
+                (ad, cmd) => ad.Delete());
         }
     }
 }

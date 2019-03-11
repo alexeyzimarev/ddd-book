@@ -52,15 +52,18 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 
         public void RequestToPublish() =>
             Apply(new Events.ClassidiedAdSentForReview {Id = Id});
-        
+
         public void Publish(UserId userId) =>
             Apply(new Events.ClassifiedAdPublished
             {
-                Id = Id, 
+                Id = Id,
                 ApprovedBy = userId,
                 OwnerId = OwnerId
             });
-        
+
+        public void Delete() =>
+            Apply(new Events.ClassifiedAdDeleted {Id = Id});
+
         public void AddPicture(Uri pictureUri, PictureSize size) =>
             Apply(new Events.PictureAddedToAClassifiedAd
             {
@@ -77,14 +80,14 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             var picture = FindPicture(pictureId);
             if (picture == null)
                 throw new InvalidOperationException("Cannot resize a picture that I don't have");
-            
+
             picture.Resize(newSize);
         }
 
         protected override void When(object @event)
         {
             Picture picture;
-            
+
             switch (@event)
             {
                 case Events.ClassifiedAdCreated e:
@@ -109,7 +112,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                     ApprovedBy = new UserId(e.ApprovedBy);
                     State = ClassifiedAdState.Active;
                     break;
-                
+
                 // picture
                 case Events.PictureAddedToAClassifiedAd e:
                     picture = new Picture(Apply);
@@ -153,8 +156,10 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             if (!valid)
                 throw new DomainExceptions.InvalidEntityState(this, $"Post-checks failed in state {State}");
         }
-        
-        protected ClassifiedAd() { }
+
+        protected ClassifiedAd()
+        {
+        }
 
         public enum ClassifiedAdState
         {

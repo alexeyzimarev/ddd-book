@@ -38,6 +38,9 @@
   <ItemGroup>
     <Content Update="appsettings.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
     <Content Remove="ClientApp\dist\**" />
+    <Content Include="ClientApp\src\components\AdPrice.vue" />
+    <Content Include="ClientApp\src\components\AdText.vue" />
+    <Content Include="ClientApp\src\components\AdTitle.vue" />
     <Content Include="ClientApp\src\components\NewAd.vue" />
     <Content Include="ClientApp\src\store\ad.module.js" />
   </ItemGroup>

@@ -42,5 +42,10 @@ namespace Marketplace.Modules.ClassifiedAds
         [HttpPut]
         public Task<IActionResult> Put(Contracts.V1.Publish command)
             => HandleCommand(command);
+
+        [Route("delete")]
+        [HttpPost]
+        public Task<IActionResult> Delete(Contracts.V1.Delete command)
+            => HandleCommand(command);
     }
 }

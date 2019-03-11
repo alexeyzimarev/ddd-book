@@ -46,6 +46,14 @@ namespace Marketplace.Modules.Projections
                             ad.CurrencyCode = e.CurrencyCode;
                         }));
                     break;
+                case Events.ClassifiedAdDeleted e:
+                    await UsingSession(async session =>
+                    {
+                        var doc = await session.LoadAsync<ReadModels.ClassifiedAdDetails>(
+                            e.Id.ToString());
+                        session.Delete(doc);
+                    });
+                    break;
                 case Ads.Domain.UserProfile.Events.UserDisplayNameUpdated e:
                     await UsingSession(session =>
                         UpdateMultipleItems(session, x => x.SellerId == e.UserId,

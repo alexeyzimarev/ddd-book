@@ -58,5 +58,10 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             public int Height { get; set; }
             public int Width { get; set; }
         }
+
+        public class ClassifiedAdDeleted
+        {
+            public Guid Id { get; set; }
+        }
     }
 }

@@ -6,3 +6,5 @@ export const Unauthorized = "unauthorized";
 export const AdCreated = "adCreated";
 export const AdRenamed = "adRenamed";
 export const AdTextUpdated = "adTextUpdated";
+export const AdPriceUpdated = "adPriceUpdated";
+export const CurrentAdCleared = "currentAdCleared";

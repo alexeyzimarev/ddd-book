@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Marketplace.EventSourcing;
 using Newtonsoft.Json;
+using Serilog;
+using Serilog.Core;
+using ILogger = Serilog.ILogger;
 
 namespace Marketplace.Infrastructure.EventStore
 {
@@ -12,10 +15,11 @@ namespace Marketplace.Infrastructure.EventStore
     {
         private readonly IEventStoreConnection _connection;
 
-        public EsAggregateStore(IEventStoreConnection connection)
-        {
-            _connection = connection;
-        }
+        private static readonly ILogger Log =
+            Serilog.Log.ForContext<EsAggregateStore>();
+
+        public EsAggregateStore(IEventStoreConnection connection) 
+            => _connection = connection;
 
         public async Task Save<T, TId>(T aggregate) where T : AggregateRoot<TId>
         {
@@ -25,6 +29,9 @@ namespace Marketplace.Infrastructure.EventStore
             var streamName = GetStreamName<T, TId>(aggregate);
             var changes = aggregate.GetChanges().ToArray();
 
+            foreach (var change in changes)
+                Log.Debug("Persisting event {event}", change.ToString());
+            
             await _connection.AppendEvents(streamName, aggregate.Version, changes);
 
             aggregate.ClearChanges();
@@ -42,6 +49,8 @@ namespace Marketplace.Infrastructure.EventStore
             var page = await _connection.ReadStreamEventsForwardAsync(
                 stream, 0, 1024, false);
 
+            Log.Debug("Loading events for the aggregate {aggregate}", aggregate.ToString());
+            
             aggregate.Load(page.Events.Select(
                 resolvedEvent => resolvedEvent.Deserialzie()).ToArray());
 

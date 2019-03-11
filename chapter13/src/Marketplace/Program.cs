@@ -12,8 +12,6 @@ namespace Marketplace
             var configuration = BuildConfiguration(args);
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .WriteTo.Console()
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
 
