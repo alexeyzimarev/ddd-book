@@ -17,11 +17,14 @@
     export default {
         name: "",
         mixins: [validationMixin],
+        props: {
+            adTitle: String
+        },
         validations: {
             title: {required, minLength: minLength(10)}
         },
         data: () => ({
-            title: ""
+            title: this.adTitle
         }),
         computed: {
             validateTitle() {

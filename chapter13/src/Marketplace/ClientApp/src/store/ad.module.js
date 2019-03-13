@@ -37,7 +37,7 @@ const actions = {
         context.commit(AdRenamed, title);
     },
     async [UpdateAdText](context, description) {
-        if (description === context.state.ad.description) return;
+        if (description === context.state.ad.text) return;
         await ApiService.put(
             "/ad/text",
             {id: context.state.ad.id, text: description});

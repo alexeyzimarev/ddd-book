@@ -1,10 +1,10 @@
 <template>
     <v-textarea
-            v-model="description"
+            v-model="text"
             label="Description"
             required
             :error-messages="validateText"
-            @blur="$v.description.$touch(); updateText();"
+            @blur="$v.text.$touch(); updateText();"
     />
 </template>
 
@@ -17,18 +17,21 @@
     export default {
         name: "",
         mixins: [validationMixin],
+        props:{
+            adText: String
+        },
         validations: {
-            description: {required, minLength: minLength(10)}
+            text: {required, minLength: minLength(10)}
         },
         data: () => ({
-            description: ""
+            text: this.adText
         }),
         computed: {
             validateText() {
                 const errors = [];
-                if (!this.$v.description.$dirty) return errors;
-                !this.$v.description.minLength && errors.push("Please put at least 10 characters");
-                !this.$v.description.required && errors.push("Ad text is required.");
+                if (!this.$v.text.$dirty) return errors;
+                !this.$v.text.minLength && errors.push("Please put at least 10 characters");
+                !this.$v.text.required && errors.push("Ad text is required.");
                 return errors;
             },
         },
@@ -36,7 +39,7 @@
             async updateText() {
                 if (this.validateText.length > 0) return;
                 try {
-                    await store.dispatch(UpdateAdText, this.description);
+                    await store.dispatch(UpdateAdText, this.text);
                 } catch (e) {
                     console.log(JSON.stringify(e));
                 }

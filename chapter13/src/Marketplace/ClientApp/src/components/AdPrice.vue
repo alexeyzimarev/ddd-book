@@ -17,11 +17,14 @@
     export default {
         name: "",
         mixins: [validationMixin],
+        props: {
+            adPrice: Number
+        },
         validations: {
             price: {required, numeric}
         },
         data: () => ({
-            price: null
+            price: this.adPrice
         }),
         computed: {
             validatePrice() {

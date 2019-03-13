@@ -37,12 +37,6 @@
 
   <ItemGroup>
     <Content Update="appsettings.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
-    <Content Remove="ClientApp\dist\**" />
-    <Content Include="ClientApp\src\components\AdPrice.vue" />
-    <Content Include="ClientApp\src\components\AdText.vue" />
-    <Content Include="ClientApp\src\components\AdTitle.vue" />
-    <Content Include="ClientApp\src\components\NewAd.vue" />
-    <Content Include="ClientApp\src\store\ad.module.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,7 +45,6 @@
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
     <None Remove="ClientApp\dist\**" />
-    <None Include="ClientApp\src\views\Register.vue" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
