@@ -48,41 +48,53 @@ namespace Marketplace
         {
             Modules.ClassifiedAds.EventMappings.MapEventTypes();
             Modules.UserProfile.EventMappings.MapEventTypes();
-            
+
             var esConnection = EventStoreConnection.Create(
                 Configuration["eventStore:connectionString"],
                 ConnectionSettings.Create().KeepReconnecting(),
-                Environment.ApplicationName);
+                Environment.ApplicationName
+            );
             var store = new EsAggregateStore(esConnection);
             var purgomalumClient = new PurgomalumClient();
+
             var documentStore = ConfigureRavenDb(
                 Configuration["ravenDb:server"],
-                Configuration["ravenDb:database"]);
+                Configuration["ravenDb:database"]
+            );
 
             Func<IAsyncDocumentSession> getSession = () => documentStore.OpenAsyncSession();
 
             services.AddSingleton(
-                new ClassifiedAdsCommandService(store, new FixedCurrencyLookup()));
-            services.AddSingleton(
-                new UserProfileCommandService(store, t => purgomalumClient.CheckForProfanity(t)));
-
-            var ravenDbProjectionManager = new ProjectionManager(esConnection,
-                new RavenDbCheckpointStore(getSession, "readmodels"),
-                ConfigureRavenDbProjections(esConnection, getSession)
+                new ClassifiedAdsCommandService(store, new FixedCurrencyLookup())
             );
-            var upcasterProjectionManager = new ProjectionManager(esConnection,
+
+            services.AddSingleton(
+                new UserProfileCommandService(store, t => purgomalumClient.CheckForProfanity(t))
+            );
+
+            var ravenDbProjectionManager = new ProjectionManager(
+                esConnection,
+                new RavenDbCheckpointStore(getSession, "readmodels"),
+                ConfigureRavenDbProjections(getSession)
+            );
+
+            var upcasterProjectionManager = new ProjectionManager(
+                esConnection,
                 new EsCheckpointStore(esConnection, "upcaster"),
-                ConfigureRavenDbProjections(esConnection, getSession)
+                ConfigureUpcasters(esConnection, getSession)
             );
 
             services.AddSingleton(c => getSession);
             services.AddSingleton(c => new AuthService(getSession));
             services.AddScoped(c => getSession());
+
             services.AddSingleton<IHostedService>(
                 new EventStoreService(
-                    esConnection, 
+                    esConnection,
                     ravenDbProjectionManager,
-                    upcasterProjectionManager));
+                    upcasterProjectionManager
+                )
+            );
 
             services
                 .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -94,14 +106,21 @@ namespace Marketplace
                 .AddApiExplorer()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddSpaStaticFiles(configuration => 
-                configuration.RootPath = "ClientApp/dist");
-            services.AddSwaggerGen(c => 
-                c.SwaggerDoc("v1", 
-                    new Info
-                    {
-                        Title = "ClassifiedAds", Version = "v1"
-                    }));
+            services.AddSpaStaticFiles(
+                configuration =>
+                    configuration.RootPath = "ClientApp/dist"
+            );
+
+            services.AddSwaggerGen(
+                c =>
+                    c.SwaggerDoc(
+                        "v1",
+                        new Info
+                        {
+                            Title = "ClassifiedAds", Version = "v1"
+                        }
+                    )
+            );
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -112,15 +131,21 @@ namespace Marketplace
             }
 
             app.UseAuthentication();
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-                routes.MapRoute(
-                    name: "api",
-                    template: "api/{controller=Home}/{action=Index}/{id?}");
-            });
+
+            app.UseMvc(
+                routes =>
+                {
+                    routes.MapRoute(
+                        name: "default",
+                        template: "{controller=Home}/{action=Index}/{id?}"
+                    );
+
+                    routes.MapRoute(
+                        name: "api",
+                        template: "api/{controller=Home}/{action=Index}/{id?}"
+                    );
+                }
+            );
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
@@ -128,15 +153,17 @@ namespace Marketplace
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ClassifiedAds v1"));
 
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
-
-                if (env.IsDevelopment())
+            app.UseSpa(
+                spa =>
                 {
-//                    spa.UseVueDevelopmentServer("serve:bs");
+                    spa.Options.SourcePath = "ClientApp";
+
+                    if (env.IsDevelopment())
+                    {
+                        spa.UseVueDevelopmentServer("serve:bs");
+                    }
                 }
-            });
+            );
         }
 
         private static IDocumentStore ConfigureRavenDb(
@@ -149,34 +176,44 @@ namespace Marketplace
                 Database = database
             };
             store.Initialize();
+
             var record = store.Maintenance.Server.Send(
-                new GetDatabaseRecordOperation(store.Database));
+                new GetDatabaseRecordOperation(store.Database)
+            );
+
             if (record == null)
             {
                 store.Maintenance.Server.Send(
-                    new CreateDatabaseOperation(new DatabaseRecord(store.Database)));
+                    new CreateDatabaseOperation(new DatabaseRecord(store.Database))
+                );
             }
 
             return store;
         }
 
         private static IProjection[] ConfigureRavenDbProjections(
-            IEventStoreConnection esConnection,
             Func<IAsyncDocumentSession> getSession)
-        {
-            return new IProjection[]
+            => new IProjection[]
             {
-                new ClassifiedAdDetailsProjection(getSession,
-                    async userId => (await GetUserDetails(userId))?.DisplayName),
-                new ClassifiedAdUpcasters(esConnection,
-                    async userId => (await GetUserDetails(userId))?.PhotoUrl),
+                new ClassifiedAdDetailsProjection(
+                    getSession,
+                    userId => 
+                        getSession.GetUserDetails(
+                            userId, x => x.DisplayName)
+                ),
                 new UserDetailsProjection(getSession),
                 new MyClassifiedAdsProjection(getSession)
             };
 
-            Task<ReadModels.UserDetails> GetUserDetails(Guid userId)
-                => getSession.GetUserDetails(userId);
-        }
-
+        private static IProjection[] ConfigureUpcasters(
+            IEventStoreConnection connection,
+            Func<IAsyncDocumentSession> getSession)
+            => new IProjection[]
+            {
+                new ClassifiedAdUpcasters(
+                    connection, 
+                    userId => getSession.GetUserDetails(
+                        userId, x => x.PhotoUrl))
+            };
     }
 }
