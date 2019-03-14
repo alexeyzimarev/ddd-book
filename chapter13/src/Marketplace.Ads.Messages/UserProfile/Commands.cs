@@ -1,8 +1,8 @@
 using System;
 
-namespace Marketplace.Modules.UserProfile
+namespace Marketplace.Ads.Messages.UserProfile
 {
-    public class Contracts
+    public static class Commands
     {
         public static class V1
         {

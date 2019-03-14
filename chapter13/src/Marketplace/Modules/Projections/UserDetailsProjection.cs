@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using Marketplace.Ads.Domain.UserProfile;
 using Marketplace.Infrastructure.RavenDb;
 using Raven.Client.Documents.Session;
+using static Marketplace.Ads.Messages.UserProfile.Events;
 
 namespace Marketplace.Modules.Projections
 {
@@ -17,7 +17,7 @@ namespace Marketplace.Modules.Projections
         {
             switch (@event)
             {
-                case Events.UserRegistered e:
+                case UserRegistered e:
                     await UsingSession(session =>
                         session.StoreAsync(new ReadModels.UserDetails
                         {
@@ -25,11 +25,11 @@ namespace Marketplace.Modules.Projections
                             DisplayName = e.DisplayName
                         }));
                     break;
-                case Events.UserDisplayNameUpdated e:
+                case UserDisplayNameUpdated e:
                     await UsingSession(session =>
                         UpdateItem(session, e.UserId, x => x.DisplayName = e.DisplayName));
                     break;
-                case Events.ProfilePhotoUploaded e:
+                case ProfilePhotoUploaded e:
                     await UsingSession(session =>
                         UpdateItem(session, e.UserId, x => x.PhotoUrl = e.PhotoUrl));
                     break;

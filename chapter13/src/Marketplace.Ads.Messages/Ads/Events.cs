@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Marketplace.Ads.Domain.ClassifiedAds
+namespace Marketplace.Ads.Messages.Ads
 {
     public static class Events
     {
@@ -13,18 +13,21 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
         public class ClassifiedAdTitleChanged
         {
             public Guid Id { get; set; }
+            public Guid OwnerId { get; set; }
             public string Title { get; set; }
         }
 
         public class ClassifiedAdTextUpdated
         {
             public Guid Id { get; set; }
+            public Guid OwnerId { get; set; }
             public string AdText { get; set; }
         }
 
         public class ClassifiedAdPriceUpdated
         {
             public Guid Id { get; set; }
+            public Guid OwnerId { get; set; }
             public decimal Price { get; set; }
             public string CurrencyCode { get; set; }
         }
@@ -32,6 +35,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
         public class ClassidiedAdSentForReview
         {
             public Guid Id { get; set; }
+            public Guid OwnerId { get; set; }
         }
 
         public class ClassifiedAdPublished
@@ -44,6 +48,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
         public class PictureAddedToAClassifiedAd
         {
             public Guid ClassifiedAdId { get; set; }
+            public Guid OwnerId { get; set; }
             public Guid PictureId { get; set; }
             public string Url { get; set; }
             public int Height { get; set; }
@@ -62,6 +67,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
         public class ClassifiedAdDeleted
         {
             public Guid Id { get; set; }
+            public Guid OwnerId { get; set; }
         }
     }
 }

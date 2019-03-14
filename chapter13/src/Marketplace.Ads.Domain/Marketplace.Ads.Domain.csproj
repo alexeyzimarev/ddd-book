@@ -4,6 +4,7 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Marketplace.Ads.Messages\Marketplace.Ads.Messages.csproj" />
     <ProjectReference Include="..\Marketplace.EventSourcing\Marketplace.EventSourcing.csproj" />
   </ItemGroup>
 </Project>

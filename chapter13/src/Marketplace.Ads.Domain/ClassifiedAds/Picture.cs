@@ -1,5 +1,6 @@
 using System;
 using Marketplace.EventSourcing;
+using static Marketplace.Ads.Messages.Ads.Events;
 
 namespace Marketplace.Ads.Domain.ClassifiedAds
 {
@@ -14,21 +15,21 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
         {
             switch (@event)
             {
-                case Events.PictureAddedToAClassifiedAd e:
+                case PictureAddedToAClassifiedAd e:
                     ParentId = new ClassifiedAdId(e.ClassifiedAdId);
                     Id = new PictureId(e.PictureId);
                     Location = new Uri(e.Url);
                     Size = new PictureSize {Height = e.Height, Width = e.Width};
                     Order = e.Order;
                     break;
-                case Events.ClassifiedAdPictureResized e:
+                case ClassifiedAdPictureResized e:
                     Size = new PictureSize{Height = e.Height, Width = e.Width};
                     break;
             }
         }
         
         public void Resize(PictureSize newSize)
-            => Apply(new Events.ClassifiedAdPictureResized
+            => Apply(new ClassifiedAdPictureResized
             {
                 PictureId = Id.Value,
                 ClassifiedAdId = ParentId.Value,

@@ -1,8 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using Marketplace.Ads.Domain.ClassifiedAds;
+using Marketplace.Ads.Messages.Ads;
 using Marketplace.Infrastructure.RavenDb;
 using Raven.Client.Documents.Session;
+using static Marketplace.Ads.Messages.Ads.Events;
+using static Marketplace.Ads.Messages.UserProfile.Events;
 
 namespace Marketplace.Modules.Projections
 {
@@ -21,7 +23,7 @@ namespace Marketplace.Modules.Projections
         {
             switch (@event)
             {
-                case Events.ClassifiedAdCreated e:
+                case ClassifiedAdCreated e:
                     await UsingSession(async session =>
                         await session.StoreAsync(new ReadModels.ClassifiedAdDetails
                         {
@@ -30,15 +32,15 @@ namespace Marketplace.Modules.Projections
                             SellersDisplayName = await _getUserDisplayName(e.OwnerId)
                         }));
                     break;
-                case Events.ClassifiedAdTitleChanged e:
+                case ClassifiedAdTitleChanged e:
                     await UsingSession(session =>
                         UpdateItem(session, e.Id, ad => ad.Title = e.Title));
                     break;
-                case Events.ClassifiedAdTextUpdated e:
+                case ClassifiedAdTextUpdated e:
                     await UsingSession(session =>
                         UpdateItem(session, e.Id, ad => ad.Description = e.AdText));
                     break;
-                case Events.ClassifiedAdPriceUpdated e:
+                case ClassifiedAdPriceUpdated e:
                     await UsingSession(session =>
                         UpdateItem(session, e.Id, ad =>
                         {
@@ -46,7 +48,7 @@ namespace Marketplace.Modules.Projections
                             ad.CurrencyCode = e.CurrencyCode;
                         }));
                     break;
-                case Events.ClassifiedAdDeleted e:
+                case ClassifiedAdDeleted e:
                     await UsingSession(async session =>
                     {
                         var doc = await session.LoadAsync<ReadModels.ClassifiedAdDetails>(
@@ -54,7 +56,7 @@ namespace Marketplace.Modules.Projections
                         session.Delete(doc);
                     });
                     break;
-                case Ads.Domain.UserProfile.Events.UserDisplayNameUpdated e:
+                case UserDisplayNameUpdated e:
                     await UsingSession(session =>
                         UpdateMultipleItems(session, x => x.SellerId == e.UserId,
                             x => x.SellersDisplayName = e.DisplayName));

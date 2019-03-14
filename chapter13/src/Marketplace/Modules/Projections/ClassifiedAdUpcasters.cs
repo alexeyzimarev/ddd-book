@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
-using Marketplace.Ads.Domain.ClassifiedAds;
+using Marketplace.Ads.Messages.Ads;
 using Marketplace.EventSourcing;
 using Marketplace.Infrastructure.EventStore;
 

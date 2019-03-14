@@ -1,6 +1,6 @@
 using System;
 
-namespace Marketplace.Ads.Domain.UserProfile
+namespace Marketplace.Ads.Messages.UserProfile
 {
     public static class Events
     {

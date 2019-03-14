@@ -1,5 +1,6 @@
 using System;
 using Marketplace.Ads.Domain.Shared;
+using Marketplace.Ads.Messages.UserProfile;
 using Marketplace.EventSourcing;
 
 namespace Marketplace.Ads.Domain.UserProfile

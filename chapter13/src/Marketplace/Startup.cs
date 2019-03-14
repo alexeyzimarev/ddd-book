@@ -65,9 +65,9 @@ namespace Marketplace
             Func<IAsyncDocumentSession> getSession = () => documentStore.OpenAsyncSession();
 
             services.AddSingleton<ApplicationService<ClassifiedAd, ClassifiedAdId>>(
-                new ClassifiedAdsApplicationService(store, new FixedCurrencyLookup()));
+                new ClassifiedAdsCommandService(store, new FixedCurrencyLookup()));
             services.AddSingleton(
-                new UserProfileApplicationService(store, t => purgomalumClient.CheckForProfanity(t)));
+                new UserProfileCommandService(store, t => purgomalumClient.CheckForProfanity(t)));
 
             var projectionManager = new ProjectionManager(esConnection,
                 new RavenDbCheckpointStore(getSession, "readmodels"),
@@ -160,7 +160,8 @@ namespace Marketplace
                     async userId => (await GetUserDetails(userId))?.DisplayName),
                 new ClassifiedAdUpcasters(esConnection,
                     async userId => (await GetUserDetails(userId))?.PhotoUrl),
-                new UserDetailsProjection(getSession)
+                new UserDetailsProjection(getSession),
+                new MyClassifiedAdsProjection(getSession)
             };
 
             Task<ReadModels.UserDetails> GetUserDetails(Guid userId)

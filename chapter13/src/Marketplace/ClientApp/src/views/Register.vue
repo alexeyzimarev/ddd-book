@@ -26,7 +26,7 @@
                                     v-model="password"/>
                         </v-form>
                         <div v-if="errors" class="error">
-                            <v-alert v-for="error in errors" :value="true" type="error">
+                            <v-alert v-for="error in errors" :value="true" :key="error" type="error">
                                 {{ error }}
                             </v-alert>
                         </div>
@@ -51,7 +51,8 @@
         data: () => ({
             userName: null,
             fullName: null,
-            password: null
+            password: null,
+            errors: {}
         }),
         methods: {
             async signUp() {

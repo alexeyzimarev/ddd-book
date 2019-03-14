@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Marketplace.Ads.Domain.Shared;
 using Marketplace.EventSourcing;
+using static Marketplace.Ads.Messages.Ads.Events;
 
 namespace Marketplace.Ads.Domain.ClassifiedAds
 {
@@ -21,7 +22,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
         {
-            Apply(new Events.ClassifiedAdCreated
+            Apply(new ClassifiedAdCreated
             {
                 Id = id,
                 OwnerId = ownerId
@@ -29,21 +30,21 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
         }
 
         public void SetTitle(ClassifiedAdTitle title) =>
-            Apply(new Events.ClassifiedAdTitleChanged
+            Apply(new ClassifiedAdTitleChanged
             {
                 Id = Id,
                 Title = title
             });
 
         public void UpdateText(ClassifiedAdText text) =>
-            Apply(new Events.ClassifiedAdTextUpdated
+            Apply(new ClassifiedAdTextUpdated
             {
                 Id = Id,
                 AdText = text
             });
 
         public void UpdatePrice(Price price) =>
-            Apply(new Events.ClassifiedAdPriceUpdated
+            Apply(new ClassifiedAdPriceUpdated
             {
                 Id = Id,
                 Price = price.Amount,
@@ -51,10 +52,10 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             });
 
         public void RequestToPublish() =>
-            Apply(new Events.ClassidiedAdSentForReview {Id = Id});
+            Apply(new ClassidiedAdSentForReview {Id = Id});
 
         public void Publish(UserId userId) =>
-            Apply(new Events.ClassifiedAdPublished
+            Apply(new ClassifiedAdPublished
             {
                 Id = Id,
                 ApprovedBy = userId,
@@ -62,10 +63,10 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             });
 
         public void Delete() =>
-            Apply(new Events.ClassifiedAdDeleted {Id = Id});
+            Apply(new ClassifiedAdDeleted {Id = Id});
 
         public void AddPicture(Uri pictureUri, PictureSize size) =>
-            Apply(new Events.PictureAddedToAClassifiedAd
+            Apply(new PictureAddedToAClassifiedAd
             {
                 PictureId = new Guid(),
                 ClassifiedAdId = Id,
@@ -90,36 +91,36 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 
             switch (@event)
             {
-                case Events.ClassifiedAdCreated e:
+                case ClassifiedAdCreated e:
                     Id = new ClassifiedAdId(e.Id);
                     OwnerId = new UserId(e.OwnerId);
                     State = ClassifiedAdState.Inactive;
                     _pictures = new List<Picture>();
                     break;
-                case Events.ClassifiedAdTitleChanged e:
+                case ClassifiedAdTitleChanged e:
                     Title = new ClassifiedAdTitle(e.Title);
                     break;
-                case Events.ClassifiedAdTextUpdated e:
+                case ClassifiedAdTextUpdated e:
                     Text = new ClassifiedAdText(e.AdText);
                     break;
-                case Events.ClassifiedAdPriceUpdated e:
+                case ClassifiedAdPriceUpdated e:
                     Price = new Price(e.Price, e.CurrencyCode);
                     break;
-                case Events.ClassidiedAdSentForReview _:
+                case ClassidiedAdSentForReview _:
                     State = ClassifiedAdState.PendingReview;
                     break;
-                case Events.ClassifiedAdPublished e:
+                case ClassifiedAdPublished e:
                     ApprovedBy = new UserId(e.ApprovedBy);
                     State = ClassifiedAdState.Active;
                     break;
 
                 // picture
-                case Events.PictureAddedToAClassifiedAd e:
+                case PictureAddedToAClassifiedAd e:
                     picture = new Picture(Apply);
                     ApplyToEntity(picture, e);
                     _pictures.Add(picture);
                     break;
-                case Events.ClassifiedAdPictureResized e:
+                case ClassifiedAdPictureResized e:
                     picture = FindPicture(new PictureId(e.PictureId));
                     ApplyToEntity(picture, @event);
                     break;

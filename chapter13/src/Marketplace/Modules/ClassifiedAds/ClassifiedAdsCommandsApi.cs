@@ -4,6 +4,7 @@ using Marketplace.EventSourcing;
 using Marketplace.Infrastructure.WebApi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static Marketplace.Ads.Messages.Ads.Commands;
 
 namespace Marketplace.Modules.ClassifiedAds
 {
@@ -15,37 +16,37 @@ namespace Marketplace.Modules.ClassifiedAds
             : base(applicationService) { }
 
         [HttpPost]
-        public Task<IActionResult> Post(Contracts.V1.Create command)
+        public Task<IActionResult> Post(V1.Create command)
             => HandleCommand(command, cmd => cmd.OwnerId = GetUserId());
 
         [Route("name")]
         [HttpPut]
-        public Task<IActionResult> Put(Contracts.V1.SetTitle command)
+        public Task<IActionResult> Put(V1.SetTitle command)
             => HandleCommand(command);
 
         [Route("text")]
         [HttpPut]
-        public Task<IActionResult> Put(Contracts.V1.UpdateText command)
+        public Task<IActionResult> Put(V1.UpdateText command)
             => HandleCommand(command);
 
         [Route("price")]
         [HttpPut]
-        public Task<IActionResult> Put(Contracts.V1.UpdatePrice command)
+        public Task<IActionResult> Put(V1.UpdatePrice command)
             => HandleCommand(command);
 
         [Route("requestpublish")]
         [HttpPut]
-        public Task<IActionResult> Put(Contracts.V1.RequestToPublish command)
+        public Task<IActionResult> Put(V1.RequestToPublish command)
             => HandleCommand(command);
 
         [Route("publish")]
         [HttpPut]
-        public Task<IActionResult> Put(Contracts.V1.Publish command)
+        public Task<IActionResult> Put(V1.Publish command)
             => HandleCommand(command);
 
         [Route("delete")]
         [HttpPost]
-        public Task<IActionResult> Delete(Contracts.V1.Delete command)
+        public Task<IActionResult> Delete(V1.Delete command)
             => HandleCommand(command);
     }
 }

@@ -1,8 +1,8 @@
 using System;
 
-namespace Marketplace.Modules.ClassifiedAds
+namespace Marketplace.Ads.Messages.Ads
 {
-    public static class Contracts
+    public static class Commands
     {
         public static class V1
         {
