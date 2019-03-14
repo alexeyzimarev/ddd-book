@@ -2,19 +2,23 @@ using System;
 using System.Threading.Tasks;
 using Marketplace.Infrastructure.RavenDb;
 using Raven.Client.Documents.Session;
+using Serilog;
 using static Marketplace.Ads.Messages.UserProfile.Events;
 
 namespace Marketplace.Modules.Projections
 {
     public class UserDetailsProjection : RavenDbProjection<ReadModels.UserDetails>
     {
+        private static readonly ILogger Log = 
+            Serilog.Log.ForContext<ClassifiedAdDetailsProjection>();
+        
         public UserDetailsProjection(Func<IAsyncDocumentSession> getSession)
-            : base(getSession)
-        {
-        }
+            : base(getSession) { }
 
         public override async Task Project(object @event)
         {
+            Log.Debug("Projecting {event} to UserDetails", @event);
+            
             switch (@event)
             {
                 case UserRegistered e:

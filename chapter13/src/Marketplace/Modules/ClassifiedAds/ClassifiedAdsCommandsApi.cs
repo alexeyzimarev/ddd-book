@@ -12,7 +12,7 @@ namespace Marketplace.Modules.ClassifiedAds
     public class ClassifiedAdsCommandsApi : BaseController<ClassifiedAd, ClassifiedAdId>
     {
         public ClassifiedAdsCommandsApi(
-            ApplicationService<ClassifiedAd, ClassifiedAdId> applicationService) 
+            ClassifiedAdsCommandService applicationService) 
             : base(applicationService) { }
 
         [HttpPost]
@@ -21,7 +21,7 @@ namespace Marketplace.Modules.ClassifiedAds
 
         [Route("name")]
         [HttpPut]
-        public Task<IActionResult> Put(V1.SetTitle command)
+        public Task<IActionResult> Put(V1.ChangeTitle command)
             => HandleCommand(command);
 
         [Route("text")]

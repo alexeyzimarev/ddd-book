@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Marketplace.Ads.Messages.UserProfile;
 using Marketplace.Infrastructure.RavenDb;
 using Raven.Client.Documents.Session;
+using Serilog;
 using static Marketplace.Ads.Messages.Ads.Events;
 using static Marketplace.Ads.Messages.UserProfile.Events;
 using static Marketplace.Modules.Projections.ReadModels;
@@ -13,13 +14,16 @@ namespace Marketplace.Modules.Projections
 {
     public class MyClassifiedAdsProjection : RavenDbProjection<MyClassifiedAds>
     {
+        private static readonly ILogger Log = 
+            Serilog.Log.ForContext<ClassifiedAdDetailsProjection>();
+        
         public MyClassifiedAdsProjection(Func<IAsyncDocumentSession> getSession)
-            : base(getSession)
-        {
-        }
+            : base(getSession) { }
 
         public override Task Project(object @event)
         {
+            Log.Debug("Projecting {event} to MyClassifiedAds", @event);
+            
             switch (@event)
             {
                 case UserRegistered e:

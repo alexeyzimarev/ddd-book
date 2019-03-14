@@ -8,6 +8,8 @@ namespace Marketplace.Ads.Messages.Ads
         {
             public Guid Id { get; set; }
             public Guid OwnerId { get; set; }
+
+            public override string ToString() => $"{nameof(ClassifiedAdCreated)}";
         }
 
         public class ClassifiedAdTitleChanged
@@ -15,6 +17,8 @@ namespace Marketplace.Ads.Messages.Ads
             public Guid Id { get; set; }
             public Guid OwnerId { get; set; }
             public string Title { get; set; }
+            
+            public override string ToString() => $"{nameof(ClassifiedAdTitleChanged)}";
         }
 
         public class ClassifiedAdTextUpdated
@@ -22,6 +26,8 @@ namespace Marketplace.Ads.Messages.Ads
             public Guid Id { get; set; }
             public Guid OwnerId { get; set; }
             public string AdText { get; set; }
+            
+            public override string ToString() => $"{nameof(ClassifiedAdTextUpdated)}";
         }
 
         public class ClassifiedAdPriceUpdated
@@ -30,12 +36,16 @@ namespace Marketplace.Ads.Messages.Ads
             public Guid OwnerId { get; set; }
             public decimal Price { get; set; }
             public string CurrencyCode { get; set; }
+            
+            public override string ToString() => $"{nameof(ClassifiedAdPriceUpdated)}";
         }
 
-        public class ClassidiedAdSentForReview
+        public class ClassifiedAdSentForReview
         {
             public Guid Id { get; set; }
             public Guid OwnerId { get; set; }
+            
+            public override string ToString() => $"{nameof(ClassifiedAdSentForReview)}";
         }
 
         public class ClassifiedAdPublished
@@ -43,6 +53,8 @@ namespace Marketplace.Ads.Messages.Ads
             public Guid Id { get; set; }
             public Guid OwnerId { get; set; }
             public Guid ApprovedBy { get; set; }
+            
+            public override string ToString() => $"{nameof(ClassifiedAdPublished)}";
         }
 
         public class PictureAddedToAClassifiedAd
@@ -54,6 +66,8 @@ namespace Marketplace.Ads.Messages.Ads
             public int Height { get; set; }
             public int Width { get; set; }
             public int Order { get; set; }
+            
+            public override string ToString() => $"{nameof(PictureAddedToAClassifiedAd)}";
         }
         
         public class ClassifiedAdPictureResized
@@ -62,12 +76,16 @@ namespace Marketplace.Ads.Messages.Ads
             public Guid PictureId { get; set; }
             public int Height { get; set; }
             public int Width { get; set; }
+            
+            public override string ToString() => $"{nameof(ClassifiedAdPictureResized)}";
         }
 
         public class ClassifiedAdDeleted
         {
             public Guid Id { get; set; }
             public Guid OwnerId { get; set; }
+            
+            public override string ToString() => $"{nameof(ClassifiedAdDeleted)}";
         }
     }
 }

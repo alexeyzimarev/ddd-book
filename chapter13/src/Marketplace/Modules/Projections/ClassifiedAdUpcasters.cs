@@ -4,11 +4,14 @@ using EventStore.ClientAPI;
 using Marketplace.Ads.Messages.Ads;
 using Marketplace.EventSourcing;
 using Marketplace.Infrastructure.EventStore;
+using ILogger = Serilog.ILogger;
 
 namespace Marketplace.Modules.Projections
 {
     public class ClassifiedAdUpcasters : IProjection
     {
+        private static readonly ILogger Log = 
+            Serilog.Log.ForContext<ClassifiedAdDetailsProjection>();
         private readonly IEventStoreConnection _eventStoreConnection;
         private readonly Func<Guid, Task<string>> _getUserPhoto;
         private const string StreamName = "UpcastedClassifiedAdEvents";
@@ -22,6 +25,8 @@ namespace Marketplace.Modules.Projections
 
         public async Task Project(object @event)
         {
+            Log.Debug($"Upcasting {{event}} to {StreamName}", @event);
+            
             switch (@event)
             {
                 case Events.ClassifiedAdPublished e:

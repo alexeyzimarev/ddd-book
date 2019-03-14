@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using EventStore.ClientAPI;
 using Newtonsoft.Json;
@@ -7,14 +6,18 @@ namespace Marketplace.Infrastructure.EventStore
 {
     public static class EventDeserializer
     {
-        public static object Deserialzie(this ResolvedEvent resolvedEvent)
+        public static object Deserialze(this ResolvedEvent resolvedEvent)
         {
-            var meta = JsonConvert.DeserializeObject<EventMetadata>(
-                Encoding.UTF8.GetString(resolvedEvent.Event.Metadata));
-            var dataType = Type.GetType(meta.ClrType);
+            var dataType = TypeMapper.GetType(resolvedEvent.Event.EventType);
             var jsonData = Encoding.UTF8.GetString(resolvedEvent.Event.Data);
             var data = JsonConvert.DeserializeObject(jsonData, dataType);
             return data;
+        }
+        
+        public static T Deserialze<T>(this ResolvedEvent resolvedEvent)
+        {
+            var jsonData = Encoding.UTF8.GetString(resolvedEvent.Event.Data);
+            return JsonConvert.DeserializeObject<T>(jsonData);
         }
     }
 }

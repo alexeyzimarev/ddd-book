@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
@@ -8,25 +9,27 @@ namespace Marketplace.Infrastructure.EventStore
     public class EventStoreService : IHostedService
     {
         private readonly IEventStoreConnection _esConnection;
-        private readonly ProjectionManager _projectionManager;
+        private readonly ProjectionManager[] _projectionManager;
 
-        public EventStoreService(IEventStoreConnection esConnection, ProjectionManager projectionManager)
+        public EventStoreService(
+            IEventStoreConnection esConnection, 
+            params ProjectionManager[] projectionManagers)
         {
             _esConnection = esConnection;
-            _projectionManager = projectionManager;
+            _projectionManager = projectionManagers;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             await _esConnection.ConnectAsync();
-            await _projectionManager.Start();
+            await Task.WhenAll(
+                _projectionManager
+                    .Select(projection => projection.Start()));
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _projectionManager.Stop();
             _esConnection.Close();
-            
             return Task.CompletedTask;
         }
     }

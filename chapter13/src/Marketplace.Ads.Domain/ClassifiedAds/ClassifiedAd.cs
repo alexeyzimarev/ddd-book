@@ -52,7 +52,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             });
 
         public void RequestToPublish() =>
-            Apply(new ClassidiedAdSentForReview {Id = Id});
+            Apply(new ClassifiedAdSentForReview {Id = Id});
 
         public void Publish(UserId userId) =>
             Apply(new ClassifiedAdPublished
@@ -106,7 +106,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                 case ClassifiedAdPriceUpdated e:
                     Price = new Price(e.Price, e.CurrencyCode);
                     break;
-                case ClassidiedAdSentForReview _:
+                case ClassifiedAdSentForReview _:
                     State = ClassifiedAdState.PendingReview;
                     break;
                 case ClassifiedAdPublished e:

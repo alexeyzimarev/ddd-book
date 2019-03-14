@@ -49,7 +49,7 @@ namespace Marketplace.Infrastructure.EventStore
         {
             if (resolvedEvent.Event.EventType.StartsWith("$")) return;
             
-            var @event = resolvedEvent.Deserialzie();
+            var @event = resolvedEvent.Deserialze();
             
             Log.Debug("Projecting event {event}", @event.ToString());
             await Task.WhenAll(_projections.Select(x => x.Project(@event)));

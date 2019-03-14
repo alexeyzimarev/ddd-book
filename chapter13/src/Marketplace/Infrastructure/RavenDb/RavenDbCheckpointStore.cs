@@ -20,16 +20,16 @@ namespace Marketplace.Infrastructure.RavenDb
             _checkpointName = checkpointName;
         }
 
-        public async Task<Position> GetCheckpoint()
+        public async Task<Position?> GetCheckpoint()
         {
             using (var session = _getSession())
             {
                 var checkpoint = await session.LoadAsync<Checkpoint>(_checkpointName);
-                return checkpoint?.Position ?? Position.Start;
+                return checkpoint?.Position ?? AllCheckpoint.AllStart;
             }
         }
 
-        public async Task StoreCheckpoint(Position position)
+        public async Task StoreCheckpoint(Position? position)
         {
             using (var session = _getSession())
             {
@@ -46,6 +46,12 @@ namespace Marketplace.Infrastructure.RavenDb
                 checkpoint.Position = position;
                 await session.SaveChangesAsync();
             }
+        }
+
+        private class Checkpoint
+        {
+            public string Id { get; set; }
+            public Position? Position { get; set; }
         }
     }
 }

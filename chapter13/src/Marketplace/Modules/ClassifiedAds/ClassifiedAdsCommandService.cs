@@ -16,7 +16,7 @@ namespace Marketplace.Modules.ClassifiedAds
                 (cmd, id) => new ClassifiedAd(
                     id, new UserId(cmd.OwnerId)));
             
-            UpdateWhen<V1.SetTitle>(
+            UpdateWhen<V1.ChangeTitle>(
                 cmd => new ClassifiedAdId(cmd.Id), 
                 (ad, cmd) => ad.SetTitle(ClassifiedAdTitle.FromString(cmd.Title)));
             

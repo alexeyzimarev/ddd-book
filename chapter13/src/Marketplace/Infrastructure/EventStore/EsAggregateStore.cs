@@ -52,7 +52,7 @@ namespace Marketplace.Infrastructure.EventStore
             Log.Debug("Loading events for the aggregate {aggregate}", aggregate.ToString());
             
             aggregate.Load(page.Events.Select(
-                resolvedEvent => resolvedEvent.Deserialzie()).ToArray());
+                resolvedEvent => resolvedEvent.Deserialze()).ToArray());
 
             return aggregate;
         }

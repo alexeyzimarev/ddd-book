@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Marketplace.Ads.Messages.Ads;
 using Marketplace.Infrastructure.RavenDb;
 using Raven.Client.Documents.Session;
+using Serilog;
 using static Marketplace.Ads.Messages.Ads.Events;
 using static Marketplace.Ads.Messages.UserProfile.Events;
 
@@ -10,17 +11,19 @@ namespace Marketplace.Modules.Projections
 {
     public class ClassifiedAdDetailsProjection : RavenDbProjection<ReadModels.ClassifiedAdDetails>
     {
+        private static readonly ILogger Log = 
+            Serilog.Log.ForContext<ClassifiedAdDetailsProjection>();
         private readonly Func<Guid, Task<string>> _getUserDisplayName;
 
         public ClassifiedAdDetailsProjection(Func<IAsyncDocumentSession> getSession,
             Func<Guid, Task<string>> getUserDisplayName)
-            : base(getSession)
-        {
+            : base(getSession) =>
             _getUserDisplayName = getUserDisplayName;
-        }
 
         public override async Task Project(object @event)
         {
+            Log.Debug("Projecting {event} to ClassifiedAdDetail", @event);
+            
             switch (@event)
             {
                 case ClassifiedAdCreated e:

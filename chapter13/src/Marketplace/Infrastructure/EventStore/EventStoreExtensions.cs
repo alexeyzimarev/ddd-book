@@ -19,11 +19,14 @@ namespace Marketplace.Infrastructure.EventStore
                 .Select(@event =>
                     new EventData(
                         eventId: Guid.NewGuid(),
-                        type: @event.GetType().Name,
+                        type: TypeMapper.GetTypeName(@event.GetType()),
                         isJson: true,
                         data: Serialize(@event),
-                        metadata: Serialize(new EventMetadata
-                            {ClrType = @event.GetType().AssemblyQualifiedName})
+                        metadata: Serialize(
+                            new EventMetadata
+                            {
+                                ClrType = @event.GetType().FullName
+                            })
                     ))
                 .ToArray();
             return connection.AppendToStreamAsync(
