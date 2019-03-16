@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Marketplace.EventSourcing;
 using Marketplace.Infrastructure.Currency;
@@ -18,12 +17,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Raven.Client.ServerWide;
 using Raven.Client.ServerWide.Operations;
 using Swashbuckle.AspNetCore.Swagger;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 // ReSharper disable UnusedMember.Global
 
@@ -35,14 +34,14 @@ namespace Marketplace
     {
         public const string CookieScheme = "MarketplaceScheme";
 
-        public Startup(IHostingEnvironment environment, IConfiguration configuration)
+        public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
             Environment = environment;
             Configuration = configuration;
         }
 
         private IConfiguration Configuration { get; }
-        private IHostingEnvironment Environment { get; }
+        private IWebHostEnvironment Environment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -102,28 +101,27 @@ namespace Marketplace
 
             services
                 .AddMvcCore()
-                .AddJsonFormatters()
                 .AddApiExplorer()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddSpaStaticFiles(
                 configuration =>
                     configuration.RootPath = "ClientApp/dist"
             );
 
-            services.AddSwaggerGen(
-                c =>
-                    c.SwaggerDoc(
-                        "v1",
-                        new Info
-                        {
-                            Title = "ClassifiedAds", Version = "v1"
-                        }
-                    )
-            );
+//            services.AddSwaggerGen(
+//                c =>
+//                    c.SwaggerDoc(
+//                        "v1",
+//                        new OpenApiInfo
+//                        {
+//                            Title = "ClassifiedAds", Version = "v1"
+//                        }
+//                    )
+//            );
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -150,8 +148,8 @@ namespace Marketplace
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ClassifiedAds v1"));
+//            app.UseSwagger();
+//            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ClassifiedAds v1"));
 
             app.UseSpa(
                 spa =>
