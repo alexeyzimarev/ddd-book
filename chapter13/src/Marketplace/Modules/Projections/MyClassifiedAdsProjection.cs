@@ -17,99 +17,90 @@ namespace Marketplace.Modules.Projections
             Serilog.Log.ForContext<ClassifiedAdDetailsProjection>();
 
         public MyClassifiedAdsProjection(Func<IAsyncDocumentSession> getSession)
-            : base(getSession) { }
+            : base(getSession, GetHandler) { }
 
-        public override Task Project(object @event)
+        static Func<Task> GetHandler(
+            IAsyncDocumentSession session,
+            object @event)
         {
-            Log.Debug("Projecting {event} to MyClassifiedAds", @event);
+            Func<Guid, string> getDbId = MyClassifiedAds.GetDatabaseId;
 
             switch (@event)
             {
                 case UserRegistered e:
 
-                    return UsingSession(
-                        session =>
-                            session.StoreAsync(
-                                new MyClassifiedAds
-                                {
-                                    Id = e.UserId.ToString(),
-                                    MyAds = new List<MyClassifiedAds.MyAd>()
-                                }
-                            )
-                    );
+                    return () =>
+                        session.StoreAsync(
+                            new MyClassifiedAds
+                            {
+                                Id = getDbId(e.UserId),
+                                MyAds = new List<MyClassifiedAds.MyAd>()
+                            }
+                        );
                 case ClassifiedAdCreated e:
 
-                    return UsingSession(
-                        session =>
-                            UpdateItem(
-                                session, e.OwnerId,
-                                myAds => myAds.MyAds.Add(
-                                    new MyClassifiedAds.MyAd
-                                        {Id = e.Id.ToString()}
-                                )
+                    return () =>
+                        Update(
+                            e.OwnerId,
+                            myAds => myAds.MyAds.Add(
+                                new MyClassifiedAds.MyAd
+                                    {Id = e.Id}
                             )
-                    );
+                        );
                 case ClassifiedAdTitleChanged e:
 
-                    return UsingSession(
-                        session =>
-                            UpdateItem(
-                                session, e.OwnerId,
-                                ad => UpdateOneAd(
-                                    ad, ad.Id,
-                                    myAd => myAd.Title = e.Title
-                                )
-                            )
-                    );
+                    return () =>
+                        UpdateOneAd(
+                            e.OwnerId, e.Id,
+                            myAd => myAd.Title = e.Title
+                        );
                 case ClassifiedAdTextUpdated e:
 
-                    return UsingSession(
-                        session =>
-                            UpdateItem(
-                                session, e.OwnerId,
-                                ad => UpdateOneAd(
-                                    ad, ad.Id,
-                                    myAd => myAd.Description = e.AdText
-                                )
-                            )
-                    );
+                    return () =>
+                        UpdateOneAd(
+                            e.OwnerId, e.Id,
+                            myAd => myAd.Description = e.AdText
+                        );
                 case ClassifiedAdPriceUpdated e:
 
-                    return UsingSession(
-                        session =>
-                            UpdateItem(
-                                session, e.OwnerId,
-                                ad => UpdateOneAd(
-                                    ad, ad.Id,
-                                    myAd => myAd.Price = e.Price
-                                )
-                            )
-                    );
+                    return () =>
+                        UpdateOneAd(
+                            e.OwnerId, e.Id,
+                            myAd => myAd.Price = e.Price
+                        );
                 case ClassifiedAdDeleted e:
 
-                    return UsingSession(
-                        session =>
-                            UpdateItem(
-                                session, e.OwnerId,
-                                ad => UpdateOneAd(
-                                    ad, ad.Id,
-                                    myAd => ad.MyAds.Remove(myAd)
-                                )
-                            )
-                    );
+                    return () =>
+                        Update(
+                            e.OwnerId,
+                            myAd => myAd.MyAds
+                                .RemoveAll(x => x.Id == e.Id)
+                        );
                 default:
-                    return Task.CompletedTask;
+                    return null;
             }
 
-            void UpdateOneAd(
-                MyClassifiedAds myAds,
-                string adId,
+            Task Update(
+                Guid id,
+                Action<MyClassifiedAds> update)
+                => UpdateItem(
+                    session, getDbId(id),
+                    update
+                );
+
+            Task UpdateOneAd(
+                Guid id,
+                Guid adId,
                 Action<MyClassifiedAds.MyAd> update)
-            {
-                var ad = myAds.MyAds
-                    .FirstOrDefault(x => x.Id == adId);
-                if (ad != null) update(ad);
-            }
+                => Update(
+                    id,
+                    myAds =>
+                    {
+                        var ad = myAds.MyAds
+                            .FirstOrDefault(x => x.Id == adId);
+                        if (ad != null) update(ad);
+                    }
+                );
         }
     }
 }

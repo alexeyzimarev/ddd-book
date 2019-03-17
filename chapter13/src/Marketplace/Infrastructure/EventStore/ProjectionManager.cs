@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
@@ -47,18 +48,33 @@ namespace Marketplace.Infrastructure.EventStore
             Log.Debug("Subscribed to $all stream");
         }
 
-        public void Stop() => _subscription.Stop();
-
-        async Task EventAppeared(EventStoreCatchUpSubscription _, ResolvedEvent resolvedEvent)
+        async Task EventAppeared(
+            EventStoreCatchUpSubscription _,
+            ResolvedEvent resolvedEvent)
         {
             if (resolvedEvent.Event.EventType.StartsWith("$")) return;
 
             var @event = resolvedEvent.Deserialze();
 
             Log.Debug("Projecting event {event}", @event.ToString());
-            await Task.WhenAll(_projections.Select(x => x.Project(@event)));
 
-            await _checkpointStore.StoreCheckpoint(resolvedEvent.OriginalPosition.Value);
+            try
+            {
+                await Task.WhenAll(_projections.Select(x => x.Project(@event)));
+
+                await _checkpointStore.StoreCheckpoint(
+                    resolvedEvent.OriginalPosition.Value
+                );
+            }
+            catch (Exception e)
+            {
+                Log.Error(
+                    e,
+                    "Error occured when projecting the event {event}",
+                    @event
+                );
+                throw;
+            }
         }
     }
 }

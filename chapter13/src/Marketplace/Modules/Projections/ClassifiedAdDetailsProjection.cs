@@ -5,99 +5,101 @@ using Raven.Client.Documents.Session;
 using Serilog;
 using static Marketplace.Ads.Messages.Ads.Events;
 using static Marketplace.Ads.Messages.UserProfile.Events;
+using static Marketplace.Modules.Projections.ClassifiedAdUpcastedEvents;
+using static Marketplace.Modules.Projections.ReadModels;
 
 namespace Marketplace.Modules.Projections
 {
-    public class ClassifiedAdDetailsProjection : RavenDbProjection<ReadModels.ClassifiedAdDetails>
+    public class ClassifiedAdDetailsProjection
+        : RavenDbProjection<ClassifiedAdDetails>
     {
-        static readonly ILogger Log =
-            Serilog.Log.ForContext<ClassifiedAdDetailsProjection>();
-
-        readonly Func<Guid, Task<string>> _getUserDisplayName;
-
         public ClassifiedAdDetailsProjection(
             Func<IAsyncDocumentSession> getSession,
             Func<Guid, Task<string>> getUserDisplayName)
-            : base(getSession)
-            => _getUserDisplayName = getUserDisplayName;
+            : base(
+                getSession,
+                (session, @event) => GetHandler(
+                    session, @event, getUserDisplayName
+                )
+            ) { }
 
-        public override async Task Project(object @event)
+        static Func<Task> GetHandler(
+            IAsyncDocumentSession session,
+            object @event,
+            Func<Guid, Task<string>> getUserDisplayName)
         {
-            Log.Debug("Projecting {event} to ClassifiedAdDetail", @event);
-
             switch (@event)
             {
                 case ClassifiedAdCreated e:
 
-                    await UsingSession(
-                        async session =>
-                            await session.StoreAsync(
-                                new ReadModels.ClassifiedAdDetails
-                                {
-                                    Id = e.Id.ToString(),
-                                    SellerId = e.OwnerId,
-                                    SellersDisplayName = await _getUserDisplayName(e.OwnerId)
-                                }
-                            )
-                    );
-                    break;
+                    return
+                        async () => await session.StoreAsync(
+                            new ClassifiedAdDetails
+                            {
+                                Id = GetDbId(e.Id),
+                                SellerId = e.OwnerId,
+                                SellersDisplayName =
+                                    await getUserDisplayName(e.OwnerId)
+                            }
+                        );
                 case ClassifiedAdTitleChanged e:
 
-                    await UsingSession(
-                        session =>
-                            UpdateItem(session, e.Id, ad => ad.Title = e.Title)
-                    );
-                    break;
+                    return () =>
+                        Update(
+                            e.Id, ad => ad.Title = e.Title
+                        );
                 case ClassifiedAdTextUpdated e:
 
-                    await UsingSession(
-                        session =>
-                            UpdateItem(session, e.Id, ad => ad.Description = e.AdText)
-                    );
-                    break;
+                    return () =>
+                        Update(
+                            e.Id,
+                            ad => ad.Description = e.AdText
+                        );
                 case ClassifiedAdPriceUpdated e:
 
-                    await UsingSession(
-                        session =>
-                            UpdateItem(
-                                session, e.Id, ad =>
-                                {
-                                    ad.Price = e.Price;
-                                    ad.CurrencyCode = e.CurrencyCode;
-                                }
-                            )
-                    );
-                    break;
+                    return () =>
+                        Update(
+                            e.Id, ad =>
+                            {
+                                ad.Price = e.Price;
+                                ad.CurrencyCode = e.CurrencyCode;
+                            }
+                        );
+
                 case ClassifiedAdDeleted e:
 
-                    await UsingSession(
-                        async session =>
-                        {
-                            var doc = await session.LoadAsync<ReadModels.ClassifiedAdDetails>(
-                                e.Id.ToString()
+                    return async () =>
+                    {
+                        var ad = await session
+                            .LoadAsync<ClassifiedAdDetails>(
+                                GetDbId(e.Id)
                             );
-                            session.Delete(doc);
-                        }
-                    );
-                    break;
+
+                        if (ad != null)
+                            session.Delete(ad);
+                    };
                 case UserDisplayNameUpdated e:
 
-                    await UsingSession(
-                        session =>
-                            UpdateMultipleItems(
-                                session, x => x.SellerId == e.UserId,
-                                x => x.SellersDisplayName = e.DisplayName
-                            )
-                    );
-                    break;
-                case ClassifiedAdUpcastedEvents.V1.ClassifiedAdPublished e:
+                    return () =>
+                        UpdateMultipleItems(
+                            session, x => x.SellerId == e.UserId,
+                            x => x.SellersDisplayName = e.DisplayName
+                        );
+                case V1.ClassifiedAdPublished e:
 
-                    await UsingSession(
-                        session =>
-                            UpdateItem(session, e.Id, ad => ad.SellersPhotoUrl = e.SellersPhotoUrl)
-                    );
-                    break;
+                    return () =>
+                        Update(
+                            e.Id,
+                            ad => ad.SellersPhotoUrl = e.SellersPhotoUrl
+                        );
+                default:
+                    return null;
             }
+
+            string GetDbId(Guid id) => ClassifiedAdDetails.GetDatabaseId(id);
+
+            Task Update(Guid id, Action<ClassifiedAdDetails> update)
+                => UpdateItem(session, GetDbId(id), update);
         }
     }
 }

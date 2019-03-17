@@ -13,7 +13,7 @@
     import {required, numeric} from "vuelidate/lib/validators";
     import {UpdateAdPrice} from "../store/actions.type";
     import store from "../store";
-    
+
     export default {
         name: "",
         mixins: [validationMixin],
@@ -23,9 +23,11 @@
         validations: {
             price: {required, numeric}
         },
-        data: () => ({
-            price: this.adPrice
-        }),
+        data: function () {
+            return {
+                price: this.adPrice
+            }
+        },
         computed: {
             validatePrice() {
                 const errors = [];

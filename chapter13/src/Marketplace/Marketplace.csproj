@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>preview</LangVersion>
     <SpaRoot>ClientApp\</SpaRoot>
     <IsPackable>false</IsPackable>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <Content Update="appsettings.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+    <Content Include="ClientApp\src\components\AdListItem.vue" />
   </ItemGroup>
 
   <ItemGroup>

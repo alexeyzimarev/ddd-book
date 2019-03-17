@@ -23,11 +23,14 @@ namespace Marketplace.Modules.UserProfile
             }
         }
 
-        public static async Task<UserDetails> GetUserDetails(
+        public static Task<UserDetails> GetUserDetails(
             this Func<IAsyncDocumentSession> getSession,
             Guid id)
         {
-            using (var session = getSession()) return await session.LoadAsync<UserDetails>(id.ToString());
+            using (var session = getSession())
+                return session.LoadAsync<UserDetails>(
+                    UserDetails.GetDatabaseId(id)
+                );
         }
     }
 }

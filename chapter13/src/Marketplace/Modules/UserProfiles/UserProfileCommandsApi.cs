@@ -10,6 +10,10 @@ namespace Marketplace.Modules.UserProfiles
     public class UserProfileCommandsApi
         : BaseController<Ads.Domain.UserProfiles.UserProfile>
     {
+        public UserProfileCommandsApi(
+            UserProfileCommandService applicationService)
+            : base(applicationService) { }
+
         [HttpPost]
         public Task<IActionResult> Post(Commands.V1.RegisterUser request)
             => HandleCommand(request);
@@ -27,9 +31,5 @@ namespace Marketplace.Modules.UserProfiles
         public Task<IActionResult> Put(
             Commands.V1.UpdateUserProfilePhoto request)
             => HandleCommand(request);
-
-        public UserProfileCommandsApi(
-            ApplicationService<Ads.Domain.UserProfiles.UserProfile>
-                applicationService) : base(applicationService) { }
     }
 }

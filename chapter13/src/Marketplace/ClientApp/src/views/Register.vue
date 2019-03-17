@@ -52,7 +52,6 @@
             userName: null,
             fullName: null,
             password: null,
-            errors: {}
         }),
         methods: {
             async signUp() {

@@ -13,19 +13,21 @@
     import {required, minLength} from "vuelidate/lib/validators";
     import {RenameAd} from "../store/actions.type";
     import store from "../store";
-    
+
     export default {
         name: "",
         mixins: [validationMixin],
         props: {
-            adTitle: String
+            adTitle : String
         },
         validations: {
             title: {required, minLength: minLength(10)}
         },
-        data: () => ({
-            title: this.adTitle
-        }),
+        data: function () {
+            return {
+                title: this.adTitle
+            }
+        },
         computed: {
             validateTitle() {
                 const errors = [];
@@ -41,7 +43,7 @@
                 try {
                     await store.dispatch(RenameAd, this.title);
                 } catch (e) {
-                    console.log(JSON.stringify(e));
+                    console.log(e.response.data.error);
                 }
             }
         },

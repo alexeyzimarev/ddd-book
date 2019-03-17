@@ -142,6 +142,10 @@ namespace Marketplace
                         "api",
                         "api/{controller=Home}/{action=Index}/{id?}"
                     );
+                    
+                    routes.MapSpaFallbackRoute(
+                        "spa-fallback",
+                        new { controller = "Home", action = "Index"});
                 }
             );
 

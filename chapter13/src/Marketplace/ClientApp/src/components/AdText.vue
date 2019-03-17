@@ -13,19 +13,21 @@
     import {required, minLength} from "vuelidate/lib/validators";
     import {UpdateAdText} from "../store/actions.type";
     import store from "../store";
-    
+
     export default {
         name: "",
         mixins: [validationMixin],
-        props:{
+        props: {
             adText: String
         },
         validations: {
             text: {required, minLength: minLength(10)}
         },
-        data: () => ({
-            text: this.adText
-        }),
+        data: function () {
+            return {
+                text: this.adText
+            }
+        },
         computed: {
             validateText() {
                 const errors = [];

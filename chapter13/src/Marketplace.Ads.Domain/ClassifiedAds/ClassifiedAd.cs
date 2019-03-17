@@ -9,7 +9,10 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 {
     public class ClassifiedAd : AggregateRoot
     {
-        public enum ClassifiedAdState { PendingReview, Active, Inactive, MarkedAsSold }
+        public enum ClassifiedAdState
+        {
+            PendingReview, Active, Inactive, MarkedAsSold
+        }
 
         List<Picture> _pictures;
 
@@ -36,13 +39,15 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
         public UserId ApprovedBy { get; private set; }
         public IEnumerable<Picture> Pictures => _pictures;
 
-        Picture FirstPicture => _pictures.OrderBy(x => x.Order).FirstOrDefault();
+        Picture FirstPicture
+            => _pictures.OrderBy(x => x.Order).FirstOrDefault();
 
         public void SetTitle(ClassifiedAdTitle title)
             => Apply(
                 new ClassifiedAdTitleChanged
                 {
                     Id = Id,
+                    OwnerId = OwnerId,
                     Title = title
                 }
             );
@@ -52,6 +57,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                 new ClassifiedAdTextUpdated
                 {
                     Id = Id,
+                    OwnerId = OwnerId,
                     AdText = text
                 }
             );
@@ -61,12 +67,20 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                 new ClassifiedAdPriceUpdated
                 {
                     Id = Id,
+                    OwnerId = OwnerId,
                     Price = price.Amount,
                     CurrencyCode = price.Currency.CurrencyCode
                 }
             );
 
-        public void RequestToPublish() => Apply(new ClassifiedAdSentForReview {Id = Id});
+        public void RequestToPublish()
+            => Apply(
+                new ClassifiedAdSentForReview
+                {
+                    Id = Id,
+                    OwnerId = OwnerId,
+                }
+            );
 
         public void Publish(UserId userId)
             => Apply(
@@ -86,6 +100,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                 {
                     PictureId = new Guid(),
                     ClassifiedAdId = Id,
+                    OwnerId = OwnerId,
                     Url = pictureUri.ToString(),
                     Height = size.Height,
                     Width = size.Width,
@@ -98,7 +113,9 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             var picture = FindPicture(pictureId);
 
             if (picture == null)
-                throw new InvalidOperationException("Cannot resize a picture that I don't have");
+                throw new InvalidOperationException(
+                    "Cannot resize a picture that I don't have"
+                );
 
             picture.Resize(newSize);
         }
@@ -145,7 +162,8 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             }
         }
 
-        Picture FindPicture(PictureId id) => Pictures.FirstOrDefault(x => x.Id == id);
+        Picture FindPicture(PictureId id)
+            => Pictures.FirstOrDefault(x => x.Id == id);
 
         protected override void EnsureValidState()
         {
@@ -173,7 +191,9 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             }
 
             if (!valid)
-                throw new DomainExceptions.InvalidEntityState(this, $"Post-checks failed in state {State}");
+                throw new DomainExceptions.InvalidEntityState(
+                    this, $"Post-checks failed in state {State}"
+                );
         }
     }
 }

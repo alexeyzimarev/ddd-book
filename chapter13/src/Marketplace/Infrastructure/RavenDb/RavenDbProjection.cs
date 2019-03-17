@@ -2,33 +2,64 @@ using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Marketplace.EventSourcing;
+using Marketplace.Modules.Projections;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Linq;
 using Raven.Client.Documents.Session;
+using Serilog;
 
 namespace Marketplace.Infrastructure.RavenDb
 {
     public abstract class RavenDbProjection<T> : IProjection
     {
-        protected RavenDbProjection(Func<IAsyncDocumentSession> getSession) => GetSession = getSession;
+        readonly ILogger _log;
+        static readonly string ReadModelName = typeof(T).Name;
 
-        protected Func<IAsyncDocumentSession> GetSession { get; }
+        protected RavenDbProjection(
+            Func<IAsyncDocumentSession> getSession,
+            Projector projector)
+        {
+            _projector = projector;
+            GetSession = getSession;
+            _log = Log.ForContext(GetType());
+        }
 
-        public abstract Task Project(object @event);
+        Func<IAsyncDocumentSession> GetSession { get; }
+        readonly Projector _projector;
+
+        public async Task Project(object @event)
+        {
+            using (var session = GetSession())
+            {
+                var handler = _projector(session, @event);
+
+                if (handler != null)
+                {
+                    _log.Debug(
+                        "Projecting {event} to {model}",
+                        @event,
+                        ReadModelName
+                    );
+                    
+                    await handler();
+                    await session.SaveChangesAsync();
+                }
+            }
+        }
 
         protected static async Task UpdateItem(
             IAsyncDocumentSession session,
-            Guid id,
+            string id,
             Action<T> update)
         {
-            var item = await session.LoadAsync<T>(id.ToString());
+            var item = await session.LoadAsync<T>(id);
 
             if (item == null) return;
 
             update(item);
         }
 
-        protected async Task UpdateMultipleItems(
+        protected static async Task UpdateMultipleItems(
             IAsyncDocumentSession session,
             Expression<Func<T, bool>> query,
             Action<T> update)
@@ -39,13 +70,8 @@ namespace Marketplace.Infrastructure.RavenDb
                 update(item);
         }
 
-        protected async Task UsingSession(Func<IAsyncDocumentSession, Task> operation)
-        {
-            using (var session = GetSession())
-            {
-                await operation(session);
-                await session.SaveChangesAsync();
-            }
-        }
+        protected delegate Func<Task> Projector(
+            IAsyncDocumentSession session,
+            object @event);
     }
 }

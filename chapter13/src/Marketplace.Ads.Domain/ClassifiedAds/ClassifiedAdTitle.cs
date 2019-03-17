@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using Marketplace.EventSourcing;
+using static System.String;
 
 namespace Marketplace.Ads.Domain.ClassifiedAds
 {
@@ -27,7 +28,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                 .Replace("<b>", "**")
                 .Replace("</b>", "**");
 
-            var value = Regex.Replace(supportedTagsReplaced, "<.*?>", string.Empty);
+            var value = Regex.Replace(supportedTagsReplaced, "<.*?>", Empty);
             CheckValidity(value);
 
             return new ClassifiedAdTitle(value);
@@ -37,11 +38,20 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 
         static void CheckValidity(string value)
         {
+            if (IsNullOrEmpty(value))
+                throw new ArgumentNullException(
+                    nameof(value),
+                    "Title cannot be empty");
+            
+            if (value.Length < 10)
+                throw new ArgumentOutOfRangeException(
+                    nameof(value),
+                    "Title cannot be shorter than 10 characters");
+            
             if (value.Length > 100)
                 throw new ArgumentOutOfRangeException(
-                    "Title cannot be longer that 100 characters",
-                    nameof(value)
-                );
+                    nameof(value),
+                    "Title cannot be longer than 100 characters");
         }
     }
 }

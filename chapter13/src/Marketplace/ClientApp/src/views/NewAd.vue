@@ -10,9 +10,9 @@
             <v-layout wrap>
                 <v-form>
                     <v-flex md12>
-                        <AdTitle/>
-                        <AdText/>
-                        <AdPrice/>
+                        <AdTitle v-bind:ad-title="title"/>
+                        <AdText v-bind:ad-text="text"/>
+                        <AdPrice v-bind:ad-price="price"/>
                         <v-image-input
                                 v-model="imageData"
                                 :image-quality="0.85"
@@ -49,6 +49,9 @@
             AdPrice
         },
         data: () => ({
+            title: null,
+            text: null,
+            price: null,
             imageData: "",
             snackBar: {}
         }),
@@ -57,7 +60,7 @@
         },
         methods: {
             add() {
-
+                
             }
         },
         async beforeRouteEnter(to, from, next) {
