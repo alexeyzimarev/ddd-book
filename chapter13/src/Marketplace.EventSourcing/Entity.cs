@@ -5,11 +5,13 @@ namespace Marketplace.EventSourcing
     public abstract class Entity<TId> : IInternalEventHandler
         where TId : Value<TId>
     {
-        private readonly Action<object> _applier;
-        
-        public TId Id { get; protected set; }
+        readonly Action<object> _applier;
 
         protected Entity(Action<object> applier) => _applier = applier;
+
+        public TId Id { get; protected set; }
+
+        void IInternalEventHandler.Handle(object @event) => When(@event);
 
         protected abstract void When(object @event);
 
@@ -18,7 +20,5 @@ namespace Marketplace.EventSourcing
             When(@event);
             _applier(@event);
         }
-
-        void IInternalEventHandler.Handle(object @event) => When(@event);
     }
 }

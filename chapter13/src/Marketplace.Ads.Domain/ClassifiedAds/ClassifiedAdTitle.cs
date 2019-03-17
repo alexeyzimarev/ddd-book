@@ -6,6 +6,13 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 {
     public class ClassifiedAdTitle : Value<ClassifiedAdTitle>
     {
+        internal ClassifiedAdTitle(string value) => Value = value;
+
+        // Satisfy the serialization requirements 
+        protected ClassifiedAdTitle() { }
+
+        public string Value { get; }
+
         public static ClassifiedAdTitle FromString(string title)
         {
             CheckValidity(title);
@@ -26,22 +33,15 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             return new ClassifiedAdTitle(value);
         }
 
-        public string Value { get; private set; }
+        public static implicit operator string(ClassifiedAdTitle title) => title.Value;
 
-        internal ClassifiedAdTitle(string value) => Value = value;
-
-        public static implicit operator string(ClassifiedAdTitle title) =>
-            title.Value;
-
-        private static void CheckValidity(string value)
+        static void CheckValidity(string value)
         {
             if (value.Length > 100)
                 throw new ArgumentOutOfRangeException(
                     "Title cannot be longer that 100 characters",
-                    nameof(value));
+                    nameof(value)
+                );
         }
-        
-        // Satisfy the serialization requirements 
-        protected ClassifiedAdTitle() { }
     }
 }

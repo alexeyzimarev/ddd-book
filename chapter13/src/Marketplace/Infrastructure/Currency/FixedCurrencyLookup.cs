@@ -6,7 +6,7 @@ namespace Marketplace.Infrastructure.Currency
 {
     public class FixedCurrencyLookup : ICurrencyLookup
     {
-        private static readonly IEnumerable<Ads.Domain.Shared.Currency> Currencies =
+        static readonly IEnumerable<Ads.Domain.Shared.Currency> Currencies =
             new[]
             {
                 new Ads.Domain.Shared.Currency

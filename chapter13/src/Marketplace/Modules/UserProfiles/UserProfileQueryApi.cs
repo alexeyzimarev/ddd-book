@@ -9,10 +9,9 @@ namespace Marketplace.Modules.UserProfile
     [Route("api/profile")]
     public class UserProfileQueryApi : ControllerBase
     {
-        private readonly Func<IAsyncDocumentSession> _getSession;
-        
-        public UserProfileQueryApi(Func<IAsyncDocumentSession> getSession) 
-            => _getSession = getSession;
+        readonly Func<IAsyncDocumentSession> _getSession;
+
+        public UserProfileQueryApi(Func<IAsyncDocumentSession> getSession) => _getSession = getSession;
 
         [HttpGet("{userId}")]
         public async Task<ActionResult<ReadModels.UserDetails>> Get(Guid userId)

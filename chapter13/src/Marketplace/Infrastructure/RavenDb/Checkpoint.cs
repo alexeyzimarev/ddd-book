@@ -1,5 +1,1 @@
-using EventStore.ClientAPI;
-
-namespace Marketplace.Infrastructure.RavenDb
-{
-}
+namespace Marketplace.Infrastructure.RavenDb {}

@@ -6,7 +6,7 @@ namespace Marketplace.ClassifiedAds.Tests
 {
     public class FakeCurrencyLookup : ICurrencyLookup
     {
-        private static readonly IEnumerable<Currency> _currencies =
+        static readonly IEnumerable<Currency> _currencies =
             new[]
             {
                 new Currency

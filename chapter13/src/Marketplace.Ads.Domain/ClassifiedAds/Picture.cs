@@ -6,6 +6,8 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 {
     public class Picture : Entity<PictureId>
     {
+        public Picture(Action<object> applier) : base(applier) { }
+
         public ClassifiedAdId ParentId { get; private set; }
         public PictureSize Size { get; private set; }
         public Uri Location { get; private set; }
@@ -23,23 +25,21 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                     Order = e.Order;
                     break;
                 case ClassifiedAdPictureResized e:
-                    Size = new PictureSize{Height = e.Height, Width = e.Width};
+                    Size = new PictureSize {Height = e.Height, Width = e.Width};
                     break;
             }
         }
-        
-        public void Resize(PictureSize newSize)
-            => Apply(new ClassifiedAdPictureResized
-            {
-                PictureId = Id.Value,
-                ClassifiedAdId = ParentId.Value,
-                Height = newSize.Width,
-                Width = newSize.Width
-            });
 
-        public Picture(Action<object> applier) : base(applier)
-        {
-        }
+        public void Resize(PictureSize newSize)
+            => Apply(
+                new ClassifiedAdPictureResized
+                {
+                    PictureId = Id.Value,
+                    ClassifiedAdId = ParentId.Value,
+                    Height = newSize.Width,
+                    Width = newSize.Width
+                }
+            );
     }
 
     public class PictureId : Value<PictureId>

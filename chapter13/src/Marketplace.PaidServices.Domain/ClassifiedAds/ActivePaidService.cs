@@ -6,6 +6,12 @@ namespace Marketplace.PaidServices.Domain.ClassifiedAd
 {
     public class ActivePaidService : Value<ActivePaidService>
     {
+        ActivePaidService(PaidServiceType paidServiceType, DateTimeOffset expiresAt)
+        {
+            ServiceType = paidServiceType;
+            ExpiresAt = expiresAt;
+        }
+
         public PaidServiceType ServiceType { get; }
         public DateTimeOffset ExpiresAt { get; }
 
@@ -13,12 +19,6 @@ namespace Marketplace.PaidServices.Domain.ClassifiedAd
         {
             var expiresAt = startFrom + PaidService.PaidService.DurationFor(paidServiceType);
             return new ActivePaidService(paidServiceType, expiresAt);
-        }
-
-        private ActivePaidService(PaidServiceType paidServiceType, DateTimeOffset expiresAt)
-        {
-            ServiceType = paidServiceType;
-            ExpiresAt = expiresAt;
         }
     }
 }

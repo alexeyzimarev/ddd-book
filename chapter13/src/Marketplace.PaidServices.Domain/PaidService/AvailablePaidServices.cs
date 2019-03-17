@@ -1,7 +1,4 @@
 namespace Marketplace.PaidServices.Domain.PaidService
 {
-    public static class AvailablePaidServices
-    {
-        
-    }
+    public static class AvailablePaidServices { }
 }

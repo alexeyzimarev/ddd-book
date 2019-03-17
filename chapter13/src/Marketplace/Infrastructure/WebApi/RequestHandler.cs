@@ -8,7 +8,9 @@ namespace Marketplace.Infrastructure.WebApi
     public static class RequestHandler
     {
         public static async Task<IActionResult> HandleCommand<T>(
-            T request, Func<T, Task> handler, ILogger log)
+            T request,
+            Func<T, Task> handler,
+            ILogger log)
         {
             try
             {
@@ -19,15 +21,19 @@ namespace Marketplace.Infrastructure.WebApi
             catch (Exception e)
             {
                 log.Error(e, "Error handling the command");
-                return new BadRequestObjectResult(new
-                {
-                    error = e.Message, stackTrace = e.StackTrace
-                });
+
+                return new BadRequestObjectResult(
+                    new
+                    {
+                        error = e.Message, stackTrace = e.StackTrace
+                    }
+                );
             }
         }
-        
+
         public static async Task<IActionResult> HandleQuery<TModel>(
-            Func<Task<TModel>> query, ILogger log)
+            Func<Task<TModel>> query,
+            ILogger log)
         {
             try
             {
@@ -36,10 +42,13 @@ namespace Marketplace.Infrastructure.WebApi
             catch (Exception e)
             {
                 log.Error(e, "Error handling the query");
-                return new BadRequestObjectResult(new
-                {
-                    error = e.Message, stackTrace = e.StackTrace
-                });
+
+                return new BadRequestObjectResult(
+                    new
+                    {
+                        error = e.Message, stackTrace = e.StackTrace
+                    }
+                );
             }
         }
     }

@@ -23,7 +23,6 @@ namespace Marketplace.Ads.Messages.UserProfile
             {
                 public Guid UserId { get; set; }
                 public string DisplayName { get; set; }
-                
             }
 
             public class UpdateUserProfilePhoto

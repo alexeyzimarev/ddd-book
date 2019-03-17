@@ -10,16 +10,16 @@ namespace Marketplace.Modules.Auth
     [ApiController, Route("api/auth")]
     public class AuthApi : ControllerBase
     {
-        private readonly AuthService _authService;
+        readonly AuthService _authService;
 
-        public AuthApi(AuthService authService)
-            => _authService = authService;
+        public AuthApi(AuthService authService) => _authService = authService;
 
         [HttpPost, Route("login")]
         public async Task<IActionResult> Post(Contracts.Login login)
         {
             if (!await _authService.CheckCredentials(
-                login.Username, login.Password))
+                login.Username, login.Password
+            ))
                 return Unauthorized();
 
             var claims = new List<Claim>
@@ -28,13 +28,17 @@ namespace Marketplace.Modules.Auth
                 new Claim("name", login.Username),
                 new Claim("role", "Member")
             };
+
             await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme, 
+                CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(
                     new ClaimsIdentity(
-                        claims, 
-                        CookieAuthenticationDefaults.AuthenticationScheme, 
-                        "user", "role")));
+                        claims,
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        "user", "role"
+                    )
+                )
+            );
 
             return Ok();
         }

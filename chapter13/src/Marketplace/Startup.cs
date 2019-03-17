@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Marketplace.EventSourcing;
 using Marketplace.Infrastructure.Currency;
@@ -11,6 +10,7 @@ using Marketplace.Modules.Auth;
 using Marketplace.Modules.ClassifiedAds;
 using Marketplace.Modules.Projections;
 using Marketplace.Modules.UserProfile;
+using Marketplace.Modules.UserProfiles;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,6 +23,7 @@ using Raven.Client.Documents.Session;
 using Raven.Client.ServerWide;
 using Raven.Client.ServerWide.Operations;
 using Swashbuckle.AspNetCore.Swagger;
+using EventMappings = Marketplace.Modules.ClassifiedAds.EventMappings;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 // ReSharper disable UnusedMember.Global
@@ -41,12 +42,12 @@ namespace Marketplace
             Configuration = configuration;
         }
 
-        private IConfiguration Configuration { get; }
-        private IHostingEnvironment Environment { get; }
+        IConfiguration Configuration { get; }
+        IHostingEnvironment Environment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Modules.ClassifiedAds.EventMappings.MapEventTypes();
+            EventMappings.MapEventTypes();
             Modules.UserProfile.EventMappings.MapEventTypes();
 
             var esConnection = EventStoreConnection.Create(
@@ -125,10 +126,7 @@ namespace Marketplace
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
             app.UseAuthentication();
 
@@ -136,13 +134,13 @@ namespace Marketplace
                 routes =>
                 {
                     routes.MapRoute(
-                        name: "default",
-                        template: "{controller=Home}/{action=Index}/{id?}"
+                        "default",
+                        "{controller=Home}/{action=Index}/{id?}"
                     );
 
                     routes.MapRoute(
-                        name: "api",
-                        template: "api/{controller=Home}/{action=Index}/{id?}"
+                        "api",
+                        "api/{controller=Home}/{action=Index}/{id?}"
                     );
                 }
             );
@@ -158,15 +156,12 @@ namespace Marketplace
                 {
                     spa.Options.SourcePath = "ClientApp";
 
-                    if (env.IsDevelopment())
-                    {
-                        spa.UseVueDevelopmentServer("serve:bs");
-                    }
+                    if (env.IsDevelopment()) spa.UseVueDevelopmentServer("serve:bs");
                 }
             );
         }
 
-        private static IDocumentStore ConfigureRavenDb(
+        static IDocumentStore ConfigureRavenDb(
             string serverUrl,
             string database)
         {
@@ -182,38 +177,39 @@ namespace Marketplace
             );
 
             if (record == null)
-            {
                 store.Maintenance.Server.Send(
                     new CreateDatabaseOperation(new DatabaseRecord(store.Database))
                 );
-            }
 
             return store;
         }
 
-        private static IProjection[] ConfigureRavenDbProjections(
+        static IProjection[] ConfigureRavenDbProjections(
             Func<IAsyncDocumentSession> getSession)
             => new IProjection[]
             {
                 new ClassifiedAdDetailsProjection(
                     getSession,
-                    userId => 
+                    userId =>
                         getSession.GetUserDetails(
-                            userId, x => x.DisplayName)
+                            userId, x => x.DisplayName
+                        )
                 ),
                 new UserDetailsProjection(getSession),
                 new MyClassifiedAdsProjection(getSession)
             };
 
-        private static IProjection[] ConfigureUpcasters(
+        static IProjection[] ConfigureUpcasters(
             IEventStoreConnection connection,
             Func<IAsyncDocumentSession> getSession)
             => new IProjection[]
             {
                 new ClassifiedAdUpcasters(
-                    connection, 
+                    connection,
                     userId => getSession.GetUserDetails(
-                        userId, x => x.PhotoUrl))
+                        userId, x => x.PhotoUrl
+                    )
+                )
             };
     }
 }

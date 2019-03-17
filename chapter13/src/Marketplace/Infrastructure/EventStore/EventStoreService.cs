@@ -8,11 +8,11 @@ namespace Marketplace.Infrastructure.EventStore
 {
     public class EventStoreService : IHostedService
     {
-        private readonly IEventStoreConnection _esConnection;
-        private readonly ProjectionManager[] _projectionManager;
+        readonly IEventStoreConnection _esConnection;
+        readonly ProjectionManager[] _projectionManager;
 
         public EventStoreService(
-            IEventStoreConnection esConnection, 
+            IEventStoreConnection esConnection,
             params ProjectionManager[] projectionManagers)
         {
             _esConnection = esConnection;
@@ -22,9 +22,11 @@ namespace Marketplace.Infrastructure.EventStore
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             await _esConnection.ConnectAsync();
+
             await Task.WhenAll(
                 _projectionManager
-                    .Select(projection => projection.Start()));
+                    .Select(projection => projection.Start())
+            );
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

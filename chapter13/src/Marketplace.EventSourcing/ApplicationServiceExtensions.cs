@@ -5,16 +5,20 @@ namespace Marketplace.EventSourcing
 {
     public static class ApplicationServiceExtensions
     {
-        public static async Task HandleUpdate<T, TId>(this IApplicationService service,
-            IAggregateStore store, TId aggregateId, Action<T> operation)
-            where T : AggregateRoot<TId>
+        public static async Task HandleUpdate<T>(
+            this IApplicationService service,
+            IAggregateStore store,
+            AggregateId<T> aggregateId,
+            Action<T> operation)
+            where T : AggregateRoot
         {
-            var aggregate = await store.Load<T, TId>(aggregateId);
+            var aggregate = await store.Load(aggregateId);
+
             if (aggregate == null)
-                throw new InvalidOperationException($"Entity with id {aggregateId.ToString()} cannot be found");
+                throw new InvalidOperationException($"Entity with id {aggregateId} cannot be found");
 
             operation(aggregate);
-            await store.Save<T, TId>(aggregate);
+            await store.Save(aggregate);
         }
     }
 }

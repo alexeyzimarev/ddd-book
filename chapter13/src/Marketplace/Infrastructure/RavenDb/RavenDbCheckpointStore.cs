@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
-using Marketplace.EventSourcing;
 using Marketplace.Infrastructure.EventStore;
 using Raven.Client.Documents.Session;
 
@@ -9,8 +8,8 @@ namespace Marketplace.Infrastructure.RavenDb
 {
     public class RavenDbCheckpointStore : ICheckpointStore
     {
-        private readonly Func<IAsyncDocumentSession> _getSession;
-        private readonly string _checkpointName;
+        readonly string _checkpointName;
+        readonly Func<IAsyncDocumentSession> _getSession;
 
         public RavenDbCheckpointStore(
             Func<IAsyncDocumentSession> getSession,
@@ -34,6 +33,7 @@ namespace Marketplace.Infrastructure.RavenDb
             using (var session = _getSession())
             {
                 var checkpoint = await session.LoadAsync<Checkpoint>(_checkpointName);
+
                 if (checkpoint == null)
                 {
                     checkpoint = new Checkpoint
@@ -48,7 +48,7 @@ namespace Marketplace.Infrastructure.RavenDb
             }
         }
 
-        private class Checkpoint
+        class Checkpoint
         {
             public string Id { get; set; }
             public Position? Position { get; set; }

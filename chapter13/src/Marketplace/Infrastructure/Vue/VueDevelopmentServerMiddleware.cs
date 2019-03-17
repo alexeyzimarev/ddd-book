@@ -22,36 +22,31 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Marketplace.Infrastructure.Vue
 {
     /// <summary>
-    /// Extension methods for enabling React development server middleware support.
+    ///     Extension methods for enabling React development server middleware support.
     /// </summary>
     public static class VueDevelopmentServerMiddlewareExtensions
     {
         /// <summary>
-        /// Handles requests by passing them through to an instance of the create-react-app server.
-        /// This means you can always serve up-to-date CLI-built resources without having
-        /// to run the create-react-app server manually.
-        ///
-        /// This feature should only be used in development. For production deployments, be
-        /// sure not to enable the create-react-app server.
+        ///     Handles requests by passing them through to an instance of the create-react-app server.
+        ///     This means you can always serve up-to-date CLI-built resources without having
+        ///     to run the create-react-app server manually.
+        ///     This feature should only be used in development. For production deployments, be
+        ///     sure not to enable the create-react-app server.
         /// </summary>
-        /// <param name="spaBuilder">The <see cref="ISpaBuilder"/>.</param>
+        /// <param name="spaBuilder">The <see cref="ISpaBuilder" />.</param>
         /// <param name="npmScript">The name of the script in your package.json file that launches the create-react-app server.</param>
         public static void UseVueDevelopmentServer(
             this ISpaBuilder spaBuilder,
             string npmScript)
         {
-            if (spaBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(spaBuilder));
-            }
+            if (spaBuilder == null) throw new ArgumentNullException(nameof(spaBuilder));
 
             var spaOptions = spaBuilder.Options;
 
             if (string.IsNullOrEmpty(spaOptions.SourcePath))
-            {
                 throw new InvalidOperationException(
-                    $"To use {nameof(UseVueDevelopmentServer)}, you must supply a non-empty value for the {nameof(SpaOptions.SourcePath)} property of {nameof(SpaOptions)} when calling {nameof(SpaApplicationBuilderExtensions.UseSpa)}.");
-            }
+                    $"To use {nameof(UseVueDevelopmentServer)}, you must supply a non-empty value for the {nameof(SpaOptions.SourcePath)} property of {nameof(SpaOptions)} when calling {nameof(SpaApplicationBuilderExtensions.UseSpa)}."
+                );
 
             VueDevelopmentServerMiddleware.Attach(spaBuilder, npmScript);
         }
@@ -59,9 +54,9 @@ namespace Marketplace.Infrastructure.Vue
 
     internal static class VueDevelopmentServerMiddleware
     {
-        private const string LogCategoryName = "Microsoft.AspNetCore.SpaServices";
+        const string LogCategoryName = "Microsoft.AspNetCore.SpaServices";
 
-        private static TimeSpan
+        static readonly TimeSpan
             RegexMatchTimeout =
                 TimeSpan.FromSeconds(5); // This is a development-time only feature, so a very long timeout is fine
 
@@ -70,15 +65,9 @@ namespace Marketplace.Infrastructure.Vue
             string npmScriptName)
         {
             var sourcePath = spaBuilder.Options.SourcePath;
-            if (string.IsNullOrEmpty(sourcePath))
-            {
-                throw new ArgumentException("Cannot be null or empty", nameof(sourcePath));
-            }
+            if (string.IsNullOrEmpty(sourcePath)) throw new ArgumentException("Cannot be null or empty", nameof(sourcePath));
 
-            if (string.IsNullOrEmpty(npmScriptName))
-            {
-                throw new ArgumentException("Cannot be null or empty", nameof(npmScriptName));
-            }
+            if (string.IsNullOrEmpty(npmScriptName)) throw new ArgumentException("Cannot be null or empty", nameof(npmScriptName));
 
             // Start create-react-app and attach to middleware pipeline
             var appBuilder = spaBuilder.ApplicationBuilder;
@@ -91,22 +80,30 @@ namespace Marketplace.Infrastructure.Vue
             // - given that, there's no reason to use https, and we couldn't even if we
             //   wanted to, because in general the create-react-app server has no certificate
             var targetUriTask = portTask.ContinueWith(
-                task => new UriBuilder("http", "localhost", task.Result).Uri);
+                task => new UriBuilder("http", "localhost", task.Result).Uri
+            );
 
-            spaBuilder.UseProxyToSpaDevelopmentServer(() =>
-            {
-                // On each request, we create a separate startup task with its own timeout. That way, even if
-                // the first request times out, subsequent requests could still work.
-                var timeout = spaBuilder.Options.StartupTimeout;
-                return targetUriTask.WithTimeout(timeout,
-                    $"The Vue development server did not start listening for requests " +
-                    $"within the timeout period of {timeout.Seconds} seconds. " +
-                    $"Check the log output for error information.");
-            });
+            spaBuilder.UseProxyToSpaDevelopmentServer(
+                () =>
+                {
+                    // On each request, we create a separate startup task with its own timeout. That way, even if
+                    // the first request times out, subsequent requests could still work.
+                    var timeout = spaBuilder.Options.StartupTimeout;
+
+                    return targetUriTask.WithTimeout(
+                        timeout,
+                        "The Vue development server did not start listening for requests " +
+                        $"within the timeout period of {timeout.Seconds} seconds. " +
+                        "Check the log output for error information."
+                    );
+                }
+            );
         }
 
-        private static async Task<int> StartCreateVueAppServerAsync(
-            string sourcePath, string npmScriptName, ILogger logger)
+        static async Task<int> StartCreateVueAppServerAsync(
+            string sourcePath,
+            string npmScriptName,
+            ILogger logger)
         {
             var portNumber = TcpPortFinder.FindAvailablePort();
             logger.LogInformation($"Starting Vue development server on port {portNumber}...");
@@ -116,10 +113,12 @@ namespace Marketplace.Infrastructure.Vue
                 {"PORT", portNumber.ToString()},
                 {
                     "BROWSER", "none"
-                }, // We don't want create-react-app to open its own extra browser window pointing to the internal dev server port
+                } // We don't want create-react-app to open its own extra browser window pointing to the internal dev server port
             };
+
             var npmScriptRunner = new NpmScriptRunner(
-                sourcePath, npmScriptName, null, envVars);
+                sourcePath, npmScriptName, null, envVars
+            );
             npmScriptRunner.AttachToLogger(logger);
 
             using (var stdErrReader = new EventedStreamStringReader(npmScriptRunner.StdErr))
@@ -131,14 +130,16 @@ namespace Marketplace.Infrastructure.Vue
                     // no compiler warnings. So instead of waiting for that, consider it ready as soon
                     // as it starts listening for requests.
                     await npmScriptRunner.StdOut.WaitForMatch(
-                        new Regex("App running at", RegexOptions.None, RegexMatchTimeout));
+                        new Regex("App running at", RegexOptions.None, RegexMatchTimeout)
+                    );
                 }
                 catch (EndOfStreamException ex)
                 {
                     throw new InvalidOperationException(
                         $"The NPM script '{npmScriptName}' exited without indicating that the " +
-                        $"Vue development server was listening for requests. The error output was: " +
-                        $"{stdErrReader.ReadAsString()}", ex);
+                        "Vue development server was listening for requests. The error output was: " +
+                        $"{stdErrReader.ReadAsString()}", ex
+                    );
                 }
             }
 
@@ -154,6 +155,7 @@ namespace Marketplace.Infrastructure.Vue
         {
             // If the DI system gives us a logger, use it. Otherwise, set up a default one
             var loggerFactory = appBuilder.ApplicationServices.GetService<ILoggerFactory>();
+
             var logger = loggerFactory != null
                 ? loggerFactory.CreateLogger(logCategoryName)
                 : NullLogger.Instance;
@@ -167,6 +169,7 @@ namespace Marketplace.Infrastructure.Vue
         {
             var listener = new TcpListener(IPAddress.Loopback, 0);
             listener.Start();
+
             try
             {
                 return ((IPEndPoint) listener.LocalEndpoint).Port;
@@ -179,14 +182,14 @@ namespace Marketplace.Infrastructure.Vue
     }
 
     /// <summary>
-    /// Captures the completed-line notifications from a <see cref="EventedStreamReader"/>,
-    /// combining the data into a single <see cref="string"/>.
+    ///     Captures the completed-line notifications from a <see cref="EventedStreamReader" />,
+    ///     combining the data into a single <see cref="string" />.
     /// </summary>
     internal class EventedStreamStringReader : IDisposable
     {
-        private EventedStreamReader _eventedStreamReader;
-        private bool _isDisposed;
-        private StringBuilder _stringBuilder = new StringBuilder();
+        readonly EventedStreamReader _eventedStreamReader;
+        bool _isDisposed;
+        readonly StringBuilder _stringBuilder = new StringBuilder();
 
         public EventedStreamStringReader(EventedStreamReader eventedStreamReader)
         {
@@ -194,10 +197,6 @@ namespace Marketplace.Infrastructure.Vue
                                    ?? throw new ArgumentNullException(nameof(eventedStreamReader));
             _eventedStreamReader.OnReceivedLine += OnReceivedLine;
         }
-
-        public string ReadAsString() => _stringBuilder.ToString();
-
-        private void OnReceivedLine(string line) => _stringBuilder.AppendLine(line);
 
         public void Dispose()
         {
@@ -207,11 +206,15 @@ namespace Marketplace.Infrastructure.Vue
                 _isDisposed = true;
             }
         }
+
+        public string ReadAsString() => _stringBuilder.ToString();
+
+        void OnReceivedLine(string line) => _stringBuilder.AppendLine(line);
     }
 
     /// <summary>
-    /// Wraps a <see cref="StreamReader"/> to expose an evented API, issuing notifications
-    /// when the stream emits partial lines, completed lines, or finally closes.
+    ///     Wraps a <see cref="StreamReader" /> to expose an evented API, issuing notifications
+    ///     when the stream emits partial lines, completed lines, or finally closes.
     /// </summary>
     internal class EventedStreamReader
     {
@@ -221,12 +224,9 @@ namespace Marketplace.Infrastructure.Vue
 
         public delegate void OnStreamClosedHandler();
 
-        public event OnReceivedChunkHandler OnReceivedChunk;
-        public event OnReceivedLineHandler OnReceivedLine;
-        public event OnStreamClosedHandler OnStreamClosed;
+        readonly StringBuilder _linesBuffer;
 
-        private readonly StreamReader _streamReader;
-        private readonly StringBuilder _linesBuffer;
+        readonly StreamReader _streamReader;
 
         public EventedStreamReader(StreamReader streamReader)
         {
@@ -234,6 +234,10 @@ namespace Marketplace.Infrastructure.Vue
             _linesBuffer = new StringBuilder();
             Task.Factory.StartNew(Run);
         }
+
+        public event OnReceivedChunkHandler OnReceivedChunk;
+        public event OnReceivedLineHandler OnReceivedLine;
+        public event OnStreamClosedHandler OnStreamClosed;
 
         public Task<Match> WaitForMatch(Regex regex)
         {
@@ -259,16 +263,10 @@ namespace Marketplace.Infrastructure.Vue
             onReceivedLineHandler = line =>
             {
                 var match = regex.Match(line);
-                if (match.Success)
-                {
-                    ResolveIfStillPending(() => tcs.SetResult(match));
-                }
+                if (match.Success) ResolveIfStillPending(() => tcs.SetResult(match));
             };
 
-            onStreamClosedHandler = () =>
-            {
-                ResolveIfStillPending(() => tcs.SetException(new EndOfStreamException()));
-            };
+            onStreamClosedHandler = () => { ResolveIfStillPending(() => tcs.SetException(new EndOfStreamException())); };
 
             OnReceivedLine += onReceivedLineHandler;
             OnStreamClosed += onStreamClosedHandler;
@@ -276,12 +274,14 @@ namespace Marketplace.Infrastructure.Vue
             return tcs.Task;
         }
 
-        private async Task Run()
+        async Task Run()
         {
             var buf = new char[8 * 1024];
+
             while (true)
             {
                 var chunkLength = await _streamReader.ReadAsync(buf, 0, buf.Length);
+
                 if (chunkLength == 0)
                 {
                     OnClosed();
@@ -291,6 +291,7 @@ namespace Marketplace.Infrastructure.Vue
                 OnChunk(new ArraySegment<char>(buf, 0, chunkLength));
 
                 var lineBreakPos = Array.IndexOf(buf, '\n', 0, chunkLength);
+
                 if (lineBreakPos < 0)
                 {
                     _linesBuffer.Append(buf, 0, chunkLength);
@@ -305,19 +306,19 @@ namespace Marketplace.Infrastructure.Vue
             }
         }
 
-        private void OnChunk(ArraySegment<char> chunk)
+        void OnChunk(ArraySegment<char> chunk)
         {
             var dlg = OnReceivedChunk;
             dlg?.Invoke(chunk);
         }
 
-        private void OnCompleteLine(string line)
+        void OnCompleteLine(string line)
         {
             var dlg = OnReceivedLine;
             dlg?.Invoke(line);
         }
 
-        private void OnClosed()
+        void OnClosed()
         {
             var dlg = OnStreamClosed;
             dlg?.Invoke();
@@ -329,55 +330,42 @@ namespace Marketplace.Infrastructure.Vue
         public static async Task WithTimeout(this Task task, TimeSpan timeoutDelay, string message)
         {
             if (task == await Task.WhenAny(task, Task.Delay(timeoutDelay)))
-            {
                 task.Wait(); // Allow any errors to propagate
-            }
             else
-            {
                 throw new TimeoutException(message);
-            }
         }
 
         public static async Task<T> WithTimeout<T>(this Task<T> task, TimeSpan timeoutDelay, string message)
         {
             if (task == await Task.WhenAny(task, Task.Delay(timeoutDelay)))
-            {
                 return task.Result;
-            }
-            else
-            {
-                throw new TimeoutException(message);
-            }
+
+            throw new TimeoutException(message);
         }
     }
 
     /// <summary>
-    /// Executes the <c>script</c> entries defined in a <c>package.json</c> file,
-    /// capturing any output written to stdio.
+    ///     Executes the <c>script</c> entries defined in a <c>package.json</c> file,
+    ///     capturing any output written to stdio.
     /// </summary>
     internal class NpmScriptRunner
     {
-        public EventedStreamReader StdOut { get; }
-        public EventedStreamReader StdErr { get; }
-
-        private static Regex AnsiColorRegex =
+        static readonly Regex AnsiColorRegex =
             new Regex("\x001b\\[[0-9;]*m", RegexOptions.None, TimeSpan.FromSeconds(1));
 
-        public NpmScriptRunner(string workingDirectory, string scriptName, string arguments,
+        public NpmScriptRunner(
+            string workingDirectory,
+            string scriptName,
+            string arguments,
             IDictionary<string, string> envVars)
         {
-            if (string.IsNullOrEmpty(workingDirectory))
-            {
-                throw new ArgumentException("Cannot be null or empty.", nameof(workingDirectory));
-            }
+            if (string.IsNullOrEmpty(workingDirectory)) throw new ArgumentException("Cannot be null or empty.", nameof(workingDirectory));
 
-            if (string.IsNullOrEmpty(scriptName))
-            {
-                throw new ArgumentException("Cannot be null or empty.", nameof(scriptName));
-            }
+            if (string.IsNullOrEmpty(scriptName)) throw new ArgumentException("Cannot be null or empty.", nameof(scriptName));
 
             var npmExe = "npm";
             var completeArguments = $"run {scriptName} -- {arguments ?? string.Empty}";
+
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // On Windows, the NPM executable is a .cmd file, so it can't be executed
@@ -398,37 +386,28 @@ namespace Marketplace.Infrastructure.Vue
             };
 
             if (envVars != null)
-            {
                 foreach (var keyValuePair in envVars)
-                {
                     processStartInfo.Environment[keyValuePair.Key] = keyValuePair.Value;
-                }
-            }
 
             var process = LaunchNodeProcess(processStartInfo);
             StdOut = new EventedStreamReader(process.StandardOutput);
             StdErr = new EventedStreamReader(process.StandardError);
         }
 
+        public EventedStreamReader StdOut { get; }
+        public EventedStreamReader StdErr { get; }
+
         public void AttachToLogger(ILogger logger)
         {
             // When the NPM task emits complete lines, pass them through to the real logger
             StdOut.OnReceivedLine += line =>
             {
-                if (!string.IsNullOrWhiteSpace(line))
-                {
-                    // NPM tasks commonly emit ANSI colors, but it wouldn't make sense to forward
-                    // those to loggers (because a logger isn't necessarily any kind of terminal)
-                    logger.LogInformation(StripAnsiColors(line));
-                }
+                if (!string.IsNullOrWhiteSpace(line)) logger.LogInformation(StripAnsiColors(line));
             };
 
             StdErr.OnReceivedLine += line =>
             {
-                if (!string.IsNullOrWhiteSpace(line))
-                {
-                    logger.LogError(StripAnsiColors(line));
-                }
+                if (!string.IsNullOrWhiteSpace(line)) logger.LogError(StripAnsiColors(line));
             };
 
             // But when it emits incomplete lines, assume this is progress information and
@@ -436,18 +415,15 @@ namespace Marketplace.Infrastructure.Vue
             StdErr.OnReceivedChunk += chunk =>
             {
                 var containsNewline = Array.IndexOf(
-                                          chunk.Array, '\n', chunk.Offset, chunk.Count) >= 0;
-                if (!containsNewline)
-                {
-                    Console.Write(chunk.Array, chunk.Offset, chunk.Count);
-                }
+                                          chunk.Array, '\n', chunk.Offset, chunk.Count
+                                      ) >= 0;
+                if (!containsNewline) Console.Write(chunk.Array, chunk.Offset, chunk.Count);
             };
         }
 
-        private static string StripAnsiColors(string line)
-            => AnsiColorRegex.Replace(line, string.Empty);
+        static string StripAnsiColors(string line) => AnsiColorRegex.Replace(line, string.Empty);
 
-        private static Process LaunchNodeProcess(ProcessStartInfo startInfo)
+        static Process LaunchNodeProcess(ProcessStartInfo startInfo)
         {
             try
             {
@@ -460,7 +436,7 @@ namespace Marketplace.Infrastructure.Vue
             }
             catch (Exception ex)
             {
-                var message = $"Failed to start 'npm'. To resolve this:.\n\n"
+                var message = "Failed to start 'npm'. To resolve this:.\n\n"
                               + "[1] Ensure that 'npm' is installed and can be found in one of the PATH directories.\n"
                               + $"    Current PATH enviroment variable is: {Environment.GetEnvironmentVariable("PATH")}\n"
                               + "    Make sure the executable is in one of those directories, or update your PATH.\n\n"

@@ -1,18 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Marketplace.EventSourcing
 {
-    public abstract class AggregateRoot<TId> : IInternalEventHandler
+    public abstract class AggregateRoot : IInternalEventHandler
     {
-        public TId Id { get; protected set; }
+        readonly List<object> _changes = new List<object>();
+
+        public Guid Id { get; private set; }
+
+        protected void SetId(Guid id) => Id = id;
+
         public int Version { get; private set; } = -1;
 
+        void IInternalEventHandler.Handle(object @event) => When(@event);
+
         protected abstract void When(object @event);
-
-        private readonly List<object> _changes;
-
-        protected AggregateRoot() => _changes = new List<object>();
 
         protected void Apply(object @event)
         {
@@ -36,9 +40,6 @@ namespace Marketplace.EventSourcing
 
         protected abstract void EnsureValidState();
 
-        protected void ApplyToEntity(IInternalEventHandler entity, object @event)
-            => entity?.Handle(@event);
-
-        void IInternalEventHandler.Handle(object @event) => When(@event);
+        protected void ApplyToEntity(IInternalEventHandler entity, object @event) => entity?.Handle(@event);
     }
 }

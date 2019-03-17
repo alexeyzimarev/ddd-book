@@ -10,13 +10,16 @@ namespace Marketplace.Modules.Projections
 {
     public class ClassifiedAdUpcasters : IProjection
     {
-        private static readonly ILogger Log = 
-            Serilog.Log.ForContext<ClassifiedAdDetailsProjection>();
-        private readonly IEventStoreConnection _eventStoreConnection;
-        private readonly Func<Guid, Task<string>> _getUserPhoto;
-        private const string StreamName = "UpcastedClassifiedAdEvents";
+        const string StreamName = "UpcastedClassifiedAdEvents";
 
-        public ClassifiedAdUpcasters(IEventStoreConnection eventStoreConnection,
+        static readonly ILogger Log =
+            Serilog.Log.ForContext<ClassifiedAdDetailsProjection>();
+
+        readonly IEventStoreConnection _eventStoreConnection;
+        readonly Func<Guid, Task<string>> _getUserPhoto;
+
+        public ClassifiedAdUpcasters(
+            IEventStoreConnection eventStoreConnection,
             Func<Guid, Task<string>> getUserPhoto)
         {
             _eventStoreConnection = eventStoreConnection;
@@ -26,11 +29,12 @@ namespace Marketplace.Modules.Projections
         public async Task Project(object @event)
         {
             Log.Debug($"Upcasting {{event}} to {StreamName}", @event);
-            
+
             switch (@event)
             {
                 case Events.ClassifiedAdPublished e:
                     var photoUrl = await _getUserPhoto(e.OwnerId);
+
                     var newEvent = new ClassifiedAdUpcastedEvents.V1.ClassifiedAdPublished
                     {
                         Id = e.Id,
@@ -38,10 +42,12 @@ namespace Marketplace.Modules.Projections
                         ApprovedBy = e.ApprovedBy,
                         SellersPhotoUrl = photoUrl
                     };
+
                     await _eventStoreConnection.AppendEvents(
                         StreamName,
                         ExpectedVersion.Any,
-                        newEvent);
+                        newEvent
+                    );
                     break;
             }
         }

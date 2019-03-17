@@ -13,7 +13,7 @@ namespace Marketplace.Infrastructure.EventStore
             var data = JsonConvert.DeserializeObject(jsonData, dataType);
             return data;
         }
-        
+
         public static T Deserialze<T>(this ResolvedEvent resolvedEvent)
         {
             var jsonData = Encoding.UTF8.GetString(resolvedEvent.Event.Data);

@@ -18,12 +18,12 @@ namespace Marketplace
             ConfigureWebHost(configuration).Build().Run();
         }
 
-        private static IConfiguration BuildConfiguration(string[] args)
+        static IConfiguration BuildConfiguration(string[] args)
             => new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false, false)
                 .Build();
 
-        private static IWebHostBuilder ConfigureWebHost(
+        static IWebHostBuilder ConfigureWebHost(
             IConfiguration configuration)
             => new WebHostBuilder()
                 .UseStartup<Startup>()

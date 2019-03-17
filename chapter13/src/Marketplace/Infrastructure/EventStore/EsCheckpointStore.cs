@@ -4,18 +4,17 @@ using System.Text;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Newtonsoft.Json;
-using ExpectedVersion = EventStore.ClientAPI.ExpectedVersion;
 
 namespace Marketplace.Infrastructure.EventStore
 {
     public class EsCheckpointStore : ICheckpointStore
     {
-        private readonly IEventStoreConnection _connection;
-        private readonly string _streamName;
+        const string CheckpointStreamPrefix = "checkpoint:";
+        readonly IEventStoreConnection _connection;
+        readonly string _streamName;
 
-        private const string CheckpointStreamPrefix = "checkpoint:";
-
-        public EsCheckpointStore(IEventStoreConnection connection, 
+        public EsCheckpointStore(
+            IEventStoreConnection connection,
             string subscriptionName)
         {
             _connection = connection;
@@ -26,7 +25,7 @@ namespace Marketplace.Infrastructure.EventStore
         {
             var slice = await _connection
                 .ReadStreamEventsBackwardAsync(_streamName, -1, 1, false);
-            
+
             var eventData = slice.Events.FirstOrDefault();
 
             if (eventData.Equals(default(ResolvedEvent)))
@@ -41,33 +40,38 @@ namespace Marketplace.Infrastructure.EventStore
 
         public Task StoreCheckpoint(Position? checkpoint)
         {
-            var @event = new Checkpoint{ Position = checkpoint};
+            var @event = new Checkpoint {Position = checkpoint};
+
             var preparedEvent =
                 new EventData(
                     Guid.NewGuid(),
                     "$checkpoint",
                     true,
                     Encoding.UTF8.GetBytes(
-                        JsonConvert.SerializeObject(@event)),
+                        JsonConvert.SerializeObject(@event)
+                    ),
                     null
                 );
-            
+
             return _connection.AppendToStreamAsync(
                 _streamName,
                 ExpectedVersion.Any,
-                preparedEvent);
+                preparedEvent
+            );
         }
 
-        private async Task SetStreamMaxCount()
+        async Task SetStreamMaxCount()
         {
             var metadata = await _connection.GetStreamMetadataAsync(_streamName);
 
             if (!metadata.StreamMetadata.MaxCount.HasValue)
-                await _connection.SetStreamMetadataAsync(_streamName, ExpectedVersion.Any,
-                    StreamMetadata.Create(1));
+                await _connection.SetStreamMetadataAsync(
+                    _streamName, ExpectedVersion.Any,
+                    StreamMetadata.Create(1)
+                );
         }
 
-        private class Checkpoint
+        class Checkpoint
         {
             public Position? Position { get; set; }
         }

@@ -5,8 +5,6 @@ namespace Marketplace.EventSourcing
     public class InvalidValueException : Exception
     {
         public InvalidValueException(Type type, string message)
-            : base($"Value of {type.Name} {message}")
-        {
-        }
+            : base($"Value of {type.Name} {message}") { }
     }
 }

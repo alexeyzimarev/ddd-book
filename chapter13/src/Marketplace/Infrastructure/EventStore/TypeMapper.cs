@@ -5,9 +5,10 @@ namespace Marketplace.Infrastructure.EventStore
 {
     public static class TypeMapper
     {
-        private static readonly Dictionary<Type, string> NamesByType 
+        static readonly Dictionary<Type, string> NamesByType
             = new Dictionary<Type, string>();
-        private static readonly Dictionary<string, Type> TypesByName 
+
+        static readonly Dictionary<string, Type> TypesByName
             = new Dictionary<string, Type>();
 
         public static void Map(Type type, string name = null)
@@ -17,7 +18,8 @@ namespace Marketplace.Infrastructure.EventStore
 
             if (TypesByName.ContainsKey(name))
                 throw new InvalidOperationException(
-                    $"'{type}' is already mapped to the following name: {TypesByName[name]}");
+                    $"'{type}' is already mapped to the following name: {TypesByName[name]}"
+                );
 
             TypesByName[name] = type;
             NamesByType[type] = name;
@@ -26,9 +28,9 @@ namespace Marketplace.Infrastructure.EventStore
         public static bool TryGetType(string name, out Type type) => TypesByName.TryGetValue(name, out type);
 
         public static bool TryGetTypeName(Type type, out string name) => NamesByType.TryGetValue(type, out name);
-        
+
         public static void Map<T>(string name) => Map(typeof(T), name);
-        
+
         public static string GetTypeName(Type type)
         {
             if (!TryGetTypeName(type, out var name))

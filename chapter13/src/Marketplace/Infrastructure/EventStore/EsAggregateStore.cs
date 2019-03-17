@@ -5,73 +5,74 @@ using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Marketplace.EventSourcing;
 using Newtonsoft.Json;
-using Serilog;
-using Serilog.Core;
 using ILogger = Serilog.ILogger;
 
 namespace Marketplace.Infrastructure.EventStore
 {
     public class EsAggregateStore : IAggregateStore
     {
-        private readonly IEventStoreConnection _connection;
-
-        private static readonly ILogger Log =
+        static readonly ILogger Log =
             Serilog.Log.ForContext<EsAggregateStore>();
 
-        public EsAggregateStore(IEventStoreConnection connection) 
-            => _connection = connection;
+        readonly IEventStoreConnection _connection;
 
-        public async Task Save<T, TId>(T aggregate) where T : AggregateRoot<TId>
+        public EsAggregateStore(IEventStoreConnection connection) => _connection = connection;
+
+        public async Task Save<T>(T aggregate) where T : AggregateRoot
         {
             if (aggregate == null)
                 throw new ArgumentNullException(nameof(aggregate));
 
-            var streamName = GetStreamName<T, TId>(aggregate);
+            var streamName = GetStreamName(aggregate);
             var changes = aggregate.GetChanges().ToArray();
 
             foreach (var change in changes)
                 Log.Debug("Persisting event {event}", change.ToString());
-            
+
             await _connection.AppendEvents(streamName, aggregate.Version, changes);
 
             aggregate.ClearChanges();
         }
 
-        public async Task<T> Load<T, TId>(TId aggregateId)
-            where T : AggregateRoot<TId>
+        public async Task<T> Load<T>(AggregateId<T> aggregateId)
+            where T : AggregateRoot
         {
             if (aggregateId == null)
                 throw new ArgumentNullException(nameof(aggregateId));
 
-            var stream = GetStreamName<T, TId>(aggregateId);
+            var stream = GetStreamName<T>(aggregateId);
             var aggregate = (T) Activator.CreateInstance(typeof(T), true);
 
             var page = await _connection.ReadStreamEventsForwardAsync(
-                stream, 0, 1024, false);
+                stream, 0, 1024, false
+            );
 
             Log.Debug("Loading events for the aggregate {aggregate}", aggregate.ToString());
-            
-            aggregate.Load(page.Events.Select(
-                resolvedEvent => resolvedEvent.Deserialze()).ToArray());
+
+            aggregate.Load(
+                page.Events.Select(
+                        resolvedEvent => resolvedEvent.Deserialze()
+                    )
+                    .ToArray()
+            );
 
             return aggregate;
         }
 
-        public async Task<bool> Exists<T, TId>(TId aggregateId)
+        public async Task<bool> Exists<T>(AggregateId<T> aggregateId) 
+            where T : AggregateRoot
         {
-            var stream = GetStreamName<T, TId>(aggregateId);
+            var stream = GetStreamName(aggregateId);
             var result = await _connection.ReadEventAsync(stream, 1, false);
             return result.Status != EventReadStatus.NoStream;
         }
 
-        private static byte[] Serialize(object data)
-            => Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
+        static string GetStreamName<T>(AggregateId<T> aggregateId) 
+            where T : AggregateRoot 
+            => $"{typeof(T).Name}-{aggregateId}";
 
-        private static string GetStreamName<T, TId>(TId aggregateId)
-            => $"{typeof(T).Name}-{aggregateId.ToString()}";
-
-        private static string GetStreamName<T, TId>(T aggregate)
-            where T : AggregateRoot<TId>
+        static string GetStreamName<T>(T aggregate)
+            where T : AggregateRoot
             => $"{typeof(T).Name}-{aggregate.Id.ToString()}";
     }
 }

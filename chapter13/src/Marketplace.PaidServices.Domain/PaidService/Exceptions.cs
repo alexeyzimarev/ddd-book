@@ -7,9 +7,7 @@ namespace Marketplace.PaidServices.Domain.PaidService
         public class UnknownService : Exception
         {
             public UnknownService(PaidServiceType paidServiceType)
-                : base($"Paid service of type {paidServiceType} is unknown")
-            {
-            }
+                : base($"Paid service of type {paidServiceType} is unknown") { }
         }
     }
 }
