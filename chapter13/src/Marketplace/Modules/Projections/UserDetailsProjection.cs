@@ -22,29 +22,26 @@ namespace Marketplace.Modules.Projections
 
             return @event switch
                 {
-                UserRegistered e => () =>
-                    session.StoreAsync(
-                        new UserDetails
-                        {
-                            Id = getDbId(e.UserId),
-                            DisplayName = e.DisplayName
-                        }
-                    ),
-                UserDisplayNameUpdated e => () =>
-                    Update(
-                        e.UserId,
-                        x => x.DisplayName = e.DisplayName
-                    ),
-                ProfilePhotoUploaded e => () =>
-                    Update(
-                        e.UserId,
-                        x => x.PhotoUrl = e.PhotoUrl
-                    ),
-                _ => (Func<Task>)null
+                UserRegistered e => 
+                () => Create(e.UserId, e.FullName),
+                UserDisplayNameUpdated e =>
+                () => Update(e.UserId, x => x.DisplayName = e.DisplayName),
+                ProfilePhotoUploaded e =>
+                () => Update(e.UserId, x => x.PhotoUrl = e.PhotoUrl),
+                _ => (Func<Task>) null
                 };
 
             Task Update(Guid id, Action<UserDetails> update)
                 => UpdateItem(session, getDbId(id), update);
+
+            Task Create(Guid userId, string displayName)
+                => session.StoreAsync(
+                    new UserDetails
+                    {
+                        Id = getDbId(userId),
+                        DisplayName = displayName
+                    }
+                );
         }
     }
 }

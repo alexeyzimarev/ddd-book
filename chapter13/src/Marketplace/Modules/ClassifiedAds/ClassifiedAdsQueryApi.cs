@@ -1,20 +1,23 @@
+using System;
 using System.Threading.Tasks;
-using Marketplace.Infrastructure.WebApi;
+using Marketplace.Infrastructure.RavenDb;
 using Microsoft.AspNetCore.Mvc;
 using Raven.Client.Documents.Session;
-using Serilog;
+using static Marketplace.Modules.Projections.ReadModels;
 
 namespace Marketplace.Modules.ClassifiedAds
 {
     [ApiController, Route("/ad")]
     public class ClassifiedAdsQueryApi : ControllerBase
     {
-        static readonly ILogger Log = Serilog.Log.ForContext<ClassifiedAdsQueryApi>();
-        readonly IAsyncDocumentSession _session;
+        readonly Func<IAsyncDocumentSession> _getSession;
 
-        public ClassifiedAdsQueryApi(IAsyncDocumentSession session) => _session = session;
+        public ClassifiedAdsQueryApi(Func<IAsyncDocumentSession> getSession) 
+            => _getSession = getSession;
 
         [HttpGet]
-        public Task<IActionResult> Get(QueryModels.GetPublicClassifiedAd request) => RequestHandler.HandleQuery(() => _session.Query(request), Log);
+        public Task<ActionResult<ClassifiedAdDetails>> Get(
+            [FromQuery] QueryModels.GetPublicClassifiedAd request)
+            => _getSession.RunApiQuery(s => s.Query(request));
     }
 }

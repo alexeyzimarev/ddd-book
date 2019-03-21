@@ -25,60 +25,53 @@ namespace Marketplace.Modules.Projections
         {
             Func<Guid, string> getDbId = MyClassifiedAds.GetDatabaseId;
 
-            switch (@event)
-            {
-                case UserRegistered e:
-
-                    return () =>
-                        session.StoreAsync(
-                            new MyClassifiedAds
-                            {
-                                Id = getDbId(e.UserId),
-                                MyAds = new List<MyClassifiedAds.MyAd>()
-                            }
-                        );
-                case ClassifiedAdCreated e:
-
-                    return () =>
-                        Update(
-                            e.OwnerId,
-                            myAds => myAds.MyAds.Add(
-                                new MyClassifiedAds.MyAd
-                                    {Id = e.Id}
-                            )
-                        );
-                case ClassifiedAdTitleChanged e:
-
-                    return () =>
-                        UpdateOneAd(
-                            e.OwnerId, e.Id,
-                            myAd => myAd.Title = e.Title
-                        );
-                case ClassifiedAdTextUpdated e:
-
-                    return () =>
-                        UpdateOneAd(
-                            e.OwnerId, e.Id,
-                            myAd => myAd.Description = e.AdText
-                        );
-                case ClassifiedAdPriceUpdated e:
-
-                    return () =>
-                        UpdateOneAd(
-                            e.OwnerId, e.Id,
-                            myAd => myAd.Price = e.Price
-                        );
-                case ClassifiedAdDeleted e:
-
-                    return () =>
-                        Update(
-                            e.OwnerId,
-                            myAd => myAd.MyAds
-                                .RemoveAll(x => x.Id == e.Id)
-                        );
-                default:
-                    return null;
-            }
+            return @event switch
+                {
+                UserRegistered e =>
+                () =>
+                    session.StoreAsync(
+                        new MyClassifiedAds
+                        {
+                            Id = getDbId(e.UserId),
+                            MyAds = new List<MyClassifiedAds.MyAd>()
+                        }
+                    ),
+                ClassifiedAdCreated e =>
+                () =>
+                    Update(
+                        e.OwnerId,
+                        myAds => myAds.MyAds.Add(
+                            new MyClassifiedAds.MyAd
+                                {Id = e.Id}
+                        )
+                    ),
+                ClassifiedAdTitleChanged e =>
+                () =>
+                    UpdateOneAd(
+                        e.OwnerId, e.Id,
+                        myAd => myAd.Title = e.Title
+                    ),
+                ClassifiedAdTextUpdated e =>
+                () =>
+                    UpdateOneAd(
+                        e.OwnerId, e.Id,
+                        myAd => myAd.Description = e.AdText
+                    ),
+                ClassifiedAdPriceUpdated e =>
+                () =>
+                    UpdateOneAd(
+                        e.OwnerId, e.Id,
+                        myAd => myAd.Price = e.Price
+                    ),
+                ClassifiedAdDeleted e =>
+                () =>
+                    Update(
+                        e.OwnerId,
+                        myAd => myAd.MyAds
+                            .RemoveAll(x => x.Id == e.Id)
+                    ),
+                _ => (Func<Task>) null
+            };
 
             Task Update(
                 Guid id,

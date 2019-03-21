@@ -1,24 +1,26 @@
 using System;
 using Marketplace.EventSourcing;
-using Marketplace.PaidServices.Domain.PaidService;
+using Marketplace.PaidServices.Domain.Services;
 
-namespace Marketplace.PaidServices.Domain.ClassifiedAd
+namespace Marketplace.PaidServices.Domain.ClassifiedAds
 {
     public class ActivePaidService : Value<ActivePaidService>
     {
-        ActivePaidService(PaidServiceType paidServiceType, DateTimeOffset expiresAt)
+        ActivePaidService(PaidService paidService, DateTimeOffset expiresAt)
         {
-            ServiceType = paidServiceType;
+            Service = paidService;
             ExpiresAt = expiresAt;
         }
 
-        public PaidServiceType ServiceType { get; }
+        public PaidService Service { get; }
         public DateTimeOffset ExpiresAt { get; }
 
-        public static ActivePaidService Create(PaidServiceType paidServiceType, DateTimeOffset startFrom)
+        public static ActivePaidService Create(
+            PaidService paidService,
+            DateTimeOffset startFrom)
         {
-            var expiresAt = startFrom + PaidService.PaidService.DurationFor(paidServiceType);
-            return new ActivePaidService(paidServiceType, expiresAt);
+            var expiresAt = startFrom + paidService.Duration;
+            return new ActivePaidService(paidService, expiresAt);
         }
     }
 }

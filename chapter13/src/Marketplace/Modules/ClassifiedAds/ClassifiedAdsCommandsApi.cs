@@ -3,16 +3,18 @@ using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.Infrastructure.WebApi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using static Marketplace.Ads.Messages.Ads.Commands;
 
 namespace Marketplace.Modules.ClassifiedAds
 {
     [ApiController, Route("api/ad"), Authorize]
-    public class ClassifiedAdsCommandsApi : BaseController<ClassifiedAd>
+    public class ClassifiedAdsCommandsApi : CommandApi<ClassifiedAd>
     {
         public ClassifiedAdsCommandsApi(
-            ClassifiedAdsCommandService applicationService)
-            : base(applicationService) { }
+            ClassifiedAdsCommandService applicationService,
+            ILoggerFactory loggerFactory)
+            : base(applicationService, loggerFactory) { }
 
         [HttpPost]
         public Task<IActionResult> Post(V1.Create command)

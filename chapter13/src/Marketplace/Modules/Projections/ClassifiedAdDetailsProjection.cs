@@ -28,78 +28,61 @@ namespace Marketplace.Modules.Projections
             object @event,
             Func<Guid, Task<string>> getUserDisplayName)
         {
-            switch (@event)
-            {
-                case ClassifiedAdCreated e:
-
-                    return
-                        async () => await session.StoreAsync(
-                            new ClassifiedAdDetails
-                            {
-                                Id = GetDbId(e.Id),
-                                SellerId = e.OwnerId,
-                                SellersDisplayName =
-                                    await getUserDisplayName(e.OwnerId)
-                            }
-                        );
-                case ClassifiedAdTitleChanged e:
-
-                    return () =>
-                        Update(
-                            e.Id, ad => ad.Title = e.Title
-                        );
-                case ClassifiedAdTextUpdated e:
-
-                    return () =>
-                        Update(
-                            e.Id,
-                            ad => ad.Description = e.AdText
-                        );
-                case ClassifiedAdPriceUpdated e:
-
-                    return () =>
-                        Update(
-                            e.Id, ad =>
-                            {
-                                ad.Price = e.Price;
-                                ad.CurrencyCode = e.CurrencyCode;
-                            }
-                        );
-
-                case ClassifiedAdDeleted e:
-
-                    return async () =>
+            return @event switch
+                {
+                ClassifiedAdCreated e =>
+                () => Create(e.Id, e.OwnerId),
+                ClassifiedAdTitleChanged e =>
+                () => Update(e.Id, ad => ad.Title = e.Title),
+                ClassifiedAdTextUpdated e =>
+                () => Update(e.Id, ad => ad.Description = e.AdText),
+                ClassifiedAdPriceUpdated e =>
+                () => Update(
+                    e.Id,
+                    ad =>
                     {
-                        var ad = await session
-                            .LoadAsync<ClassifiedAdDetails>(
-                                GetDbId(e.Id)
-                            );
-
-                        if (ad != null)
-                            session.Delete(ad);
-                    };
-                case UserDisplayNameUpdated e:
-
-                    return () =>
-                        UpdateMultipleItems(
-                            session, x => x.SellerId == e.UserId,
-                            x => x.SellersDisplayName = e.DisplayName
-                        );
-                case V1.ClassifiedAdPublished e:
-
-                    return () =>
-                        Update(
-                            e.Id,
-                            ad => ad.SellersPhotoUrl = e.SellersPhotoUrl
-                        );
-                default:
-                    return null;
-            }
+                        ad.Price = e.Price;
+                        ad.CurrencyCode = e.CurrencyCode;
+                    }
+                ),
+                ClassifiedAdDeleted e =>
+                () => Delete(e.Id),
+                UserDisplayNameUpdated e =>
+                () =>
+                    UpdateMultipleItems(
+                        session, x => x.SellerId == e.UserId,
+                        x => x.SellersDisplayName = e.DisplayName
+                    ),
+                V1.ClassifiedAdPublished e =>
+                () => Update(
+                    e.Id, ad => ad.SellersPhotoUrl = e.SellersPhotoUrl
+                ),
+                _ => (Func<Task>) null
+                };
 
             string GetDbId(Guid id) => ClassifiedAdDetails.GetDatabaseId(id);
 
+            async Task Create(Guid id, Guid ownerId)
+                => await session.StoreAsync(
+                    new ClassifiedAdDetails
+                    {
+                        Id = GetDbId(id),
+                        SellerId = ownerId,
+                        SellersDisplayName =
+                            await getUserDisplayName(ownerId)
+                    }
+                );
+
             Task Update(Guid id, Action<ClassifiedAdDetails> update)
                 => UpdateItem(session, GetDbId(id), update);
+
+            async Task Delete(Guid id)
+            {
+                var ad = await session
+                    .LoadAsync<ClassifiedAdDetails>(GetDbId(id));
+
+                if (ad != null) session.Delete(ad);
+            }
         }
     }
 }

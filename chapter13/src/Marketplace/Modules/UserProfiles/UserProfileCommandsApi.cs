@@ -1,18 +1,19 @@
 using System.Threading.Tasks;
 using Marketplace.Ads.Messages.UserProfile;
-using Marketplace.EventSourcing;
 using Marketplace.Infrastructure.WebApi;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Marketplace.Modules.UserProfiles
 {
     [Route("api/profile")]
     public class UserProfileCommandsApi
-        : BaseController<Ads.Domain.UserProfiles.UserProfile>
+        : CommandApi<Ads.Domain.UserProfiles.UserProfile>
     {
         public UserProfileCommandsApi(
-            UserProfileCommandService applicationService)
-            : base(applicationService) { }
+            UserProfileCommandService applicationService,
+            ILoggerFactory loggerFactory)
+            : base(applicationService, loggerFactory) { }
 
         [HttpPost]
         public Task<IActionResult> Post(Commands.V1.RegisterUser request)

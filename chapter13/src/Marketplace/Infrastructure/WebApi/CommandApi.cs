@@ -2,18 +2,20 @@ using System;
 using System.Threading.Tasks;
 using Marketplace.EventSourcing;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace Marketplace.Infrastructure.WebApi
 {
-    public abstract class BaseController<T> : ControllerBase
+    public abstract class CommandApi<T> : ControllerBase
         where T : AggregateRoot
     {
         readonly ILogger _log;
 
-        protected BaseController(ApplicationService<T> applicationService)
+        protected CommandApi(
+            ApplicationService<T> applicationService,
+            ILoggerFactory loggerFactory)
         {
-            _log = Log.ForContext(GetType());
+            _log = loggerFactory.CreateLogger(GetType());
             Service = applicationService;
         }
 
@@ -25,19 +27,23 @@ namespace Marketplace.Infrastructure.WebApi
         {
             try
             {
-                _log.Debug("Handling HTTP request of type {type}", typeof(T).Name);
+                _log.LogDebug(
+                    "Handling HTTP request of type {type}", 
+                    typeof(T).Name
+                );
                 commandModifier?.Invoke(command);
                 await Service.Handle(command);
                 return new OkResult();
             }
             catch (Exception e)
             {
-                _log.Error(e, "Error handling the command");
+                _log.LogError(e, "Error handling the command");
 
                 return new BadRequestObjectResult(
                     new
                     {
-                        error = e.Message, stackTrace = e.StackTrace
+                        error = e.Message, 
+                        stackTrace = e.StackTrace
                     }
                 );
             }

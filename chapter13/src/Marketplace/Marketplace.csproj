@@ -32,6 +32,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Marketplace.Ads.Domain\Marketplace.Ads.Domain.csproj" />
     <ProjectReference Include="..\Marketplace.EventSourcing\Marketplace.EventSourcing.csproj" />
+    <ProjectReference Include="..\Marketplace.PaidServices.Domain\Marketplace.PaidServices.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
