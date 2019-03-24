@@ -62,7 +62,7 @@ namespace Marketplace.Ads.Domain.UserProfiles
             switch (@event)
             {
                 case Events.UserRegistered e:
-                    SetId(e.UserId);
+                    Id = e.UserId;
                     FullName = new FullName(e.FullName);
                     DisplayName = new DisplayName(e.DisplayName);
                     break;

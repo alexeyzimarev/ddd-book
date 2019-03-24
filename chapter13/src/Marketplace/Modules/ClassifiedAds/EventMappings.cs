@@ -11,15 +11,15 @@ namespace Marketplace.Modules.ClassifiedAds
             Map<ClassifiedAdCreated>("ClassifiedAdCreated");
             Map<ClassifiedAdDeleted>("ClassifiedAdDeleted");
             Map<ClassifiedAdPublished>("ClassifiedAdPublished");
-            Map<ClassifiedAdTextUpdated>("");
-            Map<ClassifiedAdPriceUpdated>("");
-            Map<ClassifiedAdTitleChanged>("");
-            Map<ClassifiedAdPictureResized>("");
-            Map<ClassifiedAdSentForReview>("");
-            Map<PictureAddedToAClassifiedAd>("");
+            Map<ClassifiedAdTextUpdated>("ClassifiedAdTextUpdated");
+            Map<ClassifiedAdPriceUpdated>("ClassifiedAdPriceUpdated");
+            Map<ClassifiedAdTitleChanged>("ClassifiedAdTitleChanged");
+            Map<ClassifiedAdPictureResized>("ClassifiedAdPictureResized");
+            Map<ClassifiedAdSentForReview>("ClassifiedAdSentForReview");
+            Map<PictureAddedToAClassifiedAd>("PictureAddedToAClassifiedAd");
 
             // User profile
-            Map<Events.UserRegistered>("");
+            Map<Events.UserRegistered>("UserRegistered");
         }
     }
 }

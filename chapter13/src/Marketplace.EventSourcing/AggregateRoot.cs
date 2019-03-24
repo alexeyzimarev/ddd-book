@@ -8,9 +8,7 @@ namespace Marketplace.EventSourcing
     {
         readonly List<object> _changes = new List<object>();
 
-        public Guid Id { get; private set; }
-
-        protected void SetId(Guid id) => Id = id;
+        public Guid Id { get; protected set; }
 
         public int Version { get; private set; } = -1;
 

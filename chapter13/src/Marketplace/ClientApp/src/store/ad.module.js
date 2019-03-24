@@ -26,13 +26,13 @@ const getters = {
 
 const actions = {
     async [CreateAd](context, uuid) {
-        await ApiService.post("/ad", { id: uuid });
+        await ApiService.post("/test", { id: uuid });
         context.commit(AdCreated, uuid);
     },
     async [RenameAd](context, title) {
         if (context.state.ad && title === context.state.ad.title) return;
         await ApiService.put(
-            "/ad/name", 
+            "/test/title", 
             {id: context.state.ad.id, title: title});
         context.commit(AdRenamed, title);
     },

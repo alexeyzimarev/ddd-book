@@ -40,7 +40,7 @@ namespace Marketplace.Infrastructure.EventStore
             if (aggregateId == null)
                 throw new ArgumentNullException(nameof(aggregateId));
 
-            var stream = GetStreamName<T>(aggregateId);
+            var stream = GetStreamName(aggregateId);
             var aggregate = (T) Activator.CreateInstance(typeof(T), true);
 
             var page = await _connection.ReadStreamEventsForwardAsync(

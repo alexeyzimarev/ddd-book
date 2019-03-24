@@ -127,23 +127,28 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             switch (@event)
             {
                 case ClassifiedAdCreated e:
-                    SetId(e.Id);
+                    Id = e.Id;
                     OwnerId = new UserId(e.OwnerId);
                     State = ClassifiedAdState.Inactive;
                     _pictures = new List<Picture>();
                     break;
+
                 case ClassifiedAdTitleChanged e:
                     Title = new ClassifiedAdTitle(e.Title);
                     break;
+
                 case ClassifiedAdTextUpdated e:
                     Text = new ClassifiedAdText(e.AdText);
                     break;
+
                 case ClassifiedAdPriceUpdated e:
                     Price = new Price(e.Price, e.CurrencyCode);
                     break;
+
                 case ClassifiedAdSentForReview _:
                     State = ClassifiedAdState.PendingReview;
                     break;
+
                 case ClassifiedAdPublished e:
                     ApprovedBy = new UserId(e.ApprovedBy);
                     State = ClassifiedAdState.Active;
@@ -155,6 +160,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                     ApplyToEntity(picture, e);
                     _pictures.Add(picture);
                     break;
+
                 case ClassifiedAdPictureResized e:
                     picture = FindPicture(new PictureId(e.PictureId));
                     ApplyToEntity(picture, @event);
@@ -167,28 +173,23 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 
         protected override void EnsureValidState()
         {
-            var valid = Id != null && OwnerId != null;
-
-            switch (State)
-            {
-                case ClassifiedAdState.PendingReview:
-
-                    valid = valid
-                            && Title != null
-                            && Text != null
-                            && Price?.Amount > 0;
+            var valid =
+                OwnerId != null &&
+                (State switch
+                    {
+                    ClassifiedAdState.PendingReview =>
+                    Title != null
+                    && Text != null
+                    && Price?.Amount > 0,
 //                            && FirstPicture.HasCorrectSize();
-                    break;
-                case ClassifiedAdState.Active:
-
-                    valid = valid
-                            && Title != null
-                            && Text != null
-                            && Price?.Amount > 0
+                    ClassifiedAdState.Active =>
+                    Title != null
+                    && Text != null
+                    && Price?.Amount > 0
 //                            && FirstPicture.HasCorrectSize()
-                            && ApprovedBy != null;
-                    break;
-            }
+                    && ApprovedBy != null,
+                    _ => true
+                    });
 
             if (!valid)
                 throw new DomainExceptions.InvalidEntityState(

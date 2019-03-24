@@ -20,7 +20,7 @@ namespace Marketplace.Modules.ClassifiedAds
         public Task<IActionResult> Post(V1.Create command)
             => HandleCommand(command, cmd => cmd.OwnerId = GetUserId());
 
-        [Route("name"), HttpPut]
+        [Route("title"), HttpPut]
         public Task<IActionResult> Put(V1.ChangeTitle command)
             => HandleCommand(command);
 

@@ -9,6 +9,7 @@ using Marketplace.Infrastructure.Vue;
 using Marketplace.Modules.Auth;
 using Marketplace.Modules.ClassifiedAds;
 using Marketplace.Modules.Projections;
+using Marketplace.Modules.Test;
 using Marketplace.Modules.UserProfile;
 using Marketplace.Modules.UserProfiles;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -67,6 +68,10 @@ namespace Marketplace
 
             services.AddSingleton(
                 new ClassifiedAdsCommandService(store, new FixedCurrencyLookup())
+            );
+
+            services.AddSingleton(
+                new TestAdCommandService(new TestStore(esConnection))
             );
 
             services.AddSingleton(
