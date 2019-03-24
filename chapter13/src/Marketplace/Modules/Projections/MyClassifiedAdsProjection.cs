@@ -11,7 +11,7 @@ using static Marketplace.Modules.Projections.ReadModels;
 
 namespace Marketplace.Modules.Projections
 {
-    public class MyClassifiedAdsProjection 
+    public static class MyClassifiedAdsProjection 
     {
         public static Func<Task> GetHandler(
             IAsyncDocumentSession session,

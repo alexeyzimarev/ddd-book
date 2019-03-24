@@ -12,9 +12,6 @@ namespace Marketplace.Modules.Projections
     {
         const string StreamName = "UpcastedClassifiedAdEvents";
 
-        static readonly ILogger Log =
-            Serilog.Log.ForContext<ClassifiedAdUpcasters>();
-
         readonly IEventStoreConnection _eventStoreConnection;
         readonly Func<Guid, Task<string>> _getUserPhoto;
 
