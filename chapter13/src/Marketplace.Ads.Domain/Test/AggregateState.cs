@@ -1,5 +1,6 @@
 using System;
 using Force.DeepCloner;
+using Marketplace.Ads.Domain.Shared;
 
 namespace Marketplace.Ads.Domain.Test
 {
@@ -31,6 +32,20 @@ namespace Marketplace.Ads.Domain.Test
         {
             var newState = (this as T).DeepClone();
             update(newState);
+            return newState;
+        }
+
+        protected abstract bool EnsureValidState(T newState);
+        
+        internal T Apply(object @event)
+        {
+            var newState = When(@event);
+
+            if (!EnsureValidState(newState))
+                throw new DomainExceptions.InvalidEntityState(
+                    this, "Post-checks failed"
+                );
+
             return newState;
         }
     }

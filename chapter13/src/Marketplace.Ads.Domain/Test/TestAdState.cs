@@ -49,7 +49,7 @@ namespace Marketplace.Ads.Domain.Test
             return newState;
         }
 
-        static bool EnsureValidState(TestAdState newState)
+        protected override bool EnsureValidState(TestAdState newState)
             => newState.OwnerId != null &&
                (newState.State switch
                {
@@ -64,18 +64,6 @@ namespace Marketplace.Ads.Domain.Test
                        && newState.ApprovedBy != null,
                    _ => true
                });
-
-        internal TestAdState Apply(object @event)
-        {
-            var newState = When(@event);
-
-            if (!EnsureValidState(newState))
-                throw new DomainExceptions.InvalidEntityState(
-                    this, $"Post-checks failed in state {State}"
-                );
-
-            return newState;
-        }
 
         public TestAdState()
         {
