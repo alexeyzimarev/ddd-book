@@ -1,4 +1,3 @@
-using Marketplace.Ads.Messages.UserProfile;
 using static Marketplace.Ads.Messages.Ads.Events;
 using static Marketplace.Infrastructure.EventStore.TypeMapper;
 
@@ -17,9 +16,6 @@ namespace Marketplace.Modules.ClassifiedAds
             Map<ClassifiedAdPictureResized>("ClassifiedAdPictureResized");
             Map<ClassifiedAdSentForReview>("ClassifiedAdSentForReview");
             Map<PictureAddedToAClassifiedAd>("PictureAddedToAClassifiedAd");
-
-            // User profile
-            Map<Events.UserRegistered>("UserRegistered");
         }
     }
 }
