@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.Ads.Domain.Shared;
 using Marketplace.Ads.Messages.Ads;
@@ -8,11 +6,10 @@ namespace Marketplace.Ads.Domain.Test
 {
     public static class TestAd
     {
-        public static (TestAdState state, IEnumerable<object> events) Create(
+        public static TestAdState.Result Create(
             ClassifiedAdId id,
             UserId ownerId)
-            => Apply(
-                new TestAdState(),
+            => new TestAdState().Apply(
                 new Events.ClassifiedAdCreated
                 {
                     Id = id,
@@ -20,11 +17,10 @@ namespace Marketplace.Ads.Domain.Test
                 }
             );
 
-        public static (TestAdState state, IEnumerable<object> events) SetTitle(
+        public static TestAdState.Result SetTitle(
             TestAdState state,
             ClassifiedAdTitle title)
-            => Apply(
-                state, 
+            => state.Apply(
                 new Events.ClassifiedAdTitleChanged
                 {
                     Id = state.Id,
@@ -32,12 +28,5 @@ namespace Marketplace.Ads.Domain.Test
                     Title = title
                 }
             );
-
-        static (TestAdState state, IEnumerable<object> events) Apply(
-            TestAdState state,
-            params object[] events)
-            => (events.Aggregate(
-                state, (current, @event) => current.Apply(@event)
-            ), events);
     }
 }

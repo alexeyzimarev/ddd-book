@@ -18,10 +18,10 @@ namespace Marketplace.Infrastructure.EventStore
 
         public Task Save<T>(
             long version,
-            (T state, IEnumerable<object> events) update)
-            where T : IAggregateState<T>
+            AggregateState<T>.Result update)
+            where T : class, IAggregateState<T>, new()
             => _connection.AppendEvents(
-                update.state.StreamName, version, update.events.ToArray()
+                update.State.StreamName, version, update.Events.ToArray()
             );
 
         public async Task<T> Load<T>(Guid id, Func<T, object, T> when)

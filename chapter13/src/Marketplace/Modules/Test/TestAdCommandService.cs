@@ -5,6 +5,7 @@ using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.Ads.Domain.Shared;
 using Marketplace.Ads.Domain.Test;
 using Marketplace.Ads.Messages.Ads;
+using Marketplace.EventSourcing;
 using Marketplace.Infrastructure.EventStore;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +35,7 @@ namespace Marketplace.Modules.Test
     }
 
     public abstract class TestCommandService<T>
-        where T : IAggregateState<T>, new()
+        where T : class, IAggregateState<T>, new()
     {
         readonly TestStore _store;
 
@@ -43,12 +44,12 @@ namespace Marketplace.Modules.Test
         Task<T> Load(Guid id)
             => _store.Load<T>(
                 id,
-                (x, e) => x.When(e)
+                (x, e) => x.When(x, e)
             );
 
         protected async Task Handle(
             Guid id,
-            Func<T, (T, IEnumerable<object>)> update)
+            Func<T, AggregateState<T>.Result> update)
         {
             var state = await Load(id);
             await _store.Save(state.Version, update(state));
