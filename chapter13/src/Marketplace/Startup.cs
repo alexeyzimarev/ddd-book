@@ -37,7 +37,9 @@ namespace Marketplace
     {
         public const string CookieScheme = "MarketplaceScheme";
 
-        public Startup(IHostingEnvironment environment, IConfiguration configuration)
+        public Startup(
+            IHostingEnvironment environment,
+            IConfiguration configuration)
         {
             Environment = environment;
             Configuration = configuration;
@@ -64,10 +66,13 @@ namespace Marketplace
                 Configuration["ravenDb:database"]
             );
 
-            Func<IAsyncDocumentSession> getSession = () => documentStore.OpenAsyncSession();
+            Func<IAsyncDocumentSession> getSession =
+                () => documentStore.OpenAsyncSession();
 
             services.AddSingleton(
-                new ClassifiedAdsCommandService(store, new FixedCurrencyLookup())
+                new ClassifiedAdsCommandService(
+                    store, new FixedCurrencyLookup()
+                )
             );
 
             services.AddSingleton(
@@ -75,7 +80,9 @@ namespace Marketplace
             );
 
             services.AddSingleton(
-                new UserProfileCommandService(store, t => purgomalumClient.CheckForProfanity(t))
+                new UserProfileCommandService(
+                    store, t => purgomalumClient.CheckForProfanity(t)
+                )
             );
 
             var ravenDbProjectionManager = new ProjectionManager(
@@ -103,7 +110,9 @@ namespace Marketplace
             );
 
             services
-                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddAuthentication(
+                    CookieAuthenticationDefaults.AuthenticationScheme
+                )
                 .AddCookie();
 
             services
@@ -147,10 +156,11 @@ namespace Marketplace
                         "api",
                         "api/{controller=Home}/{action=Index}/{id?}"
                     );
-                    
+
                     routes.MapSpaFallbackRoute(
                         "spa-fallback",
-                        new { controller = "Home", action = "Index"});
+                        new {controller = "Home", action = "Index"}
+                    );
                 }
             );
 
@@ -158,14 +168,20 @@ namespace Marketplace
             app.UseSpaStaticFiles();
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ClassifiedAds v1"));
+
+            app.UseSwaggerUI(
+                c => c.SwaggerEndpoint(
+                    "/swagger/v1/swagger.json", "ClassifiedAds v1"
+                )
+            );
 
             app.UseSpa(
                 spa =>
                 {
                     spa.Options.SourcePath = "ClientApp";
 
-                    if (env.IsDevelopment()) spa.UseVueDevelopmentServer("serve:bs");
+                    if (env.IsDevelopment())
+                        spa.UseVueDevelopmentServer("serve:bs");
                 }
             );
         }
@@ -187,7 +203,9 @@ namespace Marketplace
 
             if (record == null)
                 store.Maintenance.Server.Send(
-                    new CreateDatabaseOperation(new DatabaseRecord(store.Database))
+                    new CreateDatabaseOperation(
+                        new DatabaseRecord(store.Database)
+                    )
                 );
 
             return store;
@@ -197,15 +215,23 @@ namespace Marketplace
             Func<IAsyncDocumentSession> getSession)
             => new IProjection[]
             {
-                new ClassifiedAdDetailsProjection(
+                new RavenDbProjection<ReadModels.ClassifiedAdDetails>(
                     getSession,
-                    userId =>
-                        getSession.GetUserDetails(
-                            userId, x => x.DisplayName
+                    (session, @event) =>
+                        ClassifiedAdDetailsProjection.GetHandler(
+                            session, @event,
+                            userId =>
+                                getSession.GetUserDetails(
+                                    userId, x => x.DisplayName
+                                )
                         )
                 ),
-                new UserDetailsProjection(getSession),
-                new MyClassifiedAdsProjection(getSession)
+                new RavenDbProjection<ReadModels.UserDetails>(
+                    getSession, UserDetailsProjection.GetHandler
+                ),
+                new RavenDbProjection<ReadModels.MyClassifiedAds>(
+                    getSession, MyClassifiedAdsProjection.GetHandler
+                )
             };
 
         static IProjection[] ConfigureUpcasters(

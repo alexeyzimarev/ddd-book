@@ -10,20 +10,9 @@ using static Marketplace.Modules.Projections.ReadModels;
 
 namespace Marketplace.Modules.Projections
 {
-    public class ClassifiedAdDetailsProjection
-        : RavenDbProjection<ClassifiedAdDetails>
+    public static class ClassifiedAdDetailsProjection
     {
-        public ClassifiedAdDetailsProjection(
-            Func<IAsyncDocumentSession> getSession,
-            Func<Guid, Task<string>> getUserDisplayName)
-            : base(
-                getSession,
-                (session, @event) => GetHandler(
-                    session, @event, getUserDisplayName
-                )
-            ) { }
-
-        static Func<Task> GetHandler(
+        public static Func<Task> GetHandler(
             IAsyncDocumentSession session,
             object @event,
             Func<Guid, Task<string>> getUserDisplayName)
@@ -49,8 +38,8 @@ namespace Marketplace.Modules.Projections
                     () => Delete(e.Id),
                 UserDisplayNameUpdated e =>
                     () =>
-                        UpdateMultipleItems(
-                            session, x => x.SellerId == e.UserId,
+                        session.UpdateMultipleItems<ClassifiedAdDetails>(
+                            x => x.SellerId == e.UserId,
                             x => x.SellersDisplayName = e.DisplayName
                         ),
                 V1.ClassifiedAdPublished e =>
@@ -74,7 +63,7 @@ namespace Marketplace.Modules.Projections
                 );
 
             Task Update(Guid id, Action<ClassifiedAdDetails> update)
-                => UpdateItem(session, GetDbId(id), update);
+                => session.UpdateItem(GetDbId(id), update);
 
             async Task Delete(Guid id)
             {

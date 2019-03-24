@@ -11,12 +11,9 @@ using static Marketplace.Modules.Projections.ReadModels;
 
 namespace Marketplace.Modules.Projections
 {
-    public class MyClassifiedAdsProjection : RavenDbProjection<MyClassifiedAds>
+    public class MyClassifiedAdsProjection 
     {
-        public MyClassifiedAdsProjection(Func<IAsyncDocumentSession> getSession)
-            : base(getSession, GetHandler) { }
-
-        static Func<Task> GetHandler(
+        public static Func<Task> GetHandler(
             IAsyncDocumentSession session,
             object @event)
         {
@@ -73,8 +70,8 @@ namespace Marketplace.Modules.Projections
             Task Update(
                 Guid id,
                 Action<MyClassifiedAds> update)
-                => UpdateItem(
-                    session, getDbId(id),
+                => session.UpdateItem(
+                    getDbId(id),
                     update
                 );
 
