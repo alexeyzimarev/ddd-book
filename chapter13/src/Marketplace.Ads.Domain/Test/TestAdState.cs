@@ -32,35 +32,35 @@ namespace Marketplace.Ads.Domain.Test
         public TestAdState When(object @event)
         {
             var newState = @event switch
-                {
+            {
                 Events.ClassifiedAdCreated e =>
-                With(
-                    x =>
-                    {
-                        x.Id = new ClassifiedAdId(e.Id);
-                        x.OwnerId = new UserId(e.OwnerId);
-                    }
-                ),
+                    With(
+                        x =>
+                        {
+                            x.Id = new ClassifiedAdId(e.Id);
+                            x.OwnerId = new UserId(e.OwnerId);
+                        }
+                    ),
                 Events.ClassifiedAdTitleChanged e =>
-                With(x => x.Title = new ClassifiedAdTitle(e.Title)),
+                    With(x => x.Title = new ClassifiedAdTitle(e.Title)),
                 Events.ClassifiedAdTextUpdated e =>
-                With(x => x.Text = new ClassifiedAdText(e.AdText)),
+                    With(x => x.Text = new ClassifiedAdText(e.AdText)),
                 Events.ClassifiedAdPriceUpdated e =>
-                With(x => x.Price = new Price(e.Price, e.CurrencyCode)),
+                    With(x => x.Price = new Price(e.Price, e.CurrencyCode)),
                 Events.ClassifiedAdSentForReview _ =>
-                With(
-                    x => x.State = ClassifiedAd.ClassifiedAdState.PendingReview
-                ),
+                    With(
+                        x => x.State = ClassifiedAd.ClassifiedAdState.PendingReview
+                    ),
                 Events.ClassifiedAdPublished e =>
-                With(
-                    x =>
-                    {
-                        x.ApprovedBy = new UserId(e.ApprovedBy);
-                        x.State = ClassifiedAd.ClassifiedAdState.Active;
-                    }
-                ),
+                    With(
+                        x =>
+                        {
+                            x.ApprovedBy = new UserId(e.ApprovedBy);
+                            x.State = ClassifiedAd.ClassifiedAdState.Active;
+                        }
+                    ),
                 _ => this
-                };
+            };
             newState.Version++;
             return newState;
         }
@@ -68,18 +68,18 @@ namespace Marketplace.Ads.Domain.Test
         static bool EnsureValidState(TestAdState newState)
             => newState.OwnerId != null &&
                (newState.State switch
-                   {
+               {
                    ClassifiedAd.ClassifiedAdState.PendingReview =>
-                   newState.Title != null
-                   && newState.Text != null
-                   && newState.Price?.Amount > 0,
+                       newState.Title != null
+                       && newState.Text != null
+                       && newState.Price?.Amount > 0,
                    ClassifiedAd.ClassifiedAdState.Active =>
-                   newState.Title != null
-                   && newState.Text != null
-                   && newState.Price?.Amount > 0
-                   && newState.ApprovedBy != null,
+                       newState.Title != null
+                       && newState.Text != null
+                       && newState.Price?.Amount > 0
+                       && newState.ApprovedBy != null,
                    _ => true
-                   });
+               });
 
         internal TestAdState Apply(object @event)
         {
