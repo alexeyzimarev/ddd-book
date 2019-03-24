@@ -52,8 +52,7 @@ namespace Marketplace.Ads.Domain.Test
         }
 
         protected override bool EnsureValidState(TestAdState newState)
-            => newState.OwnerId != null &&
-               (newState switch
+            => newState switch
                {
                    TestAdState ad when ad.OwnerId == null => false,
                    TestAdState ad when ad.State == PendingReview
@@ -66,7 +65,7 @@ namespace Marketplace.Ads.Domain.Test
                                        && ad.Price?.Amount > 0
                                        && ad.ApprovedBy != null => false,
                    _ => true
-               });
+               };
 
         public TestAdState()
         {
