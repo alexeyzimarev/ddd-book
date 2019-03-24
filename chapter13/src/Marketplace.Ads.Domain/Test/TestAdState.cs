@@ -55,14 +55,11 @@ namespace Marketplace.Ads.Domain.Test
             => newState switch
                {
                    TestAdState ad when ad.OwnerId == null => false,
-                   TestAdState ad when ad.State == PendingReview
+                   TestAdState ad when (ad.State == PendingReview || ad.State == Active)
                                        && ad.Title != null
                                        && ad.Text != null
                                        && ad.Price?.Amount > 0 => false,
                    TestAdState ad when ad.State == Active
-                                       && ad.Title != null
-                                       && ad.Text != null
-                                       && ad.Price?.Amount > 0
                                        && ad.ApprovedBy != null => false,
                    _ => true
                };
