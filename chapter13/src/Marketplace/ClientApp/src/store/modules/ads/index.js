@@ -1,4 +1,4 @@
-import ApiService from "../common/api.service";
+import ApiService from "../../../common/api.service";
 import {
     CreateAd, DeleteAdIfEmpty,
     RenameAd,
@@ -11,7 +11,7 @@ import {
     AdRenamed,
     AdTextUpdated,
     CurrentAdCleared
-} from "./mutation.type";
+} from "./mutations.type";
 
 const state = {
     errors: null,
@@ -20,28 +20,28 @@ const state = {
 };
 
 const getters = {
-    currentAd: (state) => state.ad,
-    adNotification: (state) => state.notification
+    currentAd: state => state.ad,
+    adNotification: state => state.notification
 };
 
 const actions = {
     async [CreateAd](context, uuid) {
-        await ApiService.post("/test", { id: uuid });
+        await ApiService.post("/ad", { id: uuid });
         context.commit(AdCreated, uuid);
     },
     async [RenameAd](context, title) {
         if (context.state.ad && title === context.state.ad.title) return;
         await ApiService.put(
-            "/test/title", 
+            "/ad/title", 
             {id: context.state.ad.id, title: title});
         context.commit(AdRenamed, title);
     },
-    async [UpdateAdText](context, description) {
-        if (description === context.state.ad.text) return;
+    async [UpdateAdText](context, text) {
+        if (text === context.state.ad.text) return;
         await ApiService.put(
             "/ad/text",
-            {id: context.state.ad.id, text: description});
-        context.commit(AdTextUpdated, description);
+            {id: context.state.ad.id, text: text});
+        context.commit(AdTextUpdated, text);
     },
     async [UpdateAdPrice](context, price) {
         if (price === context.state.ad.price) return;
@@ -66,8 +66,8 @@ const mutations = {
     [AdRenamed](state, title) {
         state.ad.title = title;
     },
-    [AdTextUpdated](state, description) {
-        state.ad.description = description;
+    [AdTextUpdated](state, text) {
+        state.ad.text = text;
     },
     [AdPriceUpdated](state, price) {
         state.ad.price = price;
@@ -81,5 +81,6 @@ export default {
     state,
     getters,
     actions,
-    mutations
+    mutations,
+    namespaced: true
 }

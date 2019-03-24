@@ -9,10 +9,10 @@
 </template>
 
 <script>
+    import {mapActions} from "vuex";
     import {validationMixin} from "vuelidate";
     import {required, numeric} from "vuelidate/lib/validators";
-    import {UpdateAdPrice} from "../store/actions.type";
-    import store from "../store";
+    import {UpdateAdPrice} from "../store/modules/ads/actions.type";
 
     export default {
         name: "",
@@ -41,11 +41,14 @@
             async updatePrice() {
                 if (this.validatePrice.length > 0) return;
                 try {
-                    await store.dispatch(UpdateAdPrice, this.price);
+                    await this.updateAdPrice(this.price);
                 } catch (e) {
                     console.log(JSON.stringify(e));
                 }
-            }
+            },
+            ...mapActions("ad", {
+                updateAdPrice: UpdateAdPrice
+            })
         },
     }
 </script>

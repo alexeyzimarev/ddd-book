@@ -10,6 +10,8 @@ namespace Marketplace.Modules.PaidServices
             public string Description { get; set; }
             public string Duration { get; set; }
             public string Price { get; set; }
+            public object Attributes { get; set; }
+            public string Type { get; set; }
 
             public static PaidServiceItem FromDomain(
                 PaidService paidService)
@@ -18,7 +20,9 @@ namespace Marketplace.Modules.PaidServices
                     Description = paidService.Description,
                     Price = $"€{paidService.Price}",
                     Duration = paidService.Duration == TimeSpan.Zero 
-                        ? null : $"{paidService.Duration.Days} days"
+                        ? null : $"{paidService.Duration.Days} days",
+                    Attributes = paidService.Attributes,
+                    Type = paidService.GetType().Name
                 };
         }
     }

@@ -53,19 +53,19 @@
                 {
                     title: 'Pre-fab homes',
                     src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
-                    price: 100,
+                    price: "100",
                     flex: 6
                 },
                 {
                     title: 'Favorite road trips',
                     src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
-                    price: 200,
+                    price: "200",
                     flex: 3
                 },
                 {
                     title: 'Best airlines',
                     src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-                    price: 150,
+                    price: "150",
                     flex: 3
                 }
             ]

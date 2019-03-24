@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Marketplace.Modules.PaidServices
 {
-    [Route("/services")]
+    [Route("/api/services")]
     public class PaidServicesQueryApi : ControllerBase
     {
         [HttpGet]

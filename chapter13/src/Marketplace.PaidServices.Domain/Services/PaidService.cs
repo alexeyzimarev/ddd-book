@@ -8,12 +8,14 @@ namespace Marketplace.PaidServices.Domain.Services
         {
             new ShowOnTop(), 
             new LargeCard(), 
-            new AccentedCard()
+            new ElevatedCard(),
+            new DarkCard()
         };
 
         public double Price { get; private set; }
         public TimeSpan Duration { get; private set; } = TimeSpan.Zero;
         public string Description { get; private set; }
+        public object Attributes { get; private set; }
 
         public class ShowOnTop : PaidService
         {
@@ -31,15 +33,27 @@ namespace Marketplace.PaidServices.Domain.Services
             {
                 Price = 5;
                 Description = "Show as a large card";
+                Attributes = new {flex = 6};
             }
         }
 
-        public class AccentedCard : PaidService
+        public class ElevatedCard : PaidService
         {
-            public AccentedCard()
+            public ElevatedCard()
             {
                 Price = 3;
-                Description = "Show accented";
+                Description = "Show elevated";
+                Attributes = new {elevated = 8};
+            }
+        }
+
+        public class DarkCard : PaidService
+        {
+            public DarkCard()
+            {
+                Price = 3;
+                Description = "Use dak theme";
+                Attributes = new {dark = true};
             }
         }
     }

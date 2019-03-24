@@ -28,7 +28,7 @@ namespace Marketplace.Modules.Projections
             return @event switch
             {
                 Events.ClassifiedAdPublished e => UpcastPublished(e),
-                _ => (Func<Task>) null
+                _ => Task.CompletedTask
             };
 
             async Task UpcastPublished(

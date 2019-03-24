@@ -41,7 +41,7 @@
 
 <script>
     import {mapState} from "vuex";
-    import {Login} from "../store/actions.type";
+    import {Login} from "../store/modules/auth/actions.type";
 
     export default {
         name: "",

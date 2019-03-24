@@ -21,7 +21,7 @@
                         />
                     </v-flex>
                     <v-flex md12>
-                        <v-btn color="primary" @click="add">Add</v-btn>
+                        <v-btn color="primary" @click="add">Next</v-btn>
                         <v-btn to="/">Cancel</v-btn>
                     </v-flex>
                 </v-form>
@@ -33,9 +33,9 @@
 
 <script>
     import VImageInput from 'vuetify-image-input';
-    import {mapGetters} from "vuex";
+    import {mapGetters, mapActions} from "vuex";
     import {uuid} from "vue-uuid";
-    import {CreateAd, DeleteAdIfEmpty} from "../store/actions.type";
+    import {CreateAd, DeleteAdIfEmpty} from "../store/modules/ads/actions.type";
     import AdTitle from "../components/AdTitle";
     import AdText from "../components/AdText";
     import AdPrice from "../components/AdPrice";
@@ -56,20 +56,20 @@
             snackBar: {}
         }),
         computed: {
-            ...mapGetters(["currentAd"])
+            ...mapGetters("ad", ["currentAd"])
         },
         methods: {
             add() {
-                
+                this.$router.push({name: "preview"});
             }
         },
         async beforeRouteEnter(to, from, next) {
             let adId = uuid.v1();
-            await store.dispatch(CreateAd, adId);
+            await store.dispatch("ad/" + CreateAd, adId);
             return next();
         },
         async beforeRouteLeave(to, from, next) {
-            await store.dispatch(DeleteAdIfEmpty, this.currentAd.id);
+            await store.dispatch("ad/" + DeleteAdIfEmpty, this.currentAd.id);
             next();
         }
     }

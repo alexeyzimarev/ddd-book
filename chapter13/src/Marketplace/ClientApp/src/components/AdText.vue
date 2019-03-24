@@ -9,10 +9,10 @@
 </template>
 
 <script>
+    import {mapActions} from "vuex";
     import {validationMixin} from "vuelidate";
     import {required, minLength} from "vuelidate/lib/validators";
-    import {UpdateAdText} from "../store/actions.type";
-    import store from "../store";
+    import {UpdateAdText} from "../store/modules/ads/actions.type";
 
     export default {
         name: "",
@@ -39,14 +39,20 @@
         },
         methods: {
             async updateText() {
-                if (this.validateText.length > 0) return;
+                if (this.validateText.length > 0) {
+                    console.log(this.validateText)
+                    return;
+                }
                 try {
-                    await store.dispatch(UpdateAdText, this.text);
+                    await this.updateAdText(this.text);
                 } catch (e) {
                     console.log(JSON.stringify(e));
                 }
-            }
-        },
+            },
+            ...mapActions("ad", {
+                updateAdText: UpdateAdText
+            }),
+        }
     }
 </script>
 

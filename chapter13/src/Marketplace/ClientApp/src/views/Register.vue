@@ -44,7 +44,7 @@
 
 <script>
     import {mapState} from "vuex";
-    import {Register} from "../store/actions.type";
+    import {Register} from "../store/modules/auth/actions.type";
 
     export default {
         name: "",

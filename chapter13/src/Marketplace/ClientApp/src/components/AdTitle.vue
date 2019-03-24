@@ -9,9 +9,10 @@
 </template>
 
 <script>
+    import {mapActions} from "vuex";
     import {validationMixin} from "vuelidate";
     import {required, minLength} from "vuelidate/lib/validators";
-    import {RenameAd} from "../store/actions.type";
+    import {RenameAd} from "../store/modules/ads/actions.type";
     import store from "../store";
 
     export default {
@@ -38,12 +39,15 @@
             },
         },
         methods: {
+            ...mapActions("ad", {
+                rename: RenameAd
+            }),
             async setTitle() {
                 if (this.validateTitle.length > 0) return;
                 try {
-                    await store.dispatch(RenameAd, this.title);
+                    await this.rename(this.title);
                 } catch (e) {
-                    console.log(e.response.data.error);
+                    console.log(e); //.response); //.data.error);
                 }
             }
         },

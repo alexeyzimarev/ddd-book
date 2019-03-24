@@ -7,7 +7,7 @@ import UUID from "vue-uuid";
 import Vuelidate from "vuelidate";
 import "roboto-fontface/css/roboto/roboto-fontface.css";
 import "material-design-icons-iconfont/dist/material-design-icons.css";
-import {CheckAuth} from "./store/actions.type";
+import {CheckAuth} from "./store/modules/auth/actions.type";
 import ApiService from "./common/api.service";
 
 Vue.config.productionTip = false;

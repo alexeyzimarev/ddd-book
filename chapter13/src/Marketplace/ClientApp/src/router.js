@@ -4,6 +4,7 @@ import Home from "./views/Home";
 import NewAd from "./views/NewAd";
 import Login from "./views/Login";
 import Register from "./views/Register";
+import AdServices from "./views/AdServices";
 
 Vue.use(Router);
 
@@ -20,6 +21,11 @@ export default new Router({
       path: "/new",
       name: "new",
       component: NewAd
+    },
+    {
+      path: "/new/preview",
+      name: "preview",
+      component: AdServices
     },
     {
       path: "/login",

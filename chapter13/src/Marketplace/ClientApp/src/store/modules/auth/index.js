@@ -1,4 +1,4 @@
-import ApiService from "../common/api.service";
+import ApiService from "../../../common/api.service";
 import {
     CheckAuth,
     Login,
@@ -9,7 +9,7 @@ import {
     ErrorOccured, 
     Unauthorized,
     UserDetailsReceived
-} from "./mutation.type";
+} from "./mutations.type";
 
 const state = {
     errors: null,
