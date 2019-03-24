@@ -13,9 +13,6 @@ namespace Marketplace.Modules.Projections
 {
     public class MyClassifiedAdsProjection : RavenDbProjection<MyClassifiedAds>
     {
-        static readonly ILogger Log =
-            Serilog.Log.ForContext<ClassifiedAdDetailsProjection>();
-
         public MyClassifiedAdsProjection(Func<IAsyncDocumentSession> getSession)
             : base(getSession, GetHandler) { }
 
@@ -26,7 +23,7 @@ namespace Marketplace.Modules.Projections
             Func<Guid, string> getDbId = MyClassifiedAds.GetDatabaseId;
 
             return @event switch
-                {
+            {
                 UserRegistered e =>
                 () =>
                     session.StoreAsync(

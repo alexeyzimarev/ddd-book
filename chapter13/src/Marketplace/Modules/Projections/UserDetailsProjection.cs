@@ -21,15 +21,15 @@ namespace Marketplace.Modules.Projections
             Func<Guid, string> getDbId = UserDetails.GetDatabaseId;
 
             return @event switch
-                {
+            {
                 UserRegistered e => 
-                () => Create(e.UserId, e.FullName),
+                    () => Create(e.UserId, e.FullName),
                 UserDisplayNameUpdated e =>
-                () => Update(e.UserId, x => x.DisplayName = e.DisplayName),
+                    () => Update(e.UserId, x => x.DisplayName = e.DisplayName),
                 ProfilePhotoUploaded e =>
-                () => Update(e.UserId, x => x.PhotoUrl = e.PhotoUrl),
+                    () => Update(e.UserId, x => x.PhotoUrl = e.PhotoUrl),
                 _ => (Func<Task>) null
-                };
+            };
 
             Task Update(Guid id, Action<UserDetails> update)
                 => UpdateItem(session, getDbId(id), update);

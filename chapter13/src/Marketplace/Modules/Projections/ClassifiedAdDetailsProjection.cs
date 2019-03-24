@@ -29,36 +29,36 @@ namespace Marketplace.Modules.Projections
             Func<Guid, Task<string>> getUserDisplayName)
         {
             return @event switch
-                {
+            {
                 ClassifiedAdCreated e =>
-                () => Create(e.Id, e.OwnerId),
+                    () => Create(e.Id, e.OwnerId),
                 ClassifiedAdTitleChanged e =>
-                () => Update(e.Id, ad => ad.Title = e.Title),
+                    () => Update(e.Id, ad => ad.Title = e.Title),
                 ClassifiedAdTextUpdated e =>
-                () => Update(e.Id, ad => ad.Description = e.AdText),
+                    () => Update(e.Id, ad => ad.Description = e.AdText),
                 ClassifiedAdPriceUpdated e =>
-                () => Update(
-                    e.Id,
-                    ad =>
-                    {
-                        ad.Price = e.Price;
-                        ad.CurrencyCode = e.CurrencyCode;
-                    }
-                ),
-                ClassifiedAdDeleted e =>
-                () => Delete(e.Id),
-                UserDisplayNameUpdated e =>
-                () =>
-                    UpdateMultipleItems(
-                        session, x => x.SellerId == e.UserId,
-                        x => x.SellersDisplayName = e.DisplayName
+                    () => Update(
+                        e.Id,
+                        ad =>
+                        {
+                            ad.Price = e.Price;
+                            ad.CurrencyCode = e.CurrencyCode;
+                        }
                     ),
+                ClassifiedAdDeleted e =>
+                    () => Delete(e.Id),
+                UserDisplayNameUpdated e =>
+                    () =>
+                        UpdateMultipleItems(
+                            session, x => x.SellerId == e.UserId,
+                            x => x.SellersDisplayName = e.DisplayName
+                        ),
                 V1.ClassifiedAdPublished e =>
-                () => Update(
-                    e.Id, ad => ad.SellersPhotoUrl = e.SellersPhotoUrl
-                ),
+                    () => Update(
+                        e.Id, ad => ad.SellersPhotoUrl = e.SellersPhotoUrl
+                    ),
                 _ => (Func<Task>) null
-                };
+            };
 
             string GetDbId(Guid id) => ClassifiedAdDetails.GetDatabaseId(id);
 
