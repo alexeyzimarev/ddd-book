@@ -1,5 +1,6 @@
 import Vue from "vue";
 import "./plugins/vuetify";
+import VueLodash from 'vue-lodash'
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
@@ -13,6 +14,7 @@ import ApiService from "./common/api.service";
 Vue.config.productionTip = false;
 Vue.use(UUID);
 Vue.use(Vuelidate);
+Vue.use(VueLodash);
 
 ApiService.init();
 

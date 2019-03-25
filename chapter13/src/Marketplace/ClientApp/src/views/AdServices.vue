@@ -14,11 +14,13 @@
                     :image="image"
                     :title="currentAd.title"
                     :price="currentAd.price"
-                    v-bind="attributes">
+                    :size="attributes.flex"
+                    :dark="attributes.dark"
+                    :elevation="attributes.elevated">
             </AdListItem>
             <div v-for="service in services" :key="service.type">
-                <v-switch 
-                        v-model="service.enabled" 
+                <v-switch
+                        v-model="service.enabled"
                         :label="service.description"
                         @change="cbChange"
                 />
@@ -39,6 +41,16 @@
     import {FetchServices} from "../store/modules/services/actions.type";
     import AdListItem from "../components/AdListItem";
 
+    const defaultAttributes = {
+        flex: 3,
+        dark: false,
+        elevated: 2
+    };
+
+    function clone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+    }
+
     export default {
         name: "",
         components: {
@@ -58,9 +70,7 @@
         data: function () {
             return {
                 image: "https://cdn.vuetifyjs.com/images/cards/house.jpg",
-                attributes: {
-                    flex: 3
-                }
+                attributes: clone(defaultAttributes)
             }
         },
         methods: {
@@ -68,14 +78,9 @@
                 let enabled = this.services
                     .filter(x => x.enabled && x.attributes)
                     .map(x => x.attributes);
-                if (enabled && enabled.length > 0) {
-                    console.log(enabled);
-                    let merged = Object.assign(...enabled);
-                    console.log(merged);
-                    this.attributes = merged;
-                } else {
-                    this.attributes = {flex: 3};
-                }
+                this.attributes = enabled && enabled.length > 0
+                    ? Object.assign(clone(defaultAttributes), ...clone(enabled))
+                    : {...defaultAttributes};
             },
             add() {
 

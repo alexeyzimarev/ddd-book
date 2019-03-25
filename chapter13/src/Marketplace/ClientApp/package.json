@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "lodash": "^4.17.11",
     "material-design-icons-iconfont": "^3.0.3",
     "roboto-fontface": "*",
     "vue": "^2.6.9",
     "vue-axios": "^2.1.4",
+    "vue-lodash": "^2.0.2",
     "vue-router": "^3.0.1",
     "vue-uuid": "^1.1.1",
     "vuelidate": "^0.7.4",

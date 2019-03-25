@@ -1,6 +1,6 @@
 <template>
     <v-flex v-bind="{ [`xs${flex}`]: true }">
-        <v-card>
+        <v-card :dark="dark" :elevation="elevation">
             <v-img
                     :src="image"
                     height="200px"
@@ -47,14 +47,19 @@
             image: String,
             title: String,
             price: String,
-            flex: Number
+            size: Number,
+            dark: Boolean,
+            elevation: Number
         },
         computed: {
             displayTitle() {
-                let title = this.title.slice(0, this.flex * 5);
+                let title = this.title.slice(0, this.size * 4);
                 if (title.length < this.title.length)
                     title += "...";
                 return title;
+            },
+            flex() {
+                return this.size * 1;
             }
         }
     }
