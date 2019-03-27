@@ -1,10 +1,9 @@
 using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.Ads.Domain.Shared;
-using Marketplace.Ads.Messages.Ads;
 using Marketplace.EventSourcing;
-using static Marketplace.Ads.Domain.ClassifiedAds.ClassifiedAd.ClassifiedAdState;
+using static Marketplace.Ads.Messages.Ads.Events;
 
-namespace Marketplace.Ads.Domain.Test
+namespace Marketplace.Ads.Domain.Functional
 {
     public class TestAdState : AggregateState<TestAdState>
     {
@@ -19,7 +18,7 @@ namespace Marketplace.Ads.Domain.Test
         {
             var newState = @event switch
             {
-                Events.ClassifiedAdCreated e =>
+                ClassifiedAdCreated e =>
                     With(state,
                         x =>
                         {
@@ -27,22 +26,22 @@ namespace Marketplace.Ads.Domain.Test
                             x.OwnerId = new UserId(e.OwnerId);
                         }
                     ),
-                Events.ClassifiedAdTitleChanged e =>
+                ClassifiedAdTitleChanged e =>
                     With(state, x => x.Title = new ClassifiedAdTitle(e.Title)),
-                Events.ClassifiedAdTextUpdated e =>
+                ClassifiedAdTextUpdated e =>
                     With(state, x => x.Text = new ClassifiedAdText(e.AdText)),
-                Events.ClassifiedAdPriceUpdated e =>
+                ClassifiedAdPriceUpdated e =>
                     With(state, x => x.Price = new Price(e.Price, e.CurrencyCode)),
-                Events.ClassifiedAdSentForReview _ =>
+                ClassifiedAdSentForReview _ =>
                     With(state,
-                        x => x.State = PendingReview
+                        x => x.State = ClassifiedAd.ClassifiedAdState.PendingReview
                     ),
-                Events.ClassifiedAdPublished e =>
+                ClassifiedAdPublished e =>
                     With(state,
                         x =>
                         {
                             x.ApprovedBy = new UserId(e.ApprovedBy);
-                            x.State = Active;
+                            x.State = ClassifiedAd.ClassifiedAdState.Active;
                         }
                     ),
                 _ => this
@@ -55,11 +54,11 @@ namespace Marketplace.Ads.Domain.Test
             => newState switch
                {
                    TestAdState ad when ad.OwnerId == null => false,
-                   TestAdState ad when (ad.State == PendingReview || ad.State == Active)
+                   TestAdState ad when (ad.State == ClassifiedAd.ClassifiedAdState.PendingReview || ad.State == ClassifiedAd.ClassifiedAdState.Active)
                                        && ad.Title != null
                                        && ad.Text != null
                                        && ad.Price?.Amount > 0 => false,
-                   TestAdState ad when ad.State == Active
+                   TestAdState ad when ad.State == ClassifiedAd.ClassifiedAdState.Active
                                        && ad.ApprovedBy != null => false,
                    _ => true
                };
@@ -67,7 +66,7 @@ namespace Marketplace.Ads.Domain.Test
         public TestAdState()
         {
             Version = -1;
-            State = Inactive;
+            State = ClassifiedAd.ClassifiedAdState.Inactive;
         }
     }
 }

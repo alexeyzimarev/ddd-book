@@ -8,8 +8,8 @@ using Marketplace.Infrastructure.RavenDb;
 using Marketplace.Infrastructure.Vue;
 using Marketplace.Modules.Auth;
 using Marketplace.Modules.ClassifiedAds;
+using Marketplace.Modules.FunctionalAd;
 using Marketplace.Modules.Projections;
-using Marketplace.Modules.Test;
 using Marketplace.Modules.UserProfile;
 using Marketplace.Modules.UserProfiles;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -24,7 +24,6 @@ using Raven.Client.Documents.Session;
 using Raven.Client.ServerWide;
 using Raven.Client.ServerWide.Operations;
 using Swashbuckle.AspNetCore.Swagger;
-using EventMappings = Marketplace.Modules.ClassifiedAds.EventMappings;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 // ReSharper disable UnusedMember.Global
@@ -50,7 +49,7 @@ namespace Marketplace
 
         public void ConfigureServices(IServiceCollection services)
         {
-            EventMappings.MapEventTypes();
+            Modules.ClassifiedAds.EventMappings.MapEventTypes();
             Modules.UserProfile.EventMappings.MapEventTypes();
 
             var esConnection = EventStoreConnection.Create(
@@ -66,8 +65,7 @@ namespace Marketplace
                 Configuration["ravenDb:database"]
             );
 
-            Func<IAsyncDocumentSession> getSession =
-                () => documentStore.OpenAsyncSession();
+            IAsyncDocumentSession GetSession() => documentStore.OpenAsyncSession();
 
             services.AddSingleton(
                 new ClassifiedAdsCommandService(
@@ -87,19 +85,19 @@ namespace Marketplace
 
             var ravenDbProjectionManager = new ProjectionManager(
                 esConnection,
-                new RavenDbCheckpointStore(getSession, "readmodels"),
-                ConfigureRavenDbProjections(getSession)
+                new RavenDbCheckpointStore(GetSession, "readmodels"),
+                ConfigureRavenDbProjections(GetSession)
             );
 
             var upcasterProjectionManager = new ProjectionManager(
                 esConnection,
                 new EsCheckpointStore(esConnection, "upcaster"),
-                ConfigureUpcasters(esConnection, getSession)
+                ConfigureUpcasters(esConnection, GetSession)
             );
 
-            services.AddSingleton(c => getSession);
-            services.AddSingleton(c => new AuthService(getSession));
-            services.AddScoped(c => getSession());
+            services.AddSingleton(c => (Func<IAsyncDocumentSession>) GetSession);
+            services.AddSingleton(c => new AuthService(GetSession));
+            services.AddScoped(c => GetSession());
 
             services.AddSingleton<IHostedService>(
                 new EventStoreService(

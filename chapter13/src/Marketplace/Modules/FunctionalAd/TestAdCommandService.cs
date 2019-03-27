@@ -1,15 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Marketplace.Ads.Domain.ClassifiedAds;
+using Marketplace.Ads.Domain.Functional;
 using Marketplace.Ads.Domain.Shared;
-using Marketplace.Ads.Domain.Test;
 using Marketplace.Ads.Messages.Ads;
 using Marketplace.EventSourcing;
 using Marketplace.Infrastructure.EventStore;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Marketplace.Modules.Test
+namespace Marketplace.Modules.FunctionalAd
 {
     public class TestAdCommandService : TestCommandService<TestAdState>
     {

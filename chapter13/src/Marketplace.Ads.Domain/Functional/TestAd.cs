@@ -2,7 +2,7 @@ using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.Ads.Domain.Shared;
 using Marketplace.Ads.Messages.Ads;
 
-namespace Marketplace.Ads.Domain.Test
+namespace Marketplace.Ads.Domain.Functional
 {
     public static class TestAd
     {

@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
-using Marketplace.Ads.Domain.Test;
 using Marketplace.EventSourcing;
-using Serilog;
 
 namespace Marketplace.Infrastructure.EventStore
 {
