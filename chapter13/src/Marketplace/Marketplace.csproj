@@ -37,11 +37,7 @@
 
   <ItemGroup>
     <Content Update="appsettings.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
-    <Content Include="ClientApp\src\components\AdListItem.vue" />
-    <Content Include="ClientApp\src\store\modules\services\actions.type.js" />
-    <Content Include="ClientApp\src\store\modules\services\index.js" />
-    <Content Include="ClientApp\src\store\modules\services\mutations.type.js" />
-    <Content Include="ClientApp\src\views\AdServices.vue" />
+    <Content Include="ClientApp\src\components\AdImage.vue" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,12 +46,6 @@
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
     <None Remove="ClientApp\dist\**" />
-    <None Include="ClientApp\src\store\modules\ads\actions.type.js" />
-    <None Include="ClientApp\src\store\modules\ads\ad.module.js" />
-    <None Include="ClientApp\src\store\modules\ads\mutation.type.js" />
-    <None Include="ClientApp\src\store\modules\auth\actions.type.js" />
-    <None Include="ClientApp\src\store\modules\auth\auth.module.js" />
-    <None Include="ClientApp\src\store\modules\auth\mutation.type.js" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

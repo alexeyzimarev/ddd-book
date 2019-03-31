@@ -10,15 +10,10 @@
             <v-layout wrap>
                 <v-form>
                     <v-flex md12>
-                        <AdTitle v-bind:ad-title="title"/>
-                        <AdText v-bind:ad-text="text"/>
-                        <AdPrice v-bind:ad-price="price"/>
-                        <v-image-input
-                                v-model="imageData"
-                                :image-quality="0.85"
-                                clearable
-                                image-format="jpeg"
-                        />
+                        <ad-title v-bind:ad-title="title"/>
+                        <ad-text v-bind:ad-text="text"/>
+                        <ad-price v-bind:ad-price="price"/>
+                        <ad-image />
                     </v-flex>
                     <v-flex md12>
                         <v-btn color="primary" @click="add">Next</v-btn>
@@ -32,21 +27,21 @@
 </template>
 
 <script>
-    import VImageInput from 'vuetify-image-input';
     import {mapGetters, mapActions} from "vuex";
     import {uuid} from "vue-uuid";
     import {CreateAd, DeleteAdIfEmpty} from "../store/modules/ads/actions.type";
     import AdTitle from "../components/AdTitle";
     import AdText from "../components/AdText";
     import AdPrice from "../components/AdPrice";
+    import AdImage from "../components/AdImage";
     import store from "../store";
 
     export default {
         components: {
-            [VImageInput.name]: VImageInput,
             AdTitle,
             AdText,
-            AdPrice
+            AdPrice,
+            AdImage
         },
         data: () => ({
             title: null,

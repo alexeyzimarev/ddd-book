@@ -3,7 +3,7 @@ import {
     CreateAd, DeleteAdIfEmpty,
     RenameAd,
     UpdateAdPrice,
-    UpdateAdText
+    UpdateAdText, UploadAdImage
 } from "./actions.type";
 import {
     AdCreated, 
@@ -56,6 +56,11 @@ const actions = {
         if (Object.keys(content).length === 0) {
             await ApiService.post("/ad/delete", {id});
         }
+    },
+    async [UploadAdImage](context, imageData) {
+        await ApiService.put(
+            "/ad/"
+        );
     }
 };
 

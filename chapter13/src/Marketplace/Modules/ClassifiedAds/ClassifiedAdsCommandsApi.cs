@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.Infrastructure.WebApi;
@@ -43,5 +44,11 @@ namespace Marketplace.Modules.ClassifiedAds
         [Route("delete"), HttpPost]
         public Task<IActionResult> Delete(V1.Delete command)
             => HandleCommand(command);
+
+        [Route("image"), HttpPost]
+        public async Task<IActionResult> Post(Guid id)
+        {
+            return Ok();
+        }
     }
 }
