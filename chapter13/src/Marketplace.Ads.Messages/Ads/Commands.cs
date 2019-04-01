@@ -60,6 +60,14 @@ namespace Marketplace.Ads.Messages.Ads
 
                 public override string ToString() => $"Delete {Id}";
             }
+
+            public class UploadImage
+            {
+                public Guid Id { get; set; }
+                public string Image { get; set; }
+                
+                public override string ToString() => $"Upload image for {Id}";
+            }
         }
     }
 }

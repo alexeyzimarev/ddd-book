@@ -66,6 +66,25 @@ namespace Marketplace.EventSourcing
                 }
             );
 
+        protected void UpdateWhen<TCommand>(
+            Func<TCommand, AggregateId<T>> getAggregateId,
+            Func<T, TCommand, Task> updater) where TCommand : class
+            => When<TCommand>(
+                async command =>
+                {
+                    var aggregateId = getAggregateId(command);
+                    var aggregate = await _store.Load(aggregateId);
+
+                    if (aggregate == null)
+                        throw new InvalidOperationException(
+                            $"Entity with id {aggregateId.ToString()} cannot be found"
+                        );
+
+                    await updater(aggregate, command);
+                    await _store.Save(aggregate);
+                }
+            );
+
         void When<TCommand>(Func<TCommand, Task> handler)
             where TCommand : class
             => _handlers.Add(typeof(TCommand), c => handler((TCommand) c));

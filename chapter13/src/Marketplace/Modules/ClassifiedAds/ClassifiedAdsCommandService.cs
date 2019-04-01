@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.Ads.Domain.Shared;
 using Marketplace.EventSourcing;
@@ -9,7 +11,8 @@ namespace Marketplace.Modules.ClassifiedAds
     {
         public ClassifiedAdsCommandService(
             IAggregateStore store,
-            ICurrencyLookup currencyLookup) : base(store)
+            ICurrencyLookup currencyLookup,
+            Func<string, Task<string>> uploader) : base(store)
         {
             CreateWhen<V1.Create>(
                 cmd => new ClassifiedAdId(cmd.Id),
@@ -20,18 +23,22 @@ namespace Marketplace.Modules.ClassifiedAds
 
             UpdateWhen<V1.ChangeTitle>(
                 cmd => new ClassifiedAdId(cmd.Id),
-                (ad, cmd) => ad.SetTitle(ClassifiedAdTitle.FromString(cmd.Title))
+                (ad, cmd)
+                    => ad.SetTitle(ClassifiedAdTitle.FromString(cmd.Title))
             );
 
             UpdateWhen<V1.UpdateText>(
                 cmd => new ClassifiedAdId(cmd.Id),
-                (ad, cmd) => ad.UpdateText(ClassifiedAdText.FromString(cmd.Text))
+                (ad, cmd)
+                    => ad.UpdateText(ClassifiedAdText.FromString(cmd.Text))
             );
 
             UpdateWhen<V1.UpdatePrice>(
                 cmd => new ClassifiedAdId(cmd.Id),
                 (ad, cmd) => ad.UpdatePrice(
-                    Price.FromDecimal(cmd.Price, cmd.Currency ?? "EUR", currencyLookup)
+                    Price.FromDecimal(
+                        cmd.Price, cmd.Currency ?? "EUR", currencyLookup
+                    )
                 )
             );
 
@@ -48,6 +55,13 @@ namespace Marketplace.Modules.ClassifiedAds
             UpdateWhen<V1.Delete>(
                 cmd => new ClassifiedAdId(cmd.Id),
                 (ad, cmd) => ad.Delete()
+            );
+
+            UpdateWhen<V1.UploadImage>(
+                cmd => new ClassifiedAdId(cmd.Id),
+                async (ad, cmd) => ad.AddPicture(
+                    await uploader(cmd.Image), new PictureSize(2000, 2000)
+                )
             );
         }
     }

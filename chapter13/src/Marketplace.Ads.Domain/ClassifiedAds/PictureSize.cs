@@ -7,13 +7,13 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
     {
         public PictureSize(int width, int height)
         {
-            if (Width <= 0)
+            if (width <= 0)
                 throw new ArgumentOutOfRangeException(
                     nameof(width),
                     "Picture width must be a positive number"
                 );
 
-            if (Height <= 0)
+            if (height <= 0)
                 throw new ArgumentOutOfRangeException(
                     nameof(height),
                     "Picture height must be a positive number"

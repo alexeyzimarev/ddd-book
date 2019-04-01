@@ -1,4 +1,7 @@
 using System;
+using System.IO;
+using System.Net.Mime;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.Infrastructure.WebApi;
@@ -46,9 +49,7 @@ namespace Marketplace.Modules.ClassifiedAds
             => HandleCommand(command);
 
         [Route("image"), HttpPost]
-        public async Task<IActionResult> Post(Guid id)
-        {
-            return Ok();
-        }
+        public Task<IActionResult> Post(V1.UploadImage command)
+            => HandleCommand(command);
     }
 }

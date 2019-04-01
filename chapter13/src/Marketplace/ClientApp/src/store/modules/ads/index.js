@@ -6,7 +6,7 @@ import {
     UpdateAdText, UploadAdImage
 } from "./actions.type";
 import {
-    AdCreated, 
+    AdCreated, AdImageAdded,
     AdPriceUpdated,
     AdRenamed,
     AdTextUpdated,
@@ -15,7 +15,9 @@ import {
 
 const state = {
     errors: null,
-    ad: {},
+    ad: {
+        images: []
+    },
     notification: {}
 };
 
@@ -26,13 +28,13 @@ const getters = {
 
 const actions = {
     async [CreateAd](context, uuid) {
-        await ApiService.post("/ad", { id: uuid });
+        await ApiService.post("/ad", {id: uuid});
         context.commit(AdCreated, uuid);
     },
     async [RenameAd](context, title) {
         if (context.state.ad && title === context.state.ad.title) return;
         await ApiService.put(
-            "/ad/title", 
+            "/ad/title",
             {id: context.state.ad.id, title: title});
         context.commit(AdRenamed, title);
     },
@@ -58,15 +60,16 @@ const actions = {
         }
     },
     async [UploadAdImage](context, imageData) {
-        await ApiService.put(
-            "/ad/"
+        await ApiService.post("/ad/image",
+            {id: context.state.ad.id, image: imageData}
         );
+        context.commit(AdImageAdded, imageData);
     }
 };
 
 const mutations = {
     [AdCreated](state, id) {
-        state.ad = { id: id };
+        state.ad = {id: id};
     },
     [AdRenamed](state, title) {
         state.ad.title = title;
@@ -79,6 +82,14 @@ const mutations = {
     },
     [CurrentAdCleared](state) {
         state.ad = {};
+    },
+    [AdImageAdded](state, image) {
+        if (!state.ad.images) {
+            state.ad.images = [{key: 0, image: image}];
+        } else {
+            state.ad.images.push({key: state.ad.images.length, image: image});
+        }
+
     }
 };
 

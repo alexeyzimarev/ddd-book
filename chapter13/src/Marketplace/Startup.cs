@@ -9,6 +9,7 @@ using Marketplace.Infrastructure.Vue;
 using Marketplace.Modules.Auth;
 using Marketplace.Modules.ClassifiedAds;
 using Marketplace.Modules.FunctionalAd;
+using Marketplace.Modules.Images;
 using Marketplace.Modules.Projections;
 using Marketplace.Modules.UserProfile;
 using Marketplace.Modules.UserProfiles;
@@ -69,7 +70,9 @@ namespace Marketplace
 
             services.AddSingleton(
                 new ClassifiedAdsCommandService(
-                    store, new FixedCurrencyLookup()
+                    store, 
+                    new FixedCurrencyLookup(),
+                    ImageStorage.UploadFile
                 )
             );
 
@@ -82,6 +85,8 @@ namespace Marketplace
                     store, t => purgomalumClient.CheckForProfanity(t)
                 )
             );
+
+            services.AddSingleton(new ImageQueryService(ImageStorage.GetFile));
 
             var ravenDbProjectionManager = new ProjectionManager(
                 esConnection,

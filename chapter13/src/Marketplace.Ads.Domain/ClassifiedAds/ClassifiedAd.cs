@@ -94,17 +94,17 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 
         public void Delete() => Apply(new ClassifiedAdDeleted {Id = Id});
 
-        public void AddPicture(Uri pictureUri, PictureSize size)
+        public void AddPicture(string pictureUri, PictureSize size)
             => Apply(
                 new PictureAddedToAClassifiedAd
                 {
                     PictureId = new Guid(),
                     ClassifiedAdId = Id,
                     OwnerId = OwnerId,
-                    Url = pictureUri.ToString(),
+                    Url = pictureUri,
                     Height = size.Height,
                     Width = size.Width,
-                    Order = Pictures.Max(x => x.Order)
+                    Order = Pictures.Any() ? Pictures.Max(x => x.Order) : 0
                 }
             );
 
