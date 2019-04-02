@@ -1,29 +1,26 @@
 <template>
-    <v-card>
-        <v-card-title primary-title>
-            <v-container grid-list-md>
-                <div class="headline">New Classified Ad</div>
-                <span>Fill out the details and then click the Add button.</span>
-            </v-container>
-        </v-card-title>
-        <v-container grid-list-md>
-            <v-layout wrap>
-                <v-form>
-                    <v-flex md12>
+    <v-layout row>
+        <v-flex xs12 sm6 offset-sm3>
+            <v-card>
+                <v-card-title primary-title>
+                    <div>
+                        <div class="headline">New Classified Ad</div>
+                        <span class="grey--text">Fill out the details and then click the Add button</span>
+                    </div>
+                </v-card-title>
+                <v-card-text>
+                    <v-form>
                         <ad-title v-bind:ad-title="title"/>
                         <ad-text v-bind:ad-text="text"/>
                         <ad-price v-bind:ad-price="price"/>
-                        <ad-image />
-                    </v-flex>
-                    <v-flex md12>
+                        <ad-image/>
                         <v-btn color="primary" @click="add">Next</v-btn>
                         <v-btn to="/">Cancel</v-btn>
-                    </v-flex>
-                </v-form>
-            </v-layout>
-        </v-container>
-        <v-snackbar bottom v-model="snackBar"/>
-    </v-card>
+                    </v-form>
+                </v-card-text>
+            </v-card>
+        </v-flex>
+    </v-layout>
 </template>
 
 <script>
