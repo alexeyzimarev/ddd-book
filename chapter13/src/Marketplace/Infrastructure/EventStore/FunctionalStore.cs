@@ -6,11 +6,11 @@ using Marketplace.EventSourcing;
 
 namespace Marketplace.Infrastructure.EventStore
 {
-    public class TestStore
+    public class FunctionalStore
     {
         readonly IEventStoreConnection _connection;
 
-        public TestStore(IEventStoreConnection connection)
+        public FunctionalStore(IEventStoreConnection connection)
             => _connection = connection;
 
         public Task Save<T>(

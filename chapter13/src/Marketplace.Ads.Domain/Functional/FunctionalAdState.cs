@@ -5,7 +5,7 @@ using static Marketplace.Ads.Messages.Ads.Events;
 
 namespace Marketplace.Ads.Domain.Functional
 {
-    public class TestAdState : AggregateState<TestAdState>
+    public class FunctionalAdState : AggregateState<FunctionalAdState>
     {
         internal UserId OwnerId { get; set; }
         ClassifiedAdTitle Title { get; set; }
@@ -14,7 +14,7 @@ namespace Marketplace.Ads.Domain.Functional
         ClassifiedAd.ClassifiedAdState State { get; set; }
         UserId ApprovedBy { get; set; }
 
-        public override TestAdState When(TestAdState state, object @event)
+        public override FunctionalAdState When(FunctionalAdState state, object @event)
         {
             var newState = @event switch
             {
@@ -50,20 +50,21 @@ namespace Marketplace.Ads.Domain.Functional
             return newState;
         }
 
-        protected override bool EnsureValidState(TestAdState newState)
+        protected override bool EnsureValidState(FunctionalAdState newState)
             => newState switch
-               {
-                   TestAdState ad when ad.OwnerId == null => false,
-                   TestAdState ad when (ad.State == ClassifiedAd.ClassifiedAdState.PendingReview || ad.State == ClassifiedAd.ClassifiedAdState.Active)
-                                       && ad.Title != null
-                                       && ad.Text != null
-                                       && ad.Price?.Amount > 0 => false,
-                   TestAdState ad when ad.State == ClassifiedAd.ClassifiedAdState.Active
-                                       && ad.ApprovedBy != null => false,
+               { 
+                   { } ad when ad.OwnerId == null => false, 
+                   { } ad when (ad.State == ClassifiedAd.ClassifiedAdState.PendingReview 
+                                || ad.State == ClassifiedAd.ClassifiedAdState.Active)
+                               && ad.Title != null
+                               && ad.Text != null
+                               && ad.Price?.Amount > 0 => false, 
+                    { } ad when ad.State == ClassifiedAd.ClassifiedAdState.Active
+                               && ad.ApprovedBy != null => false,
                    _ => true
                };
 
-        public TestAdState()
+        public FunctionalAdState()
         {
             Version = -1;
             State = ClassifiedAd.ClassifiedAdState.Inactive;

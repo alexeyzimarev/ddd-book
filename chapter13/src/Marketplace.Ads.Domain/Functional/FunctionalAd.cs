@@ -4,12 +4,12 @@ using Marketplace.Ads.Messages.Ads;
 
 namespace Marketplace.Ads.Domain.Functional
 {
-    public static class TestAd
+    public static class FunctionalAd
     {
-        public static TestAdState.Result Create(
+        public static FunctionalAdState.Result Create(
             ClassifiedAdId id,
             UserId ownerId)
-            => new TestAdState().Apply(
+            => new FunctionalAdState().Apply(
                 new Events.ClassifiedAdCreated
                 {
                     Id = id,
@@ -17,8 +17,8 @@ namespace Marketplace.Ads.Domain.Functional
                 }
             );
 
-        public static TestAdState.Result SetTitle(
-            TestAdState state,
+        public static FunctionalAdState.Result SetTitle(
+            FunctionalAdState state,
             ClassifiedAdTitle title)
             => state.Apply(
                 new Events.ClassifiedAdTitleChanged

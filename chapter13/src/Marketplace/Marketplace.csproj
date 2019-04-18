@@ -37,7 +37,6 @@
 
   <ItemGroup>
     <Content Update="appsettings.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
-    <Content Include="ClientApp\src\components\AdImage.vue" />
   </ItemGroup>
 
   <ItemGroup>

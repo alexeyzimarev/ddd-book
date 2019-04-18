@@ -77,7 +77,7 @@ namespace Marketplace
             );
 
             services.AddSingleton(
-                new TestAdCommandService(new TestStore(esConnection))
+                new FunctionalCommandService(new FunctionalStore(esConnection))
             );
 
             services.AddSingleton(

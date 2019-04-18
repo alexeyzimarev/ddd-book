@@ -10,14 +10,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Marketplace.Modules.FunctionalAd
 {
-    public class TestAdCommandService : TestCommandService<TestAdState>
+    public class FunctionalCommandService : FunctionalCommandService<FunctionalAdState>
     {
-        public TestAdCommandService(TestStore store) : base(store) { }
+        public FunctionalCommandService(FunctionalStore store) : base(store) { }
 
         public Task Handle(Commands.V1.Create command)
             => Handle(
                 command.Id,
-                state => TestAd.Create(
+                state => Ads.Domain.Functional.FunctionalAd.Create(
                     new ClassifiedAdId(command.Id),
                     new UserId(command.OwnerId)
                 )
@@ -26,19 +26,19 @@ namespace Marketplace.Modules.FunctionalAd
         public Task Handle(Commands.V1.ChangeTitle command)
             => Handle(
                 command.Id,
-                state => TestAd.SetTitle(
+                state => Ads.Domain.Functional.FunctionalAd.SetTitle(
                     state,
                     ClassifiedAdTitle.FromString(command.Title)
                 )
             );
     }
 
-    public abstract class TestCommandService<T>
+    public abstract class FunctionalCommandService<T>
         where T : class, IAggregateState<T>, new()
     {
-        readonly TestStore _store;
+        readonly FunctionalStore _store;
 
-        protected TestCommandService(TestStore store) => _store = store;
+        protected FunctionalCommandService(FunctionalStore store) => _store = store;
 
         Task<T> Load(Guid id)
             => _store.Load<T>(

@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Marketplace.Modules.FunctionalAd
 {
-    [Route("api/test"), Authorize]
-    public class TestCommandApi : ControllerBase
+    [Route("api/func"), Authorize]
+    public class FunctionalCommandApi : ControllerBase
     {
-        readonly TestAdCommandService _app;
+        readonly FunctionalCommandService _app;
         
-        public TestCommandApi(TestAdCommandService app) => _app = app;
+        public FunctionalCommandApi(FunctionalCommandService app) => _app = app;
 
         [HttpPost]
         public Task<ActionResult> Post(Commands.V1.Create command)
