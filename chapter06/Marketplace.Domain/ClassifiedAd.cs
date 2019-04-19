@@ -4,6 +4,14 @@ namespace Marketplace.Domain
 {
     public class ClassifiedAd : Entity<ClassifiedAdId>
     {
+        public ClassifiedAdId Id { get; private set; }
+        public UserId OwnerId { get; private set; }
+        public ClassifiedAdTitle Title { get; private set; }
+        public ClassifiedAdText Text { get; private set; }
+        public Price Price { get; private set; }
+        public ClassifiedAdState State { get; private set; }
+        public UserId ApprovedBy { get; private set; }
+
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId) =>
             Apply(new Events.ClassifiedAdCreated
             {
@@ -33,19 +41,8 @@ namespace Marketplace.Domain
                 CurrencyCode = price.Currency.CurrencyCode
             });
 
-        public void RequestToPublish()
-        {
-            if (Title == null)
-                throw new InvalidEntityStateException(this, "title cannot be empty");
-
-            if (Text == null)
-                throw new InvalidEntityStateException(this, "text cannot be empty");
-
-            if (Price == null || Price.Amount == 0)
-                throw new InvalidEntityStateException(this, "price cannot be zero");
-            
+        public void RequestToPublish() =>
             Apply(new Events.ClassidiedAdSentForReview {Id = Id});
-        }
 
         protected override void When(object @event)
         {
@@ -71,13 +68,29 @@ namespace Marketplace.Domain
             }
         }
 
-        public ClassifiedAdId Id { get; private set; }
-        public UserId OwnerId { get; private set; }
-        public ClassifiedAdTitle Title { get; private set; }
-        public ClassifiedAdText Text { get; private set; }
-        public Price Price { get; private set; }
-        public ClassifiedAdState State { get; private set; }
-        public UserId ApprovedBy { get; private set; }
+        protected override void EnsureValidState()
+        {
+            var valid =
+                Id != null &&
+                OwnerId != null &&
+                (State switch
+                {
+                    ClassifiedAdState.PendingReview =>
+                        Title != null
+                        && Text != null
+                        && Price?.Amount > 0,
+                    ClassifiedAdState.Active =>
+                        Title != null
+                        && Text != null
+                        && Price?.Amount > 0
+                        && ApprovedBy != null,
+                    _ => true
+                });
+
+            if (!valid)
+                throw new InvalidEntityStateException(
+                    this, $"Post-checks failed in state {State}");
+        }
 
         public enum ClassifiedAdState
         {

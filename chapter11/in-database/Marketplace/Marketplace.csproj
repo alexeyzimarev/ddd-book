@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EventStore.Client" Version="5.0.1" />

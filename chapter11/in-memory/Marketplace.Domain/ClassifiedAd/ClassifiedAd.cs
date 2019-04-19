@@ -72,14 +72,17 @@ namespace Marketplace.Domain.ClassifiedAd
                 Order = NewPictureOrder()
             });
             
-            int NewPictureOrder() => Pictures.Any() ? Pictures.Max(x => x.Order) + 1 : 0;
+            int NewPictureOrder() => Pictures.Any() 
+                ? Pictures.Max(x => x.Order) + 1 
+                : 0;
         }
 
         public void ResizePicture(PictureId pictureId, PictureSize newSize)
         {
             var picture = FindPicture(pictureId);
             if (picture == null)
-                throw new InvalidOperationException("Cannot resize a picture that I don't have");
+                throw new InvalidOperationException(
+                    "Cannot resize a picture that I don't have");
             
             picture.Resize(newSize);
         }
@@ -129,32 +132,33 @@ namespace Marketplace.Domain.ClassifiedAd
         private Picture FindPicture(PictureId id)
             => Pictures.FirstOrDefault(x => x.Id == id);
 
-        private Picture FirstPicture => Pictures.OrderBy(x => x.Order).FirstOrDefault();
+        private Picture FirstPicture => 
+            Pictures
+                .OrderBy(x => x.Order)
+                .FirstOrDefault();
 
         protected override void EnsureValidState()
         {
-            bool valid = Id != null && OwnerId != null;
-            switch (State)
-            {
-                case ClassifiedAdState.PendingReview:
-                    valid = valid
-                            && Title != null
-                            && Text != null
-                            && Price?.Amount > 0;
-//                            && FirstPicture.HasCorrectSize();
-                    break;
-                case ClassifiedAdState.Active:
-                    valid = valid
-                            && Title != null
-                            && Text != null
-                            && Price?.Amount > 0
-//                            && FirstPicture.HasCorrectSize()
-                            && ApprovedBy != null;
-                    break;
-            }
+            var valid =
+                Id != null &&
+                OwnerId != null &&
+                (State switch
+                {
+                    ClassifiedAdState.PendingReview =>
+                        Title != null
+                        && Text != null
+                        && Price?.Amount > 0,
+                    ClassifiedAdState.Active =>
+                        Title != null
+                        && Text != null
+                        && Price?.Amount > 0
+                        && ApprovedBy != null,
+                    _ => true
+                });
 
             if (!valid)
-                throw new DomainExceptions.InvalidEntityState(this, $"Post-checks failed in state {State}");
+                throw new DomainExceptions.InvalidEntityState(
+                    this, $"Post-checks failed in state {State}");
         }
         
         protected ClassifiedAd() { }
