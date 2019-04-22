@@ -1,14 +1,14 @@
 using System;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
-using Marketplace.Ads.Messages.Ads;
 using Marketplace.EventSourcing;
-using Marketplace.Infrastructure.EventStore;
+using Marketplace.EventStore;
+using static Marketplace.Ads.Messages.Ads.Events;
 using ILogger = Serilog.ILogger;
 
 namespace Marketplace.Modules.Projections
 {
-    public class ClassifiedAdUpcasters : IProjection
+    public class ClassifiedAdUpcasters : ISubscription
     {
         const string StreamName = "UpcastedClassifiedAdEvents";
 
@@ -17,34 +17,34 @@ namespace Marketplace.Modules.Projections
 
         public ClassifiedAdUpcasters(
             IEventStoreConnection eventStoreConnection,
-            Func<Guid, Task<string>> getUserPhoto)
+            Func<Guid, Task<string>> getUserPhoto
+        )
         {
             _eventStoreConnection = eventStoreConnection;
             _getUserPhoto = getUserPhoto;
         }
 
         public Task Project(object @event)
-        {
-            return @event switch
+            => @event switch
             {
-                Events.ClassifiedAdPublished e => UpcastPublished(e),
+                V1.ClassifiedAdPublished e => UpcastPublished(e),
                 _ => Task.CompletedTask
             };
 
-            async Task UpcastPublished(
-                Events.ClassifiedAdPublished e)
-                => await _eventStoreConnection.AppendEvents(
-                    StreamName,
-                    ExpectedVersion.Any,
-                    new ClassifiedAdUpcastedEvents.V1.ClassifiedAdPublished
-                    {
-                        Id = e.Id,
-                        OwnerId = e.OwnerId,
-                        ApprovedBy = e.ApprovedBy,
-                        SellersPhotoUrl = await _getUserPhoto(e.OwnerId)
-                    }
-                );
-        }
+        async Task UpcastPublished(
+            V1.ClassifiedAdPublished e
+        )
+            => await _eventStoreConnection.AppendEvents(
+                StreamName,
+                ExpectedVersion.Any,
+                new ClassifiedAdUpcastedEvents.V1.ClassifiedAdPublished
+                {
+                    Id = e.Id,
+                    OwnerId = e.OwnerId,
+                    ApprovedBy = e.ApprovedBy,
+                    SellersPhotoUrl = await _getUserPhoto(e.OwnerId)
+                }
+            );
     }
 
     public static class ClassifiedAdUpcastedEvents

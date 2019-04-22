@@ -1,11 +1,11 @@
 using System;
 using Marketplace.EventSourcing;
 
-namespace Marketplace.PaidServices.Domain.ClassifiedAds
+namespace Marketplace.PaidServices.Domain.Orders
 {
-    public class ClassifiedAdId : Value<ClassifiedAdId>
+    public class OrderId : Value<OrderId>
     {
-        protected ClassifiedAdId(Guid value)
+        protected OrderId(Guid value)
         {
             if (value == default)
                 throw new ArgumentNullException(
@@ -15,13 +15,12 @@ namespace Marketplace.PaidServices.Domain.ClassifiedAds
             Value = value;
         }
         
-        public static implicit operator ClassifiedAdId(string value)
-            => new ClassifiedAdId(Guid.Parse(value));
+        public static implicit operator OrderId(string value)
+            => new OrderId(Guid.Parse(value));
 
         public Guid Value { get; }
         
-        public static implicit operator Guid(ClassifiedAdId self) 
-            => self.Value;
+        public static implicit operator Guid(OrderId self) => self.Value;
 
         public override string ToString() => Value.ToString();
     }

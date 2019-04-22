@@ -17,11 +17,11 @@ namespace Marketplace.Modules.Projections
 
             return @event switch
             {
-                UserRegistered e => 
-                    () => Create(e.UserId, e.FullName),
-                UserDisplayNameUpdated e =>
+                V1.UserRegistered e => 
+                    () => Create(e.UserId, e.DisplayName, e.FullName),
+                V1.UserDisplayNameUpdated e =>
                     () => Update(e.UserId, x => x.DisplayName = e.DisplayName),
-                ProfilePhotoUploaded e =>
+                V1.ProfilePhotoUploaded e =>
                     () => Update(e.UserId, x => x.PhotoUrl = e.PhotoUrl),
                 _ => (Func<Task>) null
             };
@@ -29,12 +29,13 @@ namespace Marketplace.Modules.Projections
             Task Update(Guid id, Action<UserDetails> update)
                 => session.UpdateItem(getDbId(id), update);
 
-            Task Create(Guid userId, string displayName)
+            Task Create(Guid userId, string displayName, string fullName)
                 => session.StoreAsync(
                     new UserDetails
                     {
                         Id = getDbId(userId),
-                        DisplayName = displayName
+                        DisplayName = displayName,
+                        FullName = fullName
                     }
                 );
         }

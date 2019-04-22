@@ -1,22 +1,20 @@
 using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Marketplace.EventSourcing;
-using Newtonsoft.Json;
-using ILogger = Serilog.ILogger;
+using Marketplace.EventStore.Logging;
 
-namespace Marketplace.Infrastructure.EventStore
+namespace Marketplace.EventStore
 {
     public class EsAggregateStore : IAggregateStore
     {
-        static readonly ILogger Log =
-            Serilog.Log.ForContext<EsAggregateStore>();
+        static readonly ILog Log = LogProvider.GetCurrentClassLogger();
 
         readonly IEventStoreConnection _connection;
 
-        public EsAggregateStore(IEventStoreConnection connection) => _connection = connection;
+        public EsAggregateStore(IEventStoreConnection connection) 
+            => _connection = connection;
 
         public async Task Save<T>(T aggregate) where T : AggregateRoot
         {

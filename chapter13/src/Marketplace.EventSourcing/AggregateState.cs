@@ -70,7 +70,7 @@ namespace Marketplace.EventSourcing
             return new Result(newState, events);
         }
 
-        class InvalidEntityState : Exception
+        private class InvalidEntityState : Exception
         {
             public InvalidEntityState(object entity, string message)
                 : base(

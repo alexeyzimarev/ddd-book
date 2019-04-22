@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.Ads.Domain.Functional;
 using Marketplace.Ads.Domain.Shared;
-using Marketplace.Ads.Messages.Ads;
 using Marketplace.EventSourcing;
-using Marketplace.Infrastructure.EventStore;
+using Marketplace.EventStore;
 using Microsoft.AspNetCore.Mvc;
+using static Marketplace.Ads.Domain.Functional.FunctionalAd;
+using static Marketplace.Ads.Messages.Ads.Commands;
 
 namespace Marketplace.Modules.FunctionalAd
 {
@@ -14,19 +15,19 @@ namespace Marketplace.Modules.FunctionalAd
     {
         public FunctionalCommandService(FunctionalStore store) : base(store) { }
 
-        public Task Handle(Commands.V1.Create command)
+        public Task Handle(V1.Create command)
             => Handle(
                 command.Id,
-                state => Ads.Domain.Functional.FunctionalAd.Create(
+                state => Create(
                     new ClassifiedAdId(command.Id),
                     new UserId(command.OwnerId)
                 )
             );
 
-        public Task Handle(Commands.V1.ChangeTitle command)
+        public Task Handle(V1.ChangeTitle command)
             => Handle(
                 command.Id,
-                state => Ads.Domain.Functional.FunctionalAd.SetTitle(
+                state => SetTitle(
                     state,
                     ClassifiedAdTitle.FromString(command.Title)
                 )
@@ -38,7 +39,8 @@ namespace Marketplace.Modules.FunctionalAd
     {
         readonly FunctionalStore _store;
 
-        protected FunctionalCommandService(FunctionalStore store) => _store = store;
+        protected FunctionalCommandService(FunctionalStore store) 
+            => _store = store;
 
         Task<T> Load(Guid id)
             => _store.Load<T>(

@@ -3,9 +3,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
+using Marketplace.EventSourcing;
 using Newtonsoft.Json;
 
-namespace Marketplace.Infrastructure.EventStore
+namespace Marketplace.EventStore
 {
     public class EsCheckpointStore : ICheckpointStore
     {
@@ -21,7 +22,7 @@ namespace Marketplace.Infrastructure.EventStore
             _streamName = CheckpointStreamPrefix + subscriptionName;
         }
 
-        public async Task<Position?> GetCheckpoint()
+        public async Task<long?> GetCheckpoint()
         {
             var slice = await _connection
                 .ReadStreamEventsBackwardAsync(_streamName, -1, 1, false);
@@ -30,15 +31,15 @@ namespace Marketplace.Infrastructure.EventStore
 
             if (eventData.Equals(default(ResolvedEvent)))
             {
-                await StoreCheckpoint(AllCheckpoint.AllStart);
+                await StoreCheckpoint(AllCheckpoint.AllStart?.CommitPosition);
                 await SetStreamMaxCount();
-                return AllCheckpoint.AllStart;
+                return null;
             }
 
             return eventData.Deserialze<Checkpoint>()?.Position;
         }
 
-        public Task StoreCheckpoint(Position? checkpoint)
+        public Task StoreCheckpoint(long? checkpoint)
         {
             var @event = new Checkpoint {Position = checkpoint};
 
@@ -73,7 +74,7 @@ namespace Marketplace.Infrastructure.EventStore
 
         class Checkpoint
         {
-            public Position? Position { get; set; }
+            public long? Position { get; set; }
         }
     }
 }

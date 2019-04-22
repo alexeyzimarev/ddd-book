@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Marketplace.EventSourcing;
 
-namespace Marketplace.Infrastructure.EventStore
+namespace Marketplace.EventStore
 {
     public class FunctionalStore
     {

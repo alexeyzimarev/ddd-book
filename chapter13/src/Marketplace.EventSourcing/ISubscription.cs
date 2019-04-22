@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace Marketplace.EventSourcing
 {
-    public interface IProjection
+    public interface ISubscription
     {
         Task Project(object @event);
     }

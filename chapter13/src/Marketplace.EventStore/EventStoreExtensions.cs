@@ -3,9 +3,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
+using Marketplace.EventSourcing;
 using Newtonsoft.Json;
 
-namespace Marketplace.Infrastructure.EventStore
+namespace Marketplace.EventStore
 {
     public static class EventStoreExtensions
     {

@@ -2,10 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Marketplace.Infrastructure.RavenDb;
 using Raven.Client.Documents.Session;
-using Serilog;
 using static Marketplace.Ads.Messages.Ads.Events;
-using static Marketplace.Ads.Messages.UserProfile.Events;
-using static Marketplace.Modules.Projections.ClassifiedAdUpcastedEvents;
 using static Marketplace.Modules.Projections.ReadModels;
 
 namespace Marketplace.Modules.Projections
@@ -19,33 +16,33 @@ namespace Marketplace.Modules.Projections
         {
             return @event switch
             {
-                ClassifiedAdCreated e =>
+                V1.ClassifiedAdCreated e =>
                     () => Create(e.Id, e.OwnerId),
-                ClassifiedAdTitleChanged e =>
+                V1.ClassifiedAdTitleChanged e =>
                     () => Update(e.Id, ad => ad.Title = e.Title),
-                ClassifiedAdTextUpdated e =>
+                V1.ClassifiedAdTextUpdated e =>
                     () => Update(e.Id, ad => ad.Description = e.AdText),
-                ClassifiedAdPriceUpdated e =>
-                    () => Update(
-                        e.Id,
+                V1.ClassifiedAdPriceUpdated e =>
+                    () => Update( e.Id,
                         ad =>
                         {
                             ad.Price = e.Price;
                             ad.CurrencyCode = e.CurrencyCode;
-                        }
-                    ),
-                ClassifiedAdDeleted e =>
+                        }),
+                V1.PictureAddedToAClassifiedAd e =>
+                    () => Update(e.ClassifiedAdId, 
+                        ad => ad.PhotoUrls.Add(e.Url)),
+                V1.ClassifiedAdDeleted e =>
                     () => Delete(e.Id),
-                UserDisplayNameUpdated e =>
+                Ads.Messages.UserProfile.Events.V1.UserDisplayNameUpdated e =>
                     () =>
                         session.UpdateMultipleItems<ClassifiedAdDetails>(
                             x => x.SellerId == e.UserId,
                             x => x.SellersDisplayName = e.DisplayName
                         ),
-                V1.ClassifiedAdPublished e =>
+                ClassifiedAdUpcastedEvents.V1.ClassifiedAdPublished e =>
                     () => Update(
-                        e.Id, ad => ad.SellersPhotoUrl = e.SellersPhotoUrl
-                    ),
+                        e.Id, ad => ad.SellersPhotoUrl = e.SellersPhotoUrl),
                 _ => (Func<Task>) null
             };
 

@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <LangVersion>preview</LangVersion>
     <SpaRoot>ClientApp\</SpaRoot>
     <IsPackable>false</IsPackable>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,7 +32,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Marketplace.Ads.Domain\Marketplace.Ads.Domain.csproj" />
     <ProjectReference Include="..\Marketplace.EventSourcing\Marketplace.EventSourcing.csproj" />
+    <ProjectReference Include="..\Marketplace.EventStore\Marketplace.EventStore.csproj" />
     <ProjectReference Include="..\Marketplace.PaidServices.Domain\Marketplace.PaidServices.Domain.csproj" />
+    <ProjectReference Include="..\Marketplace.RavenDb\Marketplace.RavenDb.csproj" />
   </ItemGroup>
 
   <ItemGroup>

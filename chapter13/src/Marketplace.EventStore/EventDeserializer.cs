@@ -1,8 +1,9 @@
 using System.Text;
 using EventStore.ClientAPI;
+using Marketplace.EventSourcing;
 using Newtonsoft.Json;
 
-namespace Marketplace.Infrastructure.EventStore
+namespace Marketplace.EventStore
 {
     public static class EventDeserializer
     {

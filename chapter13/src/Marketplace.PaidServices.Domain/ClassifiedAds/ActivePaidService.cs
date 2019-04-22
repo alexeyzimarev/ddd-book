@@ -12,8 +12,8 @@ namespace Marketplace.PaidServices.Domain.ClassifiedAds
             ExpiresAt = expiresAt;
         }
 
-        public PaidService Service { get; }
-        public DateTimeOffset ExpiresAt { get; }
+        PaidService Service { get; }
+        DateTimeOffset ExpiresAt { get; }
 
         public static ActivePaidService Create(
             PaidService paidService,

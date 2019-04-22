@@ -4,19 +4,19 @@ using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Microsoft.Extensions.Hosting;
 
-namespace Marketplace.Infrastructure.EventStore
+namespace Marketplace.EventStore
 {
     public class EventStoreService : IHostedService
     {
         readonly IEventStoreConnection _esConnection;
-        readonly ProjectionManager[] _projectionManager;
+        readonly SubscriptionManager[] _subscriptionManagers;
 
         public EventStoreService(
             IEventStoreConnection esConnection,
-            params ProjectionManager[] projectionManagers)
+            params SubscriptionManager[] subscriptionManagers)
         {
             _esConnection = esConnection;
-            _projectionManager = projectionManagers;
+            _subscriptionManagers = subscriptionManagers;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -24,13 +24,14 @@ namespace Marketplace.Infrastructure.EventStore
             await _esConnection.ConnectAsync();
 
             await Task.WhenAll(
-                _projectionManager
+                _subscriptionManagers
                     .Select(projection => projection.Start())
             );
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            _subscriptionManagers.ForEach(x => x.Stop());
             _esConnection.Close();
             return Task.CompletedTask;
         }

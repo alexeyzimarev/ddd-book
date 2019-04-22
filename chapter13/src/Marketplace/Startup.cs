@@ -1,8 +1,8 @@
 ﻿using System;
 using EventStore.ClientAPI;
 using Marketplace.EventSourcing;
+using Marketplace.EventStore;
 using Marketplace.Infrastructure.Currency;
-using Marketplace.Infrastructure.EventStore;
 using Marketplace.Infrastructure.Profanity;
 using Marketplace.Infrastructure.RavenDb;
 using Marketplace.Infrastructure.Vue;
@@ -13,6 +13,7 @@ using Marketplace.Modules.Images;
 using Marketplace.Modules.Projections;
 using Marketplace.Modules.UserProfile;
 using Marketplace.Modules.UserProfiles;
+using Marketplace.RavenDb;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,6 +26,7 @@ using Raven.Client.Documents.Session;
 using Raven.Client.ServerWide;
 using Raven.Client.ServerWide.Operations;
 using Swashbuckle.AspNetCore.Swagger;
+using EventMappings = Marketplace.Modules.UserProfiles.EventMappings;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 // ReSharper disable UnusedMember.Global
@@ -51,7 +53,7 @@ namespace Marketplace
         public void ConfigureServices(IServiceCollection services)
         {
             Modules.ClassifiedAds.EventMappings.MapEventTypes();
-            Modules.UserProfile.EventMappings.MapEventTypes();
+            EventMappings.MapEventTypes();
 
             var esConnection = EventStoreConnection.Create(
                 Configuration["eventStore:connectionString"],
@@ -88,15 +90,17 @@ namespace Marketplace
 
             services.AddSingleton(new ImageQueryService(ImageStorage.GetFile));
 
-            var ravenDbProjectionManager = new ProjectionManager(
+            var ravenDbProjectionManager = new SubscriptionManager(
                 esConnection,
                 new RavenDbCheckpointStore(GetSession, "readmodels"),
+                "readmodels",
                 ConfigureRavenDbProjections(GetSession)
             );
 
-            var upcasterProjectionManager = new ProjectionManager(
+            var upcasterProjectionManager = new SubscriptionManager(
                 esConnection,
                 new EsCheckpointStore(esConnection, "upcaster"),
+                "upcaster",
                 ConfigureUpcasters(esConnection, GetSession)
             );
 
@@ -214,9 +218,9 @@ namespace Marketplace
             return store;
         }
 
-        static IProjection[] ConfigureRavenDbProjections(
+        static ISubscription[] ConfigureRavenDbProjections(
             Func<IAsyncDocumentSession> getSession)
-            => new IProjection[]
+            => new ISubscription[]
             {
                 new RavenDbProjection<ReadModels.ClassifiedAdDetails>(
                     getSession,
@@ -237,10 +241,10 @@ namespace Marketplace
                 )
             };
 
-        static IProjection[] ConfigureUpcasters(
+        static ISubscription[] ConfigureUpcasters(
             IEventStoreConnection connection,
             Func<IAsyncDocumentSession> getSession)
-            => new IProjection[]
+            => new ISubscription[]
             {
                 new ClassifiedAdUpcasters(
                     connection,

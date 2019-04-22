@@ -16,6 +16,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{11ACA044
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.Ads.Messages", "src\Marketplace.Ads.Messages\Marketplace.Ads.Messages.csproj", "{39AE4693-17DE-4E46-A13E-04DC5D924F28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.PaidServices.Messages", "src\Marketplace.PaidServices.Messages\Marketplace.PaidServices.Messages.csproj", "{0F200531-38B3-4221-AC93-7694376FFC5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.EventStore", "src\Marketplace.EventStore\Marketplace.EventStore.csproj", "{EA7B5B15-9095-4082-ADC3-E367513C54B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.RavenDb", "src\Marketplace.RavenDb\Marketplace.RavenDb.csproj", "{D2D334CA-B388-47EB-848A-4345A4E0E221}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,9 +52,23 @@ Global
 		{39AE4693-17DE-4E46-A13E-04DC5D924F28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39AE4693-17DE-4E46-A13E-04DC5D924F28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39AE4693-17DE-4E46-A13E-04DC5D924F28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F200531-38B3-4221-AC93-7694376FFC5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F200531-38B3-4221-AC93-7694376FFC5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F200531-38B3-4221-AC93-7694376FFC5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F200531-38B3-4221-AC93-7694376FFC5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA7B5B15-9095-4082-ADC3-E367513C54B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA7B5B15-9095-4082-ADC3-E367513C54B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA7B5B15-9095-4082-ADC3-E367513C54B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA7B5B15-9095-4082-ADC3-E367513C54B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2D334CA-B388-47EB-848A-4345A4E0E221}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2D334CA-B388-47EB-848A-4345A4E0E221}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2D334CA-B388-47EB-848A-4345A4E0E221}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2D334CA-B388-47EB-848A-4345A4E0E221}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F682B8F9-A43B-4D6D-BECE-4F45767A026A} = {11ACA044-780C-4C71-A6F7-ECFB6B26B9E7}
 		{FEE71FF8-559C-40CC-9AF5-1E4051EE9C7C} = {B8B2A008-6E95-4BEE-9BE3-DC621B4DC4EC}
+		{EA7B5B15-9095-4082-ADC3-E367513C54B6} = {B8B2A008-6E95-4BEE-9BE3-DC621B4DC4EC}
+		{D2D334CA-B388-47EB-848A-4345A4E0E221} = {B8B2A008-6E95-4BEE-9BE3-DC621B4DC4EC}
 	EndGlobalSection
 EndGlobal

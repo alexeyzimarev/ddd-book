@@ -17,14 +17,14 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
         {
             switch (@event)
             {
-                case PictureAddedToAClassifiedAd e:
+                case V1.PictureAddedToAClassifiedAd e:
                     ParentId = new ClassifiedAdId(e.ClassifiedAdId);
                     Id = new PictureId(e.PictureId);
                     Location = new Uri(e.Url);
                     Size = new PictureSize {Height = e.Height, Width = e.Width};
                     Order = e.Order;
                     break;
-                case ClassifiedAdPictureResized e:
+                case V1.ClassifiedAdPictureResized e:
                     Size = new PictureSize {Height = e.Height, Width = e.Width};
                     break;
             }
@@ -32,7 +32,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 
         public void Resize(PictureSize newSize)
             => Apply(
-                new ClassifiedAdPictureResized
+                new V1.ClassifiedAdPictureResized
                 {
                     PictureId = Id.Value,
                     ClassifiedAdId = ParentId.Value,

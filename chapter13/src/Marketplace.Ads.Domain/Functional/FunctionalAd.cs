@@ -1,6 +1,6 @@
 using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.Ads.Domain.Shared;
-using Marketplace.Ads.Messages.Ads;
+using static Marketplace.Ads.Messages.Ads.Events;
 
 namespace Marketplace.Ads.Domain.Functional
 {
@@ -8,9 +8,10 @@ namespace Marketplace.Ads.Domain.Functional
     {
         public static FunctionalAdState.Result Create(
             ClassifiedAdId id,
-            UserId ownerId)
+            UserId ownerId
+        )
             => new FunctionalAdState().Apply(
-                new Events.ClassifiedAdCreated
+                new V1.ClassifiedAdCreated
                 {
                     Id = id,
                     OwnerId = ownerId
@@ -19,9 +20,10 @@ namespace Marketplace.Ads.Domain.Functional
 
         public static FunctionalAdState.Result SetTitle(
             FunctionalAdState state,
-            ClassifiedAdTitle title)
+            ClassifiedAdTitle title
+        )
             => state.Apply(
-                new Events.ClassifiedAdTitleChanged
+                new V1.ClassifiedAdTitleChanged
                 {
                     Id = state.Id,
                     OwnerId = state.OwnerId,

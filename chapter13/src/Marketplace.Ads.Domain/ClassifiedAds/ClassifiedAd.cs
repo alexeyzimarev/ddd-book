@@ -21,7 +21,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             var ad = new ClassifiedAd();
 
             ad.Apply(
-                new ClassifiedAdCreated
+                new V1.ClassifiedAdCreated
                 {
                     Id = id,
                     OwnerId = ownerId
@@ -44,7 +44,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 
         public void SetTitle(ClassifiedAdTitle title)
             => Apply(
-                new ClassifiedAdTitleChanged
+                new V1.ClassifiedAdTitleChanged
                 {
                     Id = Id,
                     OwnerId = OwnerId,
@@ -54,7 +54,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 
         public void UpdateText(ClassifiedAdText text)
             => Apply(
-                new ClassifiedAdTextUpdated
+                new V1.ClassifiedAdTextUpdated
                 {
                     Id = Id,
                     OwnerId = OwnerId,
@@ -64,7 +64,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 
         public void UpdatePrice(Price price)
             => Apply(
-                new ClassifiedAdPriceUpdated
+                new V1.ClassifiedAdPriceUpdated
                 {
                     Id = Id,
                     OwnerId = OwnerId,
@@ -75,16 +75,16 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 
         public void RequestToPublish()
             => Apply(
-                new ClassifiedAdSentForReview
+                new V1.ClassifiedAdSentForReview
                 {
                     Id = Id,
-                    OwnerId = OwnerId,
+                    OwnerId = OwnerId
                 }
             );
 
         public void Publish(UserId userId)
             => Apply(
-                new ClassifiedAdPublished
+                new V1.ClassifiedAdPublished
                 {
                     Id = Id,
                     ApprovedBy = userId,
@@ -92,11 +92,11 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                 }
             );
 
-        public void Delete() => Apply(new ClassifiedAdDeleted {Id = Id});
+        public void Delete() => Apply(new V1.ClassifiedAdDeleted {Id = Id});
 
         public void AddPicture(string pictureUri, PictureSize size)
             => Apply(
-                new PictureAddedToAClassifiedAd
+                new V1.PictureAddedToAClassifiedAd
                 {
                     PictureId = new Guid(),
                     ClassifiedAdId = Id,
@@ -126,42 +126,42 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
 
             switch (@event)
             {
-                case ClassifiedAdCreated e:
+                case V1.ClassifiedAdCreated e:
                     Id = e.Id;
                     OwnerId = new UserId(e.OwnerId);
                     State = ClassifiedAdState.Inactive;
                     _pictures = new List<Picture>();
                     break;
 
-                case ClassifiedAdTitleChanged e:
+                case V1.ClassifiedAdTitleChanged e:
                     Title = new ClassifiedAdTitle(e.Title);
                     break;
 
-                case ClassifiedAdTextUpdated e:
+                case V1.ClassifiedAdTextUpdated e:
                     Text = new ClassifiedAdText(e.AdText);
                     break;
 
-                case ClassifiedAdPriceUpdated e:
+                case V1.ClassifiedAdPriceUpdated e:
                     Price = new Price(e.Price, e.CurrencyCode);
                     break;
 
-                case ClassifiedAdSentForReview _:
+                case V1.ClassifiedAdSentForReview _:
                     State = ClassifiedAdState.PendingReview;
                     break;
 
-                case ClassifiedAdPublished e:
+                case V1.ClassifiedAdPublished e:
                     ApprovedBy = new UserId(e.ApprovedBy);
                     State = ClassifiedAdState.Active;
                     break;
 
                 // picture
-                case PictureAddedToAClassifiedAd e:
+                case V1.PictureAddedToAClassifiedAd e:
                     picture = new Picture(Apply);
                     ApplyToEntity(picture, e);
                     _pictures.Add(picture);
                     break;
 
-                case ClassifiedAdPictureResized e:
+                case V1.ClassifiedAdPictureResized e:
                     picture = FindPicture(new PictureId(e.PictureId));
                     ApplyToEntity(picture, @event);
                     break;
@@ -176,20 +176,18 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             var valid =
                 OwnerId != null &&
                 (State switch
-                    {
+                {
                     ClassifiedAdState.PendingReview =>
-                    Title != null
-                    && Text != null
-                    && Price?.Amount > 0,
-//                            && FirstPicture.HasCorrectSize();
+                        Title != null
+                        && Text != null
+                        && Price?.Amount > 0,
                     ClassifiedAdState.Active =>
-                    Title != null
-                    && Text != null
-                    && Price?.Amount > 0
-//                            && FirstPicture.HasCorrectSize()
-                    && ApprovedBy != null,
+                        Title != null
+                        && Text != null
+                        && Price?.Amount > 0
+                        && ApprovedBy != null,
                     _ => true
-                    });
+                });
 
             if (!valid)
                 throw new DomainExceptions.InvalidEntityState(

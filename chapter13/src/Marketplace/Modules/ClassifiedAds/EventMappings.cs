@@ -1,5 +1,5 @@
 using static Marketplace.Ads.Messages.Ads.Events;
-using static Marketplace.Infrastructure.EventStore.TypeMapper;
+using static Marketplace.EventSourcing.TypeMapper;
 
 namespace Marketplace.Modules.ClassifiedAds
 {
@@ -7,15 +7,15 @@ namespace Marketplace.Modules.ClassifiedAds
     {
         public static void MapEventTypes()
         {
-            Map<ClassifiedAdCreated>("ClassifiedAdCreated");
-            Map<ClassifiedAdDeleted>("ClassifiedAdDeleted");
-            Map<ClassifiedAdPublished>("ClassifiedAdPublished");
-            Map<ClassifiedAdTextUpdated>("ClassifiedAdTextUpdated");
-            Map<ClassifiedAdPriceUpdated>("ClassifiedAdPriceUpdated");
-            Map<ClassifiedAdTitleChanged>("ClassifiedAdTitleChanged");
-            Map<ClassifiedAdPictureResized>("ClassifiedAdPictureResized");
-            Map<ClassifiedAdSentForReview>("ClassifiedAdSentForReview");
-            Map<PictureAddedToAClassifiedAd>("PictureAddedToAClassifiedAd");
+            Map<V1.ClassifiedAdCreated>("ClassifiedAdCreated");
+            Map<V1.ClassifiedAdDeleted>("ClassifiedAdDeleted");
+            Map<V1.ClassifiedAdPublished>("ClassifiedAdPublished");
+            Map<V1.ClassifiedAdTextUpdated>("ClassifiedAdTextUpdated");
+            Map<V1.ClassifiedAdPriceUpdated>("ClassifiedAdPriceUpdated");
+            Map<V1.ClassifiedAdTitleChanged>("ClassifiedAdTitleChanged");
+            Map<V1.ClassifiedAdPictureResized>("ClassifiedAdPictureResized");
+            Map<V1.ClassifiedAdSentForReview>("ClassifiedAdSentForReview");
+            Map<V1.PictureAddedToAClassifiedAd>("PictureAddedToAClassifiedAd");
         }
     }
 }

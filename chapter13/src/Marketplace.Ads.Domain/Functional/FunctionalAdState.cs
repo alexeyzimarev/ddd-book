@@ -1,6 +1,7 @@
 using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.Ads.Domain.Shared;
 using Marketplace.EventSourcing;
+using static Marketplace.Ads.Domain.ClassifiedAds.ClassifiedAd;
 using static Marketplace.Ads.Messages.Ads.Events;
 
 namespace Marketplace.Ads.Domain.Functional
@@ -11,14 +12,16 @@ namespace Marketplace.Ads.Domain.Functional
         ClassifiedAdTitle Title { get; set; }
         ClassifiedAdText Text { get; set; }
         Price Price { get; set; }
-        ClassifiedAd.ClassifiedAdState State { get; set; }
+        ClassifiedAdState State { get; set; }
         UserId ApprovedBy { get; set; }
 
-        public override FunctionalAdState When(FunctionalAdState state, object @event)
-        {
-            var newState = @event switch
+        public override FunctionalAdState When(
+            FunctionalAdState state, 
+            object @event
+        ) => 
+            With(@event switch
             {
-                ClassifiedAdCreated e =>
+                V1.ClassifiedAdCreated e =>
                     With(state,
                         x =>
                         {
@@ -26,40 +29,37 @@ namespace Marketplace.Ads.Domain.Functional
                             x.OwnerId = new UserId(e.OwnerId);
                         }
                     ),
-                ClassifiedAdTitleChanged e =>
+                V1.ClassifiedAdTitleChanged e =>
                     With(state, x => x.Title = new ClassifiedAdTitle(e.Title)),
-                ClassifiedAdTextUpdated e =>
+                V1.ClassifiedAdTextUpdated e =>
                     With(state, x => x.Text = new ClassifiedAdText(e.AdText)),
-                ClassifiedAdPriceUpdated e =>
+                V1.ClassifiedAdPriceUpdated e =>
                     With(state, x => x.Price = new Price(e.Price, e.CurrencyCode)),
-                ClassifiedAdSentForReview _ =>
+                V1.ClassifiedAdSentForReview _ =>
                     With(state,
-                        x => x.State = ClassifiedAd.ClassifiedAdState.PendingReview
+                        x => x.State = ClassifiedAdState.PendingReview
                     ),
-                ClassifiedAdPublished e =>
+                V1.ClassifiedAdPublished e =>
                     With(state,
                         x =>
                         {
                             x.ApprovedBy = new UserId(e.ApprovedBy);
-                            x.State = ClassifiedAd.ClassifiedAdState.Active;
+                            x.State = ClassifiedAdState.Active;
                         }
                     ),
                 _ => this
-            };
-            newState.Version++;
-            return newState;
-        }
+            }, x => x.Version++);
 
         protected override bool EnsureValidState(FunctionalAdState newState)
             => newState switch
                { 
                    { } ad when ad.OwnerId == null => false, 
-                   { } ad when (ad.State == ClassifiedAd.ClassifiedAdState.PendingReview 
-                                || ad.State == ClassifiedAd.ClassifiedAdState.Active)
+                   { } ad when (ad.State == ClassifiedAdState.PendingReview 
+                                || ad.State == ClassifiedAdState.Active)
                                && ad.Title != null
                                && ad.Text != null
                                && ad.Price?.Amount > 0 => false, 
-                    { } ad when ad.State == ClassifiedAd.ClassifiedAdState.Active
+                    { } ad when ad.State == ClassifiedAdState.Active
                                && ad.ApprovedBy != null => false,
                    _ => true
                };
@@ -67,7 +67,7 @@ namespace Marketplace.Ads.Domain.Functional
         public FunctionalAdState()
         {
             Version = -1;
-            State = ClassifiedAd.ClassifiedAdState.Inactive;
+            State = ClassifiedAdState.Inactive;
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using Marketplace.Ads.Domain.Shared;
 using Marketplace.Ads.Messages.UserProfile;
 using Marketplace.EventSourcing;
+using static Marketplace.Ads.Messages.UserProfile.Events;
 
 namespace Marketplace.Ads.Domain.UserProfiles
 {
@@ -15,7 +16,7 @@ namespace Marketplace.Ads.Domain.UserProfiles
             var profile = new UserProfile();
 
             profile.Apply(
-                new Events.UserRegistered
+                new V1.UserRegistered
                 {
                     UserId = id,
                     FullName = fullName,
@@ -32,7 +33,7 @@ namespace Marketplace.Ads.Domain.UserProfiles
 
         public void UpdateFullName(FullName fullName)
             => Apply(
-                new Events.UserFullNameUpdated
+                new V1.UserFullNameUpdated
                 {
                     UserId = Id,
                     FullName = fullName
@@ -41,7 +42,7 @@ namespace Marketplace.Ads.Domain.UserProfiles
 
         public void UpdateDisplayName(DisplayName displayName)
             => Apply(
-                new Events.UserDisplayNameUpdated
+                new V1.UserDisplayNameUpdated
                 {
                     UserId = Id,
                     DisplayName = displayName
@@ -50,7 +51,7 @@ namespace Marketplace.Ads.Domain.UserProfiles
 
         public void UpdateProfilePhoto(Uri photoUrl)
             => Apply(
-                new Events.ProfilePhotoUploaded
+                new V1.ProfilePhotoUploaded
                 {
                     UserId = Id,
                     PhotoUrl = photoUrl.ToString()
@@ -61,18 +62,18 @@ namespace Marketplace.Ads.Domain.UserProfiles
         {
             switch (@event)
             {
-                case Events.UserRegistered e:
+                case V1.UserRegistered e:
                     Id = e.UserId;
                     FullName = new FullName(e.FullName);
                     DisplayName = new DisplayName(e.DisplayName);
                     break;
-                case Events.UserFullNameUpdated e:
+                case V1.UserFullNameUpdated e:
                     FullName = new FullName(e.FullName);
                     break;
-                case Events.UserDisplayNameUpdated e:
+                case V1.UserDisplayNameUpdated e:
                     DisplayName = new DisplayName(e.DisplayName);
                     break;
-                case Events.ProfilePhotoUploaded e:
+                case V1.ProfilePhotoUploaded e:
                     PhotoUrl = e.PhotoUrl;
                     break;
             }

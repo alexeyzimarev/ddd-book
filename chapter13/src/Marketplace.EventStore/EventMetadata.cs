@@ -1,4 +1,4 @@
-namespace Marketplace.Infrastructure.EventStore
+namespace Marketplace.EventStore
 {
     public class EventMetadata
     {

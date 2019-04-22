@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using static System.String;
 
-namespace Marketplace.Infrastructure.EventStore
+namespace Marketplace.EventSourcing
 {
     public static class TypeMapper
     {
@@ -13,7 +14,7 @@ namespace Marketplace.Infrastructure.EventStore
 
         public static void Map(Type type, string name = null)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (IsNullOrWhiteSpace(name))
                 name = type.FullName;
 
             if (TypesByName.ContainsKey(name))

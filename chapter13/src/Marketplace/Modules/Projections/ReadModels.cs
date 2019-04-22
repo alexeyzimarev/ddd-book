@@ -15,7 +15,8 @@ namespace Marketplace.Modules.Projections
             public Guid SellerId { get; set; }
             public string SellersDisplayName { get; set; }
             public string SellersPhotoUrl { get; set; }
-            public string[] PhotoUrls { get; set; }
+            public List<string> PhotoUrls { get; set; }
+                = new List<string>();
 
             public static string GetDatabaseId(Guid id)
                 => $"ClassifiedAdDetails/{id}";
@@ -25,6 +26,7 @@ namespace Marketplace.Modules.Projections
         {
             public string Id { get; set; }
             public string DisplayName { get; set; }
+            public string FullName { get; set; }
             public string PhotoUrl { get; set; }
 
             public static string GetDatabaseId(Guid id) => $"UserDetails/{id}";
@@ -42,6 +44,8 @@ namespace Marketplace.Modules.Projections
                 public decimal Price { get; set; }
                 public string Description { get; set; }
                 public string Status { get; set; }
+                public List<string> PhotoUrls { get; set; }
+                    = new List<string>();
             }
 
             public static string GetDatabaseId(Guid id)

@@ -3,37 +3,38 @@ using System.Linq;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Marketplace.EventSourcing;
-using Serilog.Events;
-using ILogger = Serilog.ILogger;
+using Marketplace.EventStore.Logging;
 
-namespace Marketplace.Infrastructure.EventStore
+namespace Marketplace.EventStore
 {
-    public class ProjectionManager
+    public class SubscriptionManager
     {
-        static readonly ILogger Log =
-            Serilog.Log.ForContext<ProjectionManager>();
+        static readonly ILog Log = LogProvider.GetCurrentClassLogger();
 
         readonly ICheckpointStore _checkpointStore;
+        readonly string _name;
         readonly IEventStoreConnection _connection;
-        readonly IProjection[] _projections;
+        readonly ISubscription[] _subscriptions;
         EventStoreAllCatchUpSubscription _subscription;
 
-        public ProjectionManager(
+        public SubscriptionManager(
             IEventStoreConnection connection,
             ICheckpointStore checkpointStore,
-            params IProjection[] projections)
+            string name,
+            params ISubscription[] subscriptions)
         {
             _connection = connection;
             _checkpointStore = checkpointStore;
-            _projections = projections;
+            _name = name;
+            _subscriptions = subscriptions;
         }
 
         public async Task Start()
         {
             var settings = new CatchUpSubscriptionSettings(
                 2000, 500,
-                Log.IsEnabled(LogEventLevel.Verbose),
-                false, "try-out-subscription"
+                Log.IsDebugEnabled(),
+                false, _name
             );
 
             Log.Debug("Starting the projection manager...");
@@ -42,10 +43,16 @@ namespace Marketplace.Infrastructure.EventStore
             Log.Debug("Retrieved the checkpoint: {checkpoint}", position);
 
             _subscription = _connection.SubscribeToAllFrom(
-                position,
-                settings, EventAppeared
+                GetPosition(),
+                settings, 
+                EventAppeared
             );
             Log.Debug("Subscribed to $all stream");
+
+            Position? GetPosition()
+                => position.HasValue
+                    ? new Position(position.Value, position.Value)
+                    : AllCheckpoint.AllStart;
         }
 
         async Task EventAppeared(
@@ -60,10 +67,11 @@ namespace Marketplace.Infrastructure.EventStore
 
             try
             {
-                await Task.WhenAll(_projections.Select(x => x.Project(@event)));
+                await Task.WhenAll(_subscriptions.Select(x => x.Project(@event)));
 
                 await _checkpointStore.StoreCheckpoint(
-                    resolvedEvent.OriginalPosition.Value
+                    // ReSharper disable once PossibleInvalidOperationException
+                    resolvedEvent.OriginalPosition.Value.CommitPosition
                 );
             }
             catch (Exception e)
@@ -76,5 +84,7 @@ namespace Marketplace.Infrastructure.EventStore
                 throw;
             }
         }
+
+        public void Stop() => _subscription.Stop();
     }
 }
