@@ -6,7 +6,7 @@ using Marketplace.EventSourcing;
 
 namespace Marketplace.EventStore
 {
-    public class FunctionalStore
+    public class FunctionalStore : IFunctionalAggregateStore
     {
         readonly IEventStoreConnection _connection;
 
@@ -21,7 +21,7 @@ namespace Marketplace.EventStore
                 update.State.StreamName, version, update.Events.ToArray()
             );
 
-        public async Task<T> Load<T>(Guid id, Func<T, object, T> when)
+        async Task<T> Load<T>(Guid id, Func<T, object, T> when)
             where T : IAggregateState<T>, new()
         {
             var state = new T();
@@ -35,10 +35,7 @@ namespace Marketplace.EventStore
                 .Aggregate(state, when);
         }
 
-        public async Task<bool> Exists(string streamName)
-        {
-            var result = await _connection.ReadEventAsync(streamName, 1, false);
-            return result.Status != EventReadStatus.NoStream;
-        }
+        public Task<T> Load<T>(Guid id) where T : IAggregateState<T>, new()
+            => Load<T>(id, (x, e) => x.When(x, e));
     }
 }

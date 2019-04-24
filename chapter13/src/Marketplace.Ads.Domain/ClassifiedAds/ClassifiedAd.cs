@@ -92,7 +92,14 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                 }
             );
 
-        public void Delete() => Apply(new V1.ClassifiedAdDeleted {Id = Id});
+        public void Delete()
+            => Apply(
+                new V1.ClassifiedAdDeleted
+                {
+                    Id = Id,
+                    OwnerId = OwnerId
+                }
+            );
 
         public void AddPicture(string pictureUri, PictureSize size)
             => Apply(
@@ -128,7 +135,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             {
                 case V1.ClassifiedAdCreated e:
                     Id = e.Id;
-                    OwnerId = new UserId(e.OwnerId);
+                    OwnerId = UserId.FromGuid(e.OwnerId);
                     State = ClassifiedAdState.Inactive;
                     _pictures = new List<Picture>();
                     break;
@@ -150,7 +157,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                     break;
 
                 case V1.ClassifiedAdPublished e:
-                    ApprovedBy = new UserId(e.ApprovedBy);
+                    ApprovedBy = UserId.FromGuid(e.ApprovedBy);
                     State = ClassifiedAdState.Active;
                     break;
 
@@ -176,18 +183,18 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             var valid =
                 OwnerId != null &&
                 (State switch
-                {
+                    {
                     ClassifiedAdState.PendingReview =>
-                        Title != null
-                        && Text != null
-                        && Price?.Amount > 0,
+                    Title != null
+                    && Text != null
+                    && Price?.Amount > 0,
                     ClassifiedAdState.Active =>
-                        Title != null
-                        && Text != null
-                        && Price?.Amount > 0
-                        && ApprovedBy != null,
+                    Title != null
+                    && Text != null
+                    && Price?.Amount > 0
+                    && ApprovedBy != null,
                     _ => true
-                });
+                    });
 
             if (!valid)
                 throw new DomainExceptions.InvalidEntityState(

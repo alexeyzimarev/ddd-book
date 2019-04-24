@@ -14,7 +14,8 @@ namespace Marketplace.PaidServices.Domain.Orders
             object @event
         )
             => With(
-                @event switch {
+                @event switch 
+                {
                     V1.OrderCreated e =>
                         With(state, x => x.AdId = e.ClassifiedAdId),
                     V1.ServiceAddedToOrder e =>
@@ -51,7 +52,7 @@ namespace Marketplace.PaidServices.Domain.Orders
 
         internal Guid AdId { get; set; }
         OrderStatus Status { get; set; } = OrderStatus.New;
-        List<PaidService> Services { get; } = new List<PaidService>();
+        internal List<PaidService> Services { get; } = new List<PaidService>();
 
         internal string[] GetServices()
             => Services.Select(x => x.Type.ToString()).ToArray();

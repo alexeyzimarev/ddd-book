@@ -26,7 +26,7 @@ namespace Marketplace.Ads.Domain.Functional
                         x =>
                         {
                             x.Id = e.Id;
-                            x.OwnerId = new UserId(e.OwnerId);
+                            x.OwnerId = UserId.FromGuid(e.OwnerId);
                         }
                     ),
                 V1.ClassifiedAdTitleChanged e =>
@@ -43,7 +43,7 @@ namespace Marketplace.Ads.Domain.Functional
                     With(state,
                         x =>
                         {
-                            x.ApprovedBy = new UserId(e.ApprovedBy);
+                            x.ApprovedBy = UserId.FromGuid(e.ApprovedBy);
                             x.State = ClassifiedAdState.Active;
                         }
                     ),

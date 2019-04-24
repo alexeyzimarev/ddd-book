@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Force.DeepCloner;
 
 namespace Marketplace.EventSourcing
@@ -20,7 +21,7 @@ namespace Marketplace.EventSourcing
         where T : class, new()
     {
         public abstract T When(T state, object @event);
-
+        
         public string GetStreamName(Guid id) => $"{typeof(T).Name}-{id:N}";
 
         public string StreamName => GetStreamName(Id);
@@ -62,19 +63,21 @@ namespace Marketplace.EventSourcing
             }
         }
 
-        public Result Apply(
-            params object[] events)
+        public Result NoEvents() => new Result(this as T, new List<object>());
+
+        public Result Apply(params object[] events)
         {
             var newState = this as T;
             newState = events.Aggregate(newState, Apply);
             return new Result(newState, events);
         }
 
-        private class InvalidEntityState : Exception
+        class InvalidEntityState : Exception
         {
             public InvalidEntityState(object entity, string message)
                 : base(
-                    $"Entity {entity.GetType().Name} state change rejected, {message}"
+                    $"Entity {entity.GetType().Name} " +
+                    $"state change rejected, {message}"
                 ) { }
         }
     }

@@ -25,7 +25,8 @@ namespace Marketplace.Infrastructure.Currency
 
         public Ads.Domain.Shared.Currency FindCurrency(string currencyCode)
         {
-            var currency = Currencies.FirstOrDefault(x => x.CurrencyCode == currencyCode);
+            var currency =
+                Currencies.FirstOrDefault(x => x.CurrencyCode == currencyCode);
             return currency ?? Ads.Domain.Shared.Currency.None;
         }
     }

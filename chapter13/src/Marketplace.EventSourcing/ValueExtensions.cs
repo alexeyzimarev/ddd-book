@@ -1,4 +1,6 @@
-﻿namespace Marketplace.EventSourcing
+﻿using System;
+
+namespace Marketplace.EventSourcing
 {
     public static class ValueExtensions
     {
@@ -12,6 +14,12 @@
         {
             if (value == null)
                 throw new InvalidValueException(typeof(T), "cannot be null");
+        }
+        
+        public static T With<T>(this T instance, Action<T> update)
+        {
+            update(instance);
+            return instance;
         }
     }
 }

@@ -1,19 +1,13 @@
-﻿using System;
-using EventStore.ClientAPI;
-using Marketplace.EventSourcing;
+﻿using EventStore.ClientAPI;
+using Marketplace.Ads;
 using Marketplace.EventStore;
 using Marketplace.Infrastructure.Currency;
 using Marketplace.Infrastructure.Profanity;
-using Marketplace.Infrastructure.RavenDb;
 using Marketplace.Infrastructure.Vue;
-using Marketplace.Modules.Auth;
-using Marketplace.Modules.ClassifiedAds;
-using Marketplace.Modules.FunctionalAd;
 using Marketplace.Modules.Images;
-using Marketplace.Modules.Projections;
-using Marketplace.Modules.UserProfile;
-using Marketplace.Modules.UserProfiles;
-using Marketplace.RavenDb;
+using Marketplace.PaidServices;
+using Marketplace.Users;
+using Marketplace.WebApi;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,12 +15,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Raven.Client.Documents;
-using Raven.Client.Documents.Session;
-using Raven.Client.ServerWide;
-using Raven.Client.ServerWide.Operations;
 using Swashbuckle.AspNetCore.Swagger;
-using EventMappings = Marketplace.Modules.UserProfiles.EventMappings;
+using static Marketplace.Infrastructure.RavenDb.Configuration;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 // ReSharper disable UnusedMember.Global
@@ -41,7 +31,8 @@ namespace Marketplace
 
         public Startup(
             IHostingEnvironment environment,
-            IConfiguration configuration)
+            IConfiguration configuration
+        )
         {
             Environment = environment;
             Configuration = configuration;
@@ -52,69 +43,26 @@ namespace Marketplace
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Modules.ClassifiedAds.EventMappings.MapEventTypes();
-            EventMappings.MapEventTypes();
+            Ads.EventMappings.MapEventTypes();
+            Users.EventMappings.MapEventTypes();
+            PaidServices.EventMappings.MapEventTypes();
 
             var esConnection = EventStoreConnection.Create(
                 Configuration["eventStore:connectionString"],
                 ConnectionSettings.Create().KeepReconnecting(),
                 Environment.ApplicationName
             );
-            var store = new EsAggregateStore(esConnection);
             var purgomalumClient = new PurgomalumClient();
 
             var documentStore = ConfigureRavenDb(
-                Configuration["ravenDb:server"],
-                Configuration["ravenDb:database"]
-            );
-
-            IAsyncDocumentSession GetSession() => documentStore.OpenAsyncSession();
-
-            services.AddSingleton(
-                new ClassifiedAdsCommandService(
-                    store, 
-                    new FixedCurrencyLookup(),
-                    ImageStorage.UploadFile
-                )
-            );
-
-            services.AddSingleton(
-                new FunctionalCommandService(new FunctionalStore(esConnection))
-            );
-
-            services.AddSingleton(
-                new UserProfileCommandService(
-                    store, t => purgomalumClient.CheckForProfanity(t)
-                )
+                Configuration["ravenDb:server"]
             );
 
             services.AddSingleton(new ImageQueryService(ImageStorage.GetFile));
+            services.AddSingleton(esConnection);
+            services.AddSingleton(documentStore);
 
-            var ravenDbProjectionManager = new SubscriptionManager(
-                esConnection,
-                new RavenDbCheckpointStore(GetSession, "readmodels"),
-                "readmodels",
-                ConfigureRavenDbProjections(GetSession)
-            );
-
-            var upcasterProjectionManager = new SubscriptionManager(
-                esConnection,
-                new EsCheckpointStore(esConnection, "upcaster"),
-                "upcaster",
-                ConfigureUpcasters(esConnection, GetSession)
-            );
-
-            services.AddSingleton(c => (Func<IAsyncDocumentSession>) GetSession);
-            services.AddSingleton(c => new AuthService(GetSession));
-            services.AddScoped(c => GetSession());
-
-            services.AddSingleton<IHostedService>(
-                new EventStoreService(
-                    esConnection,
-                    ravenDbProjectionManager,
-                    upcasterProjectionManager
-                )
-            );
+            services.AddSingleton<IHostedService, EventStoreService>();
 
             services
                 .AddAuthentication(
@@ -123,7 +71,20 @@ namespace Marketplace
                 .AddCookie();
 
             services
-                .AddMvcCore()
+                .AddMvcCore(
+                    options => options.Conventions.Add(new CommandConvention())
+                )
+                .AddApplicationPart(GetType().Assembly)
+                .AddAdsModule(
+                    "ClassifiedAds",
+                    new FixedCurrencyLookup(),
+                    ImageStorage.UploadFile
+                )
+                .AddUsersModule(
+                    "Users",
+                    purgomalumClient.CheckForProfanity
+                )
+                .AddPaidServicesModule("PaidServices")
                 .AddJsonFormatters()
                 .AddApiExplorer()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -192,66 +153,5 @@ namespace Marketplace
                 }
             );
         }
-
-        static IDocumentStore ConfigureRavenDb(
-            string serverUrl,
-            string database)
-        {
-            var store = new DocumentStore
-            {
-                Urls = new[] {serverUrl},
-                Database = database
-            };
-            store.Initialize();
-
-            var record = store.Maintenance.Server.Send(
-                new GetDatabaseRecordOperation(store.Database)
-            );
-
-            if (record == null)
-                store.Maintenance.Server.Send(
-                    new CreateDatabaseOperation(
-                        new DatabaseRecord(store.Database)
-                    )
-                );
-
-            return store;
-        }
-
-        static ISubscription[] ConfigureRavenDbProjections(
-            Func<IAsyncDocumentSession> getSession)
-            => new ISubscription[]
-            {
-                new RavenDbProjection<ReadModels.ClassifiedAdDetails>(
-                    getSession,
-                    (session, @event) =>
-                        ClassifiedAdDetailsProjection.GetHandler(
-                            session, @event,
-                            userId =>
-                                getSession.GetUserDetails(
-                                    userId, x => x.DisplayName
-                                )
-                        )
-                ),
-                new RavenDbProjection<ReadModels.UserDetails>(
-                    getSession, UserDetailsProjection.GetHandler
-                ),
-                new RavenDbProjection<ReadModels.MyClassifiedAds>(
-                    getSession, MyClassifiedAdsProjection.GetHandler
-                )
-            };
-
-        static ISubscription[] ConfigureUpcasters(
-            IEventStoreConnection connection,
-            Func<IAsyncDocumentSession> getSession)
-            => new ISubscription[]
-            {
-                new ClassifiedAdUpcasters(
-                    connection,
-                    userId => getSession.GetUserDetails(
-                        userId, x => x.PhotoUrl
-                    )
-                )
-            };
     }
 }

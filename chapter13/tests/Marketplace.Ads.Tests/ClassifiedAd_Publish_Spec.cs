@@ -9,8 +9,8 @@ namespace Marketplace.ClassifiedAds.Tests
     {
         public ClassifiedAd_Publish_Spec()
             => _classifiedAd = ClassifiedAd.Create(
-                new ClassifiedAdId(Guid.NewGuid()),
-                new UserId(Guid.NewGuid())
+                ClassifiedAdId.FromGuid(Guid.NewGuid()),
+                UserId.FromGuid(Guid.NewGuid())
             );
 
         readonly ClassifiedAd _classifiedAd;

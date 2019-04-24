@@ -5,7 +5,7 @@ namespace Marketplace.PaidServices.Domain.Orders
 {
     public class OrderId : Value<OrderId>
     {
-        protected OrderId(Guid value)
+        OrderId(Guid value)
         {
             if (value == default)
                 throw new ArgumentNullException(
@@ -15,10 +15,9 @@ namespace Marketplace.PaidServices.Domain.Orders
             Value = value;
         }
         
-        public static implicit operator OrderId(string value)
-            => new OrderId(Guid.Parse(value));
+        public static OrderId FromGuid(Guid value) => new OrderId(value);
 
-        public Guid Value { get; }
+        Guid Value { get; }
         
         public static implicit operator Guid(OrderId self) => self.Value;
 

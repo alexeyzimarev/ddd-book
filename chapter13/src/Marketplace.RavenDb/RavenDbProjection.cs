@@ -8,11 +8,11 @@ namespace Marketplace.RavenDb
 {
     public class RavenDbProjection<T> : ISubscription
     {
-        readonly ILog _log = LogProvider.GetCurrentClassLogger();
+        static readonly ILog Log = LogProvider.GetCurrentClassLogger();
         static readonly string ReadModelName = typeof(T).Name;
 
         public RavenDbProjection(
-            Func<IAsyncDocumentSession> getSession,
+            GetSession getSession,
             Projector projector
         )
         {
@@ -20,7 +20,7 @@ namespace Marketplace.RavenDb
             GetSession = getSession;
         }
 
-        Func<IAsyncDocumentSession> GetSession { get; }
+        GetSession GetSession { get; }
         readonly Projector _projector;
 
         public async Task Project(object @event)
@@ -29,9 +29,9 @@ namespace Marketplace.RavenDb
 
             var handler = _projector(session, @event);
 
-            if (handler == null) return;
+            if ( handler == null) return;
 
-            _log.Debug("Projecting {event} to {model}", @event, ReadModelName);
+            Log.Debug("Projecting {event} to {model}", @event, ReadModelName);
 
             await handler();
             await session.SaveChangesAsync();

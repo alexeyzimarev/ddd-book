@@ -22,6 +22,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.EventStore", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.RavenDb", "src\Marketplace.RavenDb\Marketplace.RavenDb.csproj", "{D2D334CA-B388-47EB-848A-4345A4E0E221}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.Ads", "src\Marketplace.Ads\Marketplace.Ads.csproj", "{F4E64B8D-0934-404E-915A-D3C4DED87AA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.PaidServices", "src\Marketplace.PaidServices\Marketplace.PaidServices.csproj", "{FECA7D30-BFE1-4765-8C55-DF2E426D5A15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.Users", "src\Marketplace.Users\Marketplace.Users.csproj", "{5BE3CD45-D17F-42EE-B65F-2CA772CE6596}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.Users.Domain", "src\Marketplace.Users.Domain\Marketplace.Users.Domain.csproj", "{E77AE327-2378-44F0-ACE3-428872BA9CBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.Users.Messages", "src\Marketplace.Users.Messages\Marketplace.Users.Messages.csproj", "{AD314E3F-ABEF-4E13-BF8E-5808700C0A23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.WebApi", "src\Marketplace.WebApi\Marketplace.WebApi.csproj", "{2ED6B97C-4C4B-4A35-8CF3-57B3BD8F8D2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,11 +76,36 @@ Global
 		{D2D334CA-B388-47EB-848A-4345A4E0E221}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2D334CA-B388-47EB-848A-4345A4E0E221}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2D334CA-B388-47EB-848A-4345A4E0E221}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4E64B8D-0934-404E-915A-D3C4DED87AA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4E64B8D-0934-404E-915A-D3C4DED87AA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4E64B8D-0934-404E-915A-D3C4DED87AA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4E64B8D-0934-404E-915A-D3C4DED87AA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FECA7D30-BFE1-4765-8C55-DF2E426D5A15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FECA7D30-BFE1-4765-8C55-DF2E426D5A15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FECA7D30-BFE1-4765-8C55-DF2E426D5A15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FECA7D30-BFE1-4765-8C55-DF2E426D5A15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BE3CD45-D17F-42EE-B65F-2CA772CE6596}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BE3CD45-D17F-42EE-B65F-2CA772CE6596}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BE3CD45-D17F-42EE-B65F-2CA772CE6596}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BE3CD45-D17F-42EE-B65F-2CA772CE6596}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E77AE327-2378-44F0-ACE3-428872BA9CBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E77AE327-2378-44F0-ACE3-428872BA9CBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E77AE327-2378-44F0-ACE3-428872BA9CBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E77AE327-2378-44F0-ACE3-428872BA9CBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD314E3F-ABEF-4E13-BF8E-5808700C0A23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD314E3F-ABEF-4E13-BF8E-5808700C0A23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD314E3F-ABEF-4E13-BF8E-5808700C0A23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD314E3F-ABEF-4E13-BF8E-5808700C0A23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ED6B97C-4C4B-4A35-8CF3-57B3BD8F8D2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ED6B97C-4C4B-4A35-8CF3-57B3BD8F8D2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ED6B97C-4C4B-4A35-8CF3-57B3BD8F8D2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ED6B97C-4C4B-4A35-8CF3-57B3BD8F8D2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F682B8F9-A43B-4D6D-BECE-4F45767A026A} = {11ACA044-780C-4C71-A6F7-ECFB6B26B9E7}
 		{FEE71FF8-559C-40CC-9AF5-1E4051EE9C7C} = {B8B2A008-6E95-4BEE-9BE3-DC621B4DC4EC}
 		{EA7B5B15-9095-4082-ADC3-E367513C54B6} = {B8B2A008-6E95-4BEE-9BE3-DC621B4DC4EC}
 		{D2D334CA-B388-47EB-848A-4345A4E0E221} = {B8B2A008-6E95-4BEE-9BE3-DC621B4DC4EC}
+		{2ED6B97C-4C4B-4A35-8CF3-57B3BD8F8D2B} = {B8B2A008-6E95-4BEE-9BE3-DC621B4DC4EC}
 	EndGlobalSection
 EndGlobal

@@ -6,12 +6,23 @@ namespace Marketplace.PaidServices.Messages.Ads
     {
         public class V1
         {
-            public class ServiceAddedForClassifiedAd
+            public class Created
             {
-                public Guid ClassfiiedAdId { get; set; }
-                public string Description { get; set; }
-                public TimeSpan Duration { get; set; }
-                public string Attributes { get; set; }
+                public Guid ClassifiedAdId { get; set; }
+                public Guid SellerId { get; set; }
+            }
+
+            public class ServiceActivated
+            {
+                public Guid ClassifiedAdId { get; set; }
+                public string ServiceType { get; set; }
+                public DateTimeOffset ActiveUntil { get; set; }
+            }
+
+            public class ServiceDeactivated
+            {
+                public Guid ClassifiedAdId { get; set; }
+                public string ServiceType { get; set; }
             }
         }
     }

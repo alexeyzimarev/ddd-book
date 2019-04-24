@@ -8,9 +8,9 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
     {
         public Picture(Action<object> applier) : base(applier) { }
 
-        public ClassifiedAdId ParentId { get; private set; }
+        ClassifiedAdId ParentId { get; set; }
         public PictureSize Size { get; private set; }
-        public Uri Location { get; private set; }
+        Uri Location { get; set; }
         public int Order { get; private set; }
 
         protected override void When(object @event)
@@ -18,7 +18,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             switch (@event)
             {
                 case V1.PictureAddedToAClassifiedAd e:
-                    ParentId = new ClassifiedAdId(e.ClassifiedAdId);
+                    ParentId = ClassifiedAdId.FromGuid(e.ClassifiedAdId);
                     Id = new PictureId(e.PictureId);
                     Location = new Uri(e.Url);
                     Size = new PictureSize {Height = e.Height, Width = e.Width};

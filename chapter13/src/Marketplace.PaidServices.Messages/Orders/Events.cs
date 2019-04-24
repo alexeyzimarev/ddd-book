@@ -10,6 +10,7 @@ namespace Marketplace.PaidServices.Messages.Orders
             {
                 public Guid OrderId { get; set; }
                 public Guid ClassifiedAdId { get; set; }
+                public Guid CustomerId { get; set; }
             }
 
             public class ServiceAddedToOrder
@@ -29,14 +30,29 @@ namespace Marketplace.PaidServices.Messages.Orders
             public class OrderTotalUpdated
             {
                 public Guid OrderId { get; set; }
-                public double Totel { get; set; }
+                public double Total { get; set; }
             }
 
             public class OrderFulfilled
             {
                 public Guid OrderId { get; set; }
                 public Guid ClassifiedAdId { get; set; }
-                public string[] Services { get; set; }
+                public Guid CustomerId { get; set; }
+                public double Total { get; set; }
+                public DateTimeOffset FulfilledAt { get; set; }
+                public Service[] Services { get; set; }
+
+                public class Service
+                {
+                    public string Type { get; set; }
+                    public string Description { get; set; }
+                    public double Price { get; set; }
+                }
+            }
+
+            public class OrderDeleted
+            {
+                public Guid OrderId { get; set; }
             }
         }
     }

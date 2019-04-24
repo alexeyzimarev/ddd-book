@@ -76,7 +76,7 @@ namespace Marketplace.PaidServices.Domain.Services
         internal static PaidService Find(ServiceType type)
             => AvailableServices.First(x => x.Type == type);
 
-        internal static PaidService Find(string serviceType)
+        public static PaidService Find(string serviceType)
             => Find(ParseString(serviceType));
 
         internal static ServiceType ParseString(string serviceType)

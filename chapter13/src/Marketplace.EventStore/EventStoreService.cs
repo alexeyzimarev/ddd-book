@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,11 +10,11 @@ namespace Marketplace.EventStore
     public class EventStoreService : IHostedService
     {
         readonly IEventStoreConnection _esConnection;
-        readonly SubscriptionManager[] _subscriptionManagers;
+        readonly IEnumerable<SubscriptionManager> _subscriptionManagers;
 
         public EventStoreService(
             IEventStoreConnection esConnection,
-            params SubscriptionManager[] subscriptionManagers)
+            IEnumerable<SubscriptionManager> subscriptionManagers)
         {
             _esConnection = esConnection;
             _subscriptionManagers = subscriptionManagers;
