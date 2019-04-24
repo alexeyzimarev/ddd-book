@@ -1,3 +1,4 @@
+using System;
 using EventStore.ClientAPI;
 using Marketplace.Ads.ClassifiedAds;
 using Marketplace.Ads.Domain.Shared;
@@ -25,9 +26,7 @@ namespace Marketplace.Ads
             builder.Services.AddSingleton(
                 c =>
                     new ClassifiedAdsCommandService(
-                        new EsAggregateStore(
-                            c.GetRequiredService<IEventStoreConnection>()
-                        ),
+                        new EsAggregateStore(c.GetEsConnection()),
                         currencyLookup,
                         uploadFile
                     )
@@ -36,15 +35,15 @@ namespace Marketplace.Ads
             builder.Services.AddSingleton(
                 c =>
                 {
-                    var store = c.GetRequiredService<IDocumentStore>();
+                    var store = c.GetRavenStore();
                     store.CheckAndCreateDatabase(databaseName);
                     
                     IAsyncDocumentSession GetSession()
-                        => c.GetRequiredService<IDocumentStore>()
+                        => c.GetRavenStore()
                             .OpenAsyncSession(databaseName);
 
                     return new SubscriptionManager(
-                        c.GetRequiredService<IEventStoreConnection>(),
+                        c.GetEsConnection(),
                         new RavenDbCheckpointStore(
                             GetSession, SubscriptionName
                         ),
@@ -65,5 +64,15 @@ namespace Marketplace.Ads
 
             return builder;
         }
+
+        static IDocumentStore GetRavenStore(
+            this IServiceProvider provider
+        )
+            => provider.GetRequiredService<IDocumentStore>();
+        
+        static IEventStoreConnection GetEsConnection(
+            this IServiceProvider provider
+        )
+            => provider.GetRequiredService<IEventStoreConnection>();
     }
 }
