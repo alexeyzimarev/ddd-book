@@ -21,6 +21,8 @@ namespace Marketplace.PaidServices
             string databaseName
         )
         {
+            EventMappings.MapEventTypes();
+
             builder.Services.AddSingleton(
                 c => new OrdersCommandService(c.GetStore())
             );

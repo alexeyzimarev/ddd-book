@@ -23,6 +23,8 @@ namespace Marketplace.Ads
             UploadFile uploadFile
         )
         {
+            EventMappings.MapEventTypes();
+            
             builder.Services.AddSingleton(
                 c =>
                     new ClassifiedAdsCommandService(

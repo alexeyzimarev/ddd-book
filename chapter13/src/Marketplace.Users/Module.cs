@@ -23,6 +23,8 @@ namespace Marketplace.Users
             CheckTextForProfanity profanityCheck
         )
         {
+            EventMappings.MapEventTypes();
+            
             builder.Services.AddSingleton(
                     c =>
                         new UserProfileCommandService(

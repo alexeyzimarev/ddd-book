@@ -43,10 +43,6 @@ namespace Marketplace
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Ads.EventMappings.MapEventTypes();
-            Users.EventMappings.MapEventTypes();
-            PaidServices.EventMappings.MapEventTypes();
-
             var esConnection = EventStoreConnection.Create(
                 Configuration["eventStore:connectionString"],
                 ConnectionSettings.Create().KeepReconnecting(),

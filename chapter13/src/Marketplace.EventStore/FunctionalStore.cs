@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EventStore.ClientAPI;
@@ -15,27 +16,43 @@ namespace Marketplace.EventStore
 
         public Task Save<T>(
             long version,
-            AggregateState<T>.Result update)
+            AggregateState<T>.Result update
+        )
             where T : class, IAggregateState<T>, new()
             => _connection.AppendEvents(
                 update.State.StreamName, version, update.Events.ToArray()
             );
 
+        public Task<T> Load<T>(Guid id) where T : IAggregateState<T>, new()
+            => Load<T>(id, (x, e) => x.When(x, e));
+
         async Task<T> Load<T>(Guid id, Func<T, object, T> when)
             where T : IAggregateState<T>, new()
         {
+            const int maxSliceSize = 4096;
+
             var state = new T();
             var streamName = state.GetStreamName(id);
 
-            var page = await _connection.ReadStreamEventsForwardAsync(
-                streamName, 0, 1024, false
-            );
+            var position = 0L;
+            bool endOfStream;
+            var events = new List<object>();
 
-            return page.Events.Select(x => x.Deserialze())
-                .Aggregate(state, when);
+            do
+            {
+                var slice = await _connection
+                    .ReadStreamEventsForwardAsync(
+                        streamName, position, maxSliceSize, false
+                    );
+                position = slice.NextEventNumber;
+                endOfStream = slice.IsEndOfStream;
+
+                events.AddRange(
+                    slice.Events.Select(x => x.Deserialze())
+                );
+            } while (!endOfStream);
+
+            return events.Aggregate(state, when);
         }
-
-        public Task<T> Load<T>(Guid id) where T : IAggregateState<T>, new()
-            => Load<T>(id, (x, e) => x.When(x, e));
     }
 }

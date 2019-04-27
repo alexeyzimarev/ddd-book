@@ -6,7 +6,7 @@ namespace Marketplace.EventSourcing
     public abstract class CommandService<T>
         where T : class, IAggregateState<T>, new()
     {
-        protected IFunctionalAggregateStore Store { get; }
+        IFunctionalAggregateStore Store { get; }
 
         protected CommandService(IFunctionalAggregateStore store) 
             => Store = store;

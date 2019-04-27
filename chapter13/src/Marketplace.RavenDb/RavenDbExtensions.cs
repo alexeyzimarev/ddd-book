@@ -48,6 +48,15 @@ namespace Marketplace.RavenDb
             update(item);
         }
 
+        public static Task Del(
+            this IAsyncDocumentSession session,
+            string id
+        )
+        {
+            session.Delete(id);
+            return Task.CompletedTask;
+        }
+
         public static async Task UpsertItem<T>(
             this IAsyncDocumentSession session,
             string id,

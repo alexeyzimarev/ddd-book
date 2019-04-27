@@ -45,9 +45,9 @@ namespace Marketplace.PaidServices.Projections
                         x => x.Services.RemoveAll(s => s.Type == e.ServiceType)
                     ),
                 V1.OrderFulfilled e =>
-                    () => session.Delete(DbId(e.OrderId)),
+                    () => session.Del(DbId(e.OrderId)),
                 V1.OrderDeleted e =>
-                    () => session.Delete(DbId(e.OrderId)),
+                    () => session.Del(DbId(e.OrderId)),
                 _ => (Func<Task>) null
             };
 
