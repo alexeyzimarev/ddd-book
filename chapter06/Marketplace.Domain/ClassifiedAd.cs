@@ -1,4 +1,5 @@
 ﻿using Marketplace.Framework;
+using static Marketplace.Domain.Events;
 
 namespace Marketplace.Domain
 {
@@ -13,28 +14,28 @@ namespace Marketplace.Domain
         public UserId ApprovedBy { get; private set; }
 
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId) =>
-            Apply(new Events.ClassifiedAdCreated
+            Apply(new ClassifiedAdCreated
             {
                 Id = id,
                 OwnerId = ownerId
             });
 
         public void SetTitle(ClassifiedAdTitle title) =>
-            Apply(new Events.ClassifiedAdTitleChanged
+            Apply(new ClassifiedAdTitleChanged
             {
                 Id = Id,
                 Title = title
             });
 
         public void UpdateText(ClassifiedAdText text) =>
-            Apply(new Events.ClassifiedAdTextUpdated
+            Apply(new ClassifiedAdTextUpdated
             {
                 Id = Id,
                 AdText = text
             });
 
         public void UpdatePrice(Price price) =>
-            Apply(new Events.ClassifiedAdPriceUpdated
+            Apply(new ClassifiedAdPriceUpdated
             {
                 Id = Id,
                 Price = price.Amount,
@@ -42,27 +43,27 @@ namespace Marketplace.Domain
             });
 
         public void RequestToPublish() =>
-            Apply(new Events.ClassidiedAdSentForReview {Id = Id});
+            Apply(new ClassidiedAdSentForReview {Id = Id});
 
         protected override void When(object @event)
         {
             switch (@event)
             {
-                case Events.ClassifiedAdCreated e:
+                case ClassifiedAdCreated e:
                     Id = new ClassifiedAdId(e.Id);
                     OwnerId = new UserId(e.OwnerId);
                     State = ClassifiedAdState.Inactive;
                     break;
-                case Events.ClassifiedAdTitleChanged e:
+                case ClassifiedAdTitleChanged e:
                     Title = new ClassifiedAdTitle(e.Title);
                     break;
-                case Events.ClassifiedAdTextUpdated e:
+                case ClassifiedAdTextUpdated e:
                     Text = new ClassifiedAdText(e.AdText);
                     break;
-                case Events.ClassifiedAdPriceUpdated e:
+                case ClassifiedAdPriceUpdated e:
                     Price = new Price(e.Price, e.CurrencyCode);
                     break;
-                case Events.ClassidiedAdSentForReview e:
+                case ClassidiedAdSentForReview _:
                     State = ClassifiedAdState.PendingReview;
                     break;
             }
