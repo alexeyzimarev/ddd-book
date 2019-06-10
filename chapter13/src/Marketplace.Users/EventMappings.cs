@@ -1,5 +1,5 @@
 using static Marketplace.EventSourcing.TypeMapper;
-using static Marketplace.Users.Messages.UserProfile.Events;
+using static Marketplace.Users.Domain.UserProfiles.Events;
 
 namespace Marketplace.Users
 {

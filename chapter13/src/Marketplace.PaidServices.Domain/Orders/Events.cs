@@ -1,6 +1,6 @@
 using System;
 
-namespace Marketplace.PaidServices.Messages.Orders
+namespace Marketplace.PaidServices.Domain.Orders
 {
     public static class Events
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Marketplace.RavenDb;
 using Raven.Client.Documents.Session;
-using static Marketplace.Ads.Messages.Ads.Events;
+using static Marketplace.Ads.Domain.ClassifiedAds.Events;
 using static Marketplace.Modules.PublishedAds.ReadModels;
 
 namespace Marketplace.Modules.PublishedAds
@@ -22,11 +22,9 @@ namespace Marketplace.Modules.PublishedAds
                 V1.ClassifiedAdPublished e =>
                     () => Create(e),
                 V1.ClassifiedAdTitleChanged e =>
-                    () => Update(e.OwnerId, e.Id,
-                        myAd => myAd.Title = e.Title),
+                    () => Update(e.Id, ad => ad.Title = e.Title),
                 V1.ClassifiedAdPriceUpdated e =>
-                    () => Update(e.OwnerId, e.Id,
-                        myAd => myAd.Price = e.Price),
+                    () => Update(e.Id, ad => ad.Price = e.Price),
                 V1.ClassifiedAdDeleted e =>
                     () => Delete(e.Id),
                 _ => (Func<Task>) null
@@ -35,14 +33,18 @@ namespace Marketplace.Modules.PublishedAds
             string GetDbId(Guid id) 
                 => PublishedAd.GetDatabaseId(id);
             
+            // TODO: Complete the projection
             Task Create(V1.ClassifiedAdPublished e)
-                => session.Create<PublishedAd>(
+            {
+                return session.Create<PublishedAd>(
                     x =>
                     {
                         x.Id = GetDbId(e.Id);
+                        x.SellerId = e.OwnerId.ToString();
                     }
                 );
-            
+            }
+
             Task Update(Guid id, Action<PublishedAd> update)
                 => session.Update(getDbId(id), update);
             

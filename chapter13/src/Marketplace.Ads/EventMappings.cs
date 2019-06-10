@@ -1,4 +1,4 @@
-using static Marketplace.Ads.Messages.Ads.Events;
+using static Marketplace.Ads.Domain.ClassifiedAds.Events;
 using static Marketplace.EventSourcing.TypeMapper;
 
 namespace Marketplace.Ads

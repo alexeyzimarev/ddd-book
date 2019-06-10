@@ -30,13 +30,13 @@
     <PackageReference Include="Ben.Demystifier" Version="0.1.4" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Marketplace.Ads.Domain\Marketplace.Ads.Domain.csproj" />
-    <ProjectReference Include="..\Marketplace.Ads.Messages\Marketplace.Ads.Messages.csproj" />
-    <ProjectReference Include="..\Marketplace.Ads\Marketplace.Ads.csproj" />
     <ProjectReference Include="..\Marketplace.EventSourcing\Marketplace.EventSourcing.csproj" />
     <ProjectReference Include="..\Marketplace.EventStore\Marketplace.EventStore.csproj" />
+    
     <ProjectReference Include="..\Marketplace.PaidServices\Marketplace.PaidServices.csproj" />
     <ProjectReference Include="..\Marketplace.Users\Marketplace.Users.csproj" />
+    <ProjectReference Include="..\Marketplace.Ads\Marketplace.Ads.csproj" />
+    <ProjectReference Include="..\Marketplace.Ads.Domain\Marketplace.Ads.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

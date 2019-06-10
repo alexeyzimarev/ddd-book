@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.Ads.Domain.Shared;
 using Marketplace.EventSourcing;
-using static Marketplace.Ads.Messages.Ads.Commands;
+using static Marketplace.Ads.ClassifiedAds.Commands;
 
 namespace Marketplace.Ads.ClassifiedAds
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Marketplace.Ads.Domain.Shared;
 using Marketplace.EventSourcing;
-using static Marketplace.Ads.Messages.Ads.Events;
+using static Marketplace.Ads.Domain.ClassifiedAds.Events;
 
 namespace Marketplace.Ads.Domain.ClassifiedAds
 {
@@ -14,7 +14,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
             PendingReview, Active, Inactive, MarkedAsSold
         }
 
-        List<Picture> _pictures;
+        List<Picture> _pictures = new List<Picture>();
 
         public static ClassifiedAd Create(ClassifiedAdId id, UserId ownerId)
         {
@@ -31,13 +31,13 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
         }
 
         // Aggregate state properties
-        public UserId OwnerId { get; private set; }
-        public ClassifiedAdTitle Title { get; private set; }
-        public ClassifiedAdText Text { get; private set; }
-        public Price Price { get; private set; }
+        UserId OwnerId { get; set; }
+        ClassifiedAdTitle Title { get; set; }
+        ClassifiedAdText Text { get; set; }
+        Price Price { get; set; }
         public ClassifiedAdState State { get; private set; }
-        public UserId ApprovedBy { get; private set; }
-        public IEnumerable<Picture> Pictures => _pictures;
+        UserId ApprovedBy { get; set; }
+        IEnumerable<Picture> Pictures => _pictures;
 
         Picture FirstPicture
             => _pictures.OrderBy(x => x.Order).FirstOrDefault();

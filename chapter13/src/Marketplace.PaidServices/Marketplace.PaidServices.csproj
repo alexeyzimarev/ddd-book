@@ -10,13 +10,12 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Marketplace.Ads.Messages\Marketplace.Ads.Messages.csproj" />
+    <ProjectReference Include="..\Marketplace.EventSourcing\Marketplace.EventSourcing.csproj" />
     <ProjectReference Include="..\Marketplace.EventStore\Marketplace.EventStore.csproj" />
     <ProjectReference Include="..\Marketplace.RavenDb\Marketplace.RavenDb.csproj" />
     <ProjectReference Include="..\Marketplace.WebApi\Marketplace.WebApi.csproj" />
-    <ProjectReference Include="..\Marketplace.EventSourcing\Marketplace.EventSourcing.csproj" />
+    
     <ProjectReference Include="..\Marketplace.PaidServices.Domain\Marketplace.PaidServices.Domain.csproj" />
-    <ProjectReference Include="..\Marketplace.PaidServices.Messages\Marketplace.PaidServices.Messages.csproj" />
   </ItemGroup>
 
 </Project>

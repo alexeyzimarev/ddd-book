@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Marketplace.RavenDb;
 using Raven.Client.Documents.Session;
-using static Marketplace.Ads.Messages.Ads.Events;
+using static Marketplace.Ads.Domain.ClassifiedAds.Events;
 using static Marketplace.Ads.Projections.ReadModels;
 
 namespace Marketplace.Ads.Projections

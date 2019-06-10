@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Marketplace.PaidServices.Domain.Orders;
 using Marketplace.PaidServices.Domain.Services;
 using Marketplace.PaidServices.Domain.Shared;
-using Marketplace.PaidServices.Messages.Orders;
-using static Marketplace.PaidServices.Messages.Ads.Events;
+using static Marketplace.PaidServices.Domain.ClassifiedAds.Events;
 
 namespace Marketplace.PaidServices.Domain.ClassifiedAds
 {
@@ -16,7 +14,7 @@ namespace Marketplace.PaidServices.Domain.ClassifiedAds
             UserId sellerId
         )
             => new ClassifiedAdState().Apply(
-                new V1.Created
+                new V1.OrderCreated
                 {
                     ClassifiedAdId = id,
                     SellerId = sellerId

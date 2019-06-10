@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Marketplace.EventSourcing;
 using Marketplace.PaidServices.Domain.Services;
-using static Marketplace.PaidServices.Messages.Orders.Events;
+using static Marketplace.PaidServices.Domain.Orders.Events;
 
 namespace Marketplace.PaidServices.Domain.Orders
 {

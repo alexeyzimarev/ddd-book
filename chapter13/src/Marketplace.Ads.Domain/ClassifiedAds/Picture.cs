@@ -1,6 +1,6 @@
 using System;
 using Marketplace.EventSourcing;
-using static Marketplace.Ads.Messages.Ads.Events;
+using static Marketplace.Ads.Domain.ClassifiedAds.Events;
 
 namespace Marketplace.Ads.Domain.ClassifiedAds
 {

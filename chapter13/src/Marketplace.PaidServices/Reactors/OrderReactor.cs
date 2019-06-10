@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Marketplace.EventStore;
 using Marketplace.PaidServices.ClassifiedAds;
-using Events = Marketplace.PaidServices.Messages.Orders.Events;
-using V1 = Marketplace.PaidServices.Messages.Ads.Commands.V1;
+using Marketplace.PaidServices.Domain.Orders;
+using V1 = Marketplace.PaidServices.ClassifiedAds.Commands.V1;
 
 namespace Marketplace.PaidServices.Reactors
 {

@@ -2,7 +2,7 @@ using System.Linq;
 using Marketplace.PaidServices.Domain.ClassifiedAds;
 using Marketplace.PaidServices.Domain.Services;
 using Marketplace.PaidServices.Domain.Shared;
-using static Marketplace.PaidServices.Messages.Orders.Events;
+using static Marketplace.PaidServices.Domain.Orders.Events;
 
 namespace Marketplace.PaidServices.Domain.Orders
 {

@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using Marketplace.EventSourcing;
 using Marketplace.PaidServices.Domain.Orders;
-using Marketplace.PaidServices.Messages.Ads;
+using static Marketplace.PaidServices.Domain.ClassifiedAds.Events;
 
 namespace Marketplace.PaidServices.Domain.ClassifiedAds
 {
@@ -16,7 +15,7 @@ namespace Marketplace.PaidServices.Domain.ClassifiedAds
             => With(
                 @event switch
                 {
-                    Events.V1.Created e =>
+                    V1.OrderCreated e =>
                         With(state, x => x.Id = e.ClassifiedAdId)
                 },
                 x => x.Version++

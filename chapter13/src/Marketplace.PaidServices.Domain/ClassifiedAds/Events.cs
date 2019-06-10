@@ -1,12 +1,12 @@
 using System;
 
-namespace Marketplace.PaidServices.Messages.Ads
+namespace Marketplace.PaidServices.Domain.ClassifiedAds
 {
     public static class Events
     {
-        public class V1
+        public static class V1
         {
-            public class Created
+            public class OrderCreated
             {
                 public Guid ClassifiedAdId { get; set; }
                 public Guid SellerId { get; set; }

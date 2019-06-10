@@ -4,7 +4,7 @@ using Marketplace.PaidServices.Domain.ClassifiedAds;
 using Marketplace.PaidServices.Domain.Orders;
 using Marketplace.PaidServices.Domain.Services;
 using Marketplace.PaidServices.Domain.Shared;
-using static Marketplace.PaidServices.Messages.Orders.Commands;
+using static Marketplace.PaidServices.Orders.Commands;
 
 namespace Marketplace.PaidServices.Orders
 {

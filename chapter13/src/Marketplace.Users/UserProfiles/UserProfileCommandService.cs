@@ -2,7 +2,7 @@ using System;
 using Marketplace.EventSourcing;
 using Marketplace.Users.Domain.Shared;
 using Marketplace.Users.Domain.UserProfiles;
-using static Marketplace.Users.Messages.UserProfile.Commands;
+using static Marketplace.Users.UserProfiles.Commands;
 
 namespace Marketplace.Users.UserProfiles
 {

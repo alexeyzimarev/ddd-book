@@ -4,7 +4,7 @@ using Marketplace.EventSourcing;
 using Marketplace.PaidServices.Domain.ClassifiedAds;
 using Marketplace.PaidServices.Domain.Services;
 using Marketplace.PaidServices.Domain.Shared;
-using static Marketplace.PaidServices.Messages.Ads.Commands;
+using static Marketplace.PaidServices.ClassifiedAds.Commands;
 
 namespace Marketplace.PaidServices.ClassifiedAds
 {

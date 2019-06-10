@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Marketplace.RavenDb;
 using Raven.Client.Documents.Session;
-using static Marketplace.PaidServices.Messages.Orders.Events;
+using static Marketplace.PaidServices.Domain.Orders.Events;
 using static Marketplace.PaidServices.Projections.ReadModels;
 
 namespace Marketplace.PaidServices.Projections

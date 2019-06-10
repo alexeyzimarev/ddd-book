@@ -4,7 +4,7 @@ using Marketplace.WebApi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using static Marketplace.Ads.Messages.Ads.Commands;
+using static Marketplace.Ads.ClassifiedAds.Commands;
 
 namespace Marketplace.Ads.ClassifiedAds
 {

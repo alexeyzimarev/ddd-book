@@ -1,6 +1,6 @@
 using System;
 
-namespace Marketplace.PaidServices.Messages.Ads
+namespace Marketplace.PaidServices.ClassifiedAds
 {
     public static class Commands
     {

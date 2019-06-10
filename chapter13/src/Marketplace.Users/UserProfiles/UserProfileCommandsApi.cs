@@ -3,7 +3,7 @@ using Marketplace.Users.Domain.UserProfiles;
 using Marketplace.WebApi;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using static Marketplace.Users.Messages.UserProfile.Commands;
+using static Marketplace.Users.UserProfiles.Commands;
 
 namespace Marketplace.Users.UserProfiles
 {

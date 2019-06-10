@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Marketplace.RavenDb;
-using Marketplace.Users.Messages.UserProfile;
 using Raven.Client.Documents.Session;
+using static Marketplace.Users.Domain.UserProfiles.Events;
 
 namespace Marketplace.Users.Projections
 {
@@ -16,11 +16,11 @@ namespace Marketplace.Users.Projections
 
             return @event switch
             {
-                Events.V1.UserRegistered e => 
+                V1.UserRegistered e => 
                     () => Create(e.UserId, e.DisplayName, e.FullName),
-                Events.V1.UserDisplayNameUpdated e =>
+                V1.UserDisplayNameUpdated e =>
                     () => Update(e.UserId, x => x.DisplayName = e.DisplayName),
-                Events.V1.ProfilePhotoUploaded e =>
+                V1.ProfilePhotoUploaded e =>
                     () => Update(e.UserId, x => x.PhotoUrl = e.PhotoUrl),
                 _ => (Func<Task>) null
             };

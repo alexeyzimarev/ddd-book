@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Marketplace.EventSourcing\Marketplace.EventSourcing.csproj" />
-    <ProjectReference Include="..\Marketplace.Users.Messages\Marketplace.Users.Messages.csproj" />
   </ItemGroup>
 
 </Project>
