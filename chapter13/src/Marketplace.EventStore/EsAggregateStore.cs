@@ -11,10 +11,10 @@ namespace Marketplace.EventStore
     {
         static readonly ILog Log = LogProvider.GetCurrentClassLogger();
 
-        readonly IEventStoreConnection _connection;
+        readonly IEventStore _store;
 
-        public EsAggregateStore(IEventStoreConnection connection) 
-            => _connection = connection;
+        public EsAggregateStore(IEventStore store) 
+            => _store = store;
 
         public async Task Save<T>(T aggregate) where T : AggregateRoot
         {
@@ -27,7 +27,7 @@ namespace Marketplace.EventStore
             foreach (var change in changes)
                 Log.Debug("Persisting event {event}", change.ToString());
 
-            await _connection.AppendEvents(streamName, aggregate.Version, changes);
+            await _store.AppendEvents(streamName, aggregate.Version, changes);
 
             aggregate.ClearChanges();
         }
@@ -41,29 +41,18 @@ namespace Marketplace.EventStore
             var stream = GetStreamName(aggregateId);
             var aggregate = (T) Activator.CreateInstance(typeof(T), true);
 
-            var page = await _connection.ReadStreamEventsForwardAsync(
-                stream, 0, 1024, false
-            );
+            var events = await _store.LoadEvents(stream);
 
             Log.Debug("Loading events for the aggregate {aggregate}", aggregate.ToString());
 
-            aggregate.Load(
-                page.Events.Select(
-                        resolvedEvent => resolvedEvent.Deserialze()
-                    )
-                    .ToArray()
-            );
+            aggregate.Load(events);
 
             return aggregate;
         }
 
-        public async Task<bool> Exists<T>(AggregateId<T> aggregateId) 
+        public Task<bool> Exists<T>(AggregateId<T> aggregateId) 
             where T : AggregateRoot
-        {
-            var stream = GetStreamName(aggregateId);
-            var result = await _connection.ReadEventAsync(stream, 1, false);
-            return result.Status != EventReadStatus.NoStream;
-        }
+            => _store.StreamExists(GetStreamName(aggregateId));
 
         static string GetStreamName<T>(AggregateId<T> aggregateId) 
             where T : AggregateRoot 

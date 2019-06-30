@@ -1,14 +1,14 @@
 using System.Threading.Tasks;
-using Marketplace.Ads.Projections;
+using Marketplace.Ads.Queries.Projections;
 using Raven.Client.Documents.Session;
 
-namespace Marketplace.Modules.ClassifiedAds
+namespace Marketplace.Ads.Queries
 {
     public static class Queries
     {
         public static Task<ReadModels.ClassifiedAdDetails> Query(
             this IAsyncDocumentSession session,
-            QueryModels.GetPublicClassifiedAd query)
+            QueryModels.GetClassifiedAdDetails query)
             => session.LoadAsync<ReadModels.ClassifiedAdDetails>(
                 query.ClassifiedAdId.ToString()
             );

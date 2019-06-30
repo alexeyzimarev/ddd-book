@@ -2,13 +2,14 @@ using System;
 using EventStore.ClientAPI;
 using Marketplace.Ads.ClassifiedAds;
 using Marketplace.Ads.Domain.Shared;
-using Marketplace.Ads.Projections;
+using Marketplace.Ads.Queries.Projections;
+using Marketplace.EventSourcing;
 using Marketplace.EventStore;
 using Marketplace.RavenDb;
 using Microsoft.Extensions.DependencyInjection;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
-using static Marketplace.Ads.Projections.ReadModels;
+using static Marketplace.Ads.Queries.Projections.ReadModels;
 
 namespace Marketplace.Ads
 {
@@ -28,7 +29,7 @@ namespace Marketplace.Ads
             builder.Services.AddSingleton(
                 c =>
                     new ClassifiedAdsCommandService(
-                        new EsAggregateStore(c.GetEsConnection()),
+                        c.GetAggregateStore(),
                         currencyLookup,
                         uploadFile
                     )
@@ -76,5 +77,8 @@ namespace Marketplace.Ads
             this IServiceProvider provider
         )
             => provider.GetRequiredService<IEventStoreConnection>();
+
+        static IAggregateStore GetAggregateStore(this IServiceProvider provider)
+            => provider.GetRequiredService<IAggregateStore>();
     }
 }

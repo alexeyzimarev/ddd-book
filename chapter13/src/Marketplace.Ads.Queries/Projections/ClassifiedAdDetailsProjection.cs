@@ -1,11 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.RavenDb;
 using Raven.Client.Documents.Session;
-using static Marketplace.Ads.Domain.ClassifiedAds.Events;
-using static Marketplace.Ads.Projections.ReadModels;
 
-namespace Marketplace.Ads.Projections
+namespace Marketplace.Ads.Queries.Projections
 {
     public static class ClassifiedAdDetailsProjection
     {
@@ -15,32 +14,32 @@ namespace Marketplace.Ads.Projections
         {
             return @event switch
             {
-                V1.ClassifiedAdCreated e =>
+                Events.V1.ClassifiedAdCreated e =>
                     () => Create(e.Id, e.OwnerId),
-                V1.ClassifiedAdTitleChanged e =>
+                Events.V1.ClassifiedAdTitleChanged e =>
                     () => Update(e.Id, ad => ad.Title = e.Title),
-                V1.ClassifiedAdTextUpdated e =>
+                Events.V1.ClassifiedAdTextUpdated e =>
                     () => Update(e.Id, ad => ad.Description = e.AdText),
-                V1.ClassifiedAdPriceUpdated e =>
+                Events.V1.ClassifiedAdPriceUpdated e =>
                     () => Update( e.Id,
                         ad =>
                         {
                             ad.Price = e.Price;
                             ad.CurrencyCode = e.CurrencyCode;
                         }),
-                V1.PictureAddedToAClassifiedAd e =>
+                Events.V1.PictureAddedToAClassifiedAd e =>
                     () => Update(e.ClassifiedAdId, 
                         ad => ad.PhotoUrls.Add(e.Url)),
-                V1.ClassifiedAdDeleted e =>
+                Events.V1.ClassifiedAdDeleted e =>
                     () => Delete(e.Id),
                 _ => (Func<Task>) null
             };
 
             string GetDbId(Guid id) 
-                => ClassifiedAdDetails.GetDatabaseId(id);
+                => ReadModels.ClassifiedAdDetails.GetDatabaseId(id);
 
             Task Create(Guid id, Guid ownerId)
-                => session.Create<ClassifiedAdDetails>(
+                => session.Create<ReadModels.ClassifiedAdDetails>(
                     x =>
                     {
                         x.Id = GetDbId(id);
@@ -48,7 +47,7 @@ namespace Marketplace.Ads.Projections
                     }
                 );
 
-            Task Update(Guid id, Action<ClassifiedAdDetails> update)
+            Task Update(Guid id, Action<ReadModels.ClassifiedAdDetails> update)
                 => session.Update(GetDbId(id), update);
 
             Task Delete(Guid id)

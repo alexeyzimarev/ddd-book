@@ -1,15 +1,9 @@
 using System;
 
-namespace Marketplace.Modules.ClassifiedAds
+namespace Marketplace.Ads.Queries
 {
     public static class QueryModels
     {
-        public class GetPublishedClassifiedAds
-        {
-            public int Page { get; set; }
-            public int PageSize { get; set; }
-        }
-
         public class GetOwnersClassifiedAd
         {
             public Guid OwnerId { get; set; }
@@ -17,7 +11,7 @@ namespace Marketplace.Modules.ClassifiedAds
             public int PageSize { get; set; }
         }
 
-        public class GetPublicClassifiedAd
+        public class GetClassifiedAdDetails
         {
             public Guid ClassifiedAdId { get; set; }
         }

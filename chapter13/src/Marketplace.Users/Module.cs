@@ -1,5 +1,7 @@
+using System;
 using System.Runtime.CompilerServices;
 using EventStore.ClientAPI;
+using Marketplace.EventSourcing;
 using Marketplace.EventStore;
 using Marketplace.RavenDb;
 using Marketplace.Users.Auth;
@@ -24,13 +26,11 @@ namespace Marketplace.Users
         )
         {
             EventMappings.MapEventTypes();
-            
+
             builder.Services.AddSingleton(
                     c =>
                         new UserProfileCommandService(
-                            new EsAggregateStore(
-                                c.GetRequiredService<IEventStoreConnection>()
-                            ),
+                            c.GetAggregateStore(),
                             profanityCheck
                         )
                 )
@@ -51,8 +51,9 @@ namespace Marketplace.Users
                     {
                         var getSession =
                             c.GetRequiredService<GetUsersModuleSession>();
+
                         return new SubscriptionManager(
-                            c.GetRequiredService<IEventStoreConnection>(),
+                            c.GetEsConnection(),
                             new RavenDbCheckpointStore(
                                 () => getSession(),
                                 SubscriptionName
@@ -71,6 +72,14 @@ namespace Marketplace.Users
 
             return builder;
         }
+
+        static IEventStoreConnection GetEsConnection(
+            this IServiceProvider provider
+        )
+            => provider.GetRequiredService<IEventStoreConnection>();
+
+        static IAggregateStore GetAggregateStore(this IServiceProvider provider)
+            => provider.GetRequiredService<IAggregateStore>();
     }
 
     public delegate IAsyncDocumentSession GetUsersModuleSession();

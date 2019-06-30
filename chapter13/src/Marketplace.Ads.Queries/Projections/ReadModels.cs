@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Marketplace.Ads.Projections
+namespace Marketplace.Ads.Queries.Projections
 {
     public static class ReadModels
     {

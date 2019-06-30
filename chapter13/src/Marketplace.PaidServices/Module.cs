@@ -63,6 +63,9 @@ namespace Marketplace.PaidServices
             builder.Services.AddSingleton(
                 c =>
                 {
+                    var service =
+                        c.GetRequiredService<ClassifiedAdCommandService>();
+
                     var connection =
                         c.GetRequiredService<IEventStoreConnection>();
                     const string subscriptionName = "servicesReactors";
@@ -71,8 +74,8 @@ namespace Marketplace.PaidServices
                         connection,
                         new EsCheckpointStore(connection, subscriptionName),
                         subscriptionName,
-                        new OrderReactor(
-                            c.GetRequiredService<ClassifiedAdCommandService>()
+                        new EventStoreReactor(
+                            x => OrderReaction.React(service, x)
                         )
                     );
                 }
@@ -87,7 +90,7 @@ namespace Marketplace.PaidServices
             this IServiceProvider provider
         )
             => new FunctionalStore(
-                provider.GetRequiredService<IEventStoreConnection>()
+                provider.GetRequiredService<IEventStore>()
             );
     }
 }

@@ -3,7 +3,7 @@ using static Marketplace.Users.Domain.UserProfiles.Events;
 
 namespace Marketplace.Users
 {
-    public static class EventMappings
+    internal static class EventMappings
     {
         public static void MapEventTypes()
         {

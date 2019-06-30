@@ -3,7 +3,7 @@ using static Marketplace.EventSourcing.TypeMapper;
 
 namespace Marketplace.Ads
 {
-    public static class EventMappings
+    internal static class EventMappings
     {
         public static void MapEventTypes()
         {

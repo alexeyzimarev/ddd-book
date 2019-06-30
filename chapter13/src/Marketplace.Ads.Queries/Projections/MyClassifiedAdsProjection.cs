@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Marketplace.Ads.Domain.ClassifiedAds;
 using Marketplace.RavenDb;
 using Raven.Client.Documents.Session;
-using static Marketplace.Ads.Domain.ClassifiedAds.Events;
-using static Marketplace.Ads.Projections.ReadModels;
 
-namespace Marketplace.Ads.Projections
+namespace Marketplace.Ads.Queries.Projections
 {
     public static class MyClassifiedAdsProjection 
     {
@@ -15,33 +14,33 @@ namespace Marketplace.Ads.Projections
             IAsyncDocumentSession session,
             object @event)
         {
-            Func<Guid, string> getDbId = MyClassifiedAds.GetDatabaseId;
+            Func<Guid, string> getDbId = ReadModels.MyClassifiedAds.GetDatabaseId;
 
             return @event switch
             { 
-                V1.ClassifiedAdCreated e =>
+                Events.V1.ClassifiedAdCreated e =>
                     () => CreateOrUpdate(e.OwnerId,
                         myAds => myAds.MyAds.Add(
-                            new MyClassifiedAds.MyAd {Id = e.Id}
+                            new ReadModels.MyClassifiedAds.MyAd {Id = e.Id}
                         ),
-                        () => new MyClassifiedAds
+                        () => new ReadModels.MyClassifiedAds
                         {
                             Id = getDbId(e.OwnerId),
-                            MyAds = new List<MyClassifiedAds.MyAd>()
+                            MyAds = new List<ReadModels.MyClassifiedAds.MyAd>()
                         }),
-                V1.ClassifiedAdTitleChanged e =>
+                Events.V1.ClassifiedAdTitleChanged e =>
                     () => UpdateOneAd(e.OwnerId, e.Id,
                         myAd => myAd.Title = e.Title),
-                V1.ClassifiedAdTextUpdated e =>
+                Events.V1.ClassifiedAdTextUpdated e =>
                     () => UpdateOneAd(e.OwnerId, e.Id,
                         myAd => myAd.Description = e.AdText),
-                V1.ClassifiedAdPriceUpdated e =>
+                Events.V1.ClassifiedAdPriceUpdated e =>
                     () => UpdateOneAd(e.OwnerId, e.Id,
                         myAd => myAd.Price = e.Price),
-                V1.PictureAddedToAClassifiedAd e =>
+                Events.V1.PictureAddedToAClassifiedAd e =>
                     () => UpdateOneAd(e.OwnerId, e.ClassifiedAdId,
                         myAd => myAd.PhotoUrls.Add(e.Url)),
-                V1.ClassifiedAdDeleted e =>
+                Events.V1.ClassifiedAdDeleted e =>
                     () => Update(e.OwnerId,
                         myAd => myAd.MyAds
                             .RemoveAll(x => x.Id == e.Id)),
@@ -50,17 +49,17 @@ namespace Marketplace.Ads.Projections
 
             Task CreateOrUpdate(
                 Guid id,
-                Action<MyClassifiedAds> update,
-                Func<MyClassifiedAds> create
+                Action<ReadModels.MyClassifiedAds> update,
+                Func<ReadModels.MyClassifiedAds> create
             )
                 => session.UpsertItem(getDbId(id), update, create);
             
             Task Update(Guid id,
-                Action<MyClassifiedAds> update)
+                Action<ReadModels.MyClassifiedAds> update)
                 => session.Update(getDbId(id), update);
 
             Task UpdateOneAd(Guid id, Guid adId,
-                Action<MyClassifiedAds.MyAd> update)
+                Action<ReadModels.MyClassifiedAds.MyAd> update)
                 => Update(id, myAds =>
                     {
                         var ad = myAds.MyAds

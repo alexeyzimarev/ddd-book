@@ -9,17 +9,17 @@ namespace Marketplace.EventStore
 {
     public class FunctionalStore : IFunctionalAggregateStore
     {
-        readonly IEventStoreConnection _connection;
+        readonly IEventStore _eventStore;
 
-        public FunctionalStore(IEventStoreConnection connection)
-            => _connection = connection;
+        public FunctionalStore(IEventStore eventStore)
+            => _eventStore = eventStore;
 
         public Task Save<T>(
             long version,
             AggregateState<T>.Result update
         )
             where T : class, IAggregateState<T>, new()
-            => _connection.AppendEvents(
+            => _eventStore.AppendEvents(
                 update.State.StreamName, version, update.Events.ToArray()
             );
 
@@ -29,28 +29,10 @@ namespace Marketplace.EventStore
         async Task<T> Load<T>(Guid id, Func<T, object, T> when)
             where T : IAggregateState<T>, new()
         {
-            const int maxSliceSize = 4096;
-
             var state = new T();
             var streamName = state.GetStreamName(id);
 
-            var position = 0L;
-            bool endOfStream;
-            var events = new List<object>();
-
-            do
-            {
-                var slice = await _connection
-                    .ReadStreamEventsForwardAsync(
-                        streamName, position, maxSliceSize, false
-                    );
-                position = slice.NextEventNumber;
-                endOfStream = slice.IsEndOfStream;
-
-                events.AddRange(
-                    slice.Events.Select(x => x.Deserialze())
-                );
-            } while (!endOfStream);
+            var events = await _eventStore.LoadEvents(streamName);
 
             return events.Aggregate(state, when);
         }

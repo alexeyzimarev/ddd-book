@@ -4,7 +4,7 @@ using static Marketplace.PaidServices.Domain.Orders.Events;
 
 namespace Marketplace.PaidServices
 {
-    public static class EventMappings
+    internal static class EventMappings
     {
         public static void MapEventTypes()
         {

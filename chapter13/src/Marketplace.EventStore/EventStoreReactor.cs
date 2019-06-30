@@ -1,29 +1,33 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Marketplace.EventSourcing;
 using Marketplace.EventStore.Logging;
 
 namespace Marketplace.EventStore
 {
-    public abstract class ReactorBase : ISubscription
+    public class EventStoreReactor : ISubscription
     {
         static readonly ILog Log = LogProvider.GetCurrentClassLogger();
-        
-        public ReactorBase(Reactor reactor) => _reactor = reactor;
 
-        readonly Reactor _reactor;
+        public EventStoreReactor(params Reactor[] reactions)
+            => _reactions = reactions;
+
+        readonly Reactor[] _reactions;
 
         public Task Project(object @event)
         {
-            var handler = _reactor(@event);
+            var handlers = _reactions.Select(x => x(@event))
+                .Where(x => x != null)
+                .ToArray();
 
-            if (handler == null) return Task.CompletedTask;
-            
+            if (!handlers.Any()) return Task.CompletedTask;
+
             Log.Debug("Reacting to event {event}", @event);
 
-            return handler();
+            return Task.WhenAll(handlers.Select(x => x()));
         }
-        
-        public delegate Func<Task> Reactor(object @event);
     }
+
+    public delegate Func<Task> Reactor(object @event);
 }

@@ -8,8 +8,8 @@ namespace Marketplace.Ads.Integration.ClassifiedAds
         {
             public class AdPublished
             {
-                public string Id { get; set; }
-                public string SellerId { get; set; }
+                public Guid Id { get; set; }
+                public Guid SellerId { get; set; }
                 public string Title { get; set; }
                 public decimal Price { get; set; }
                 public string PhotoUrl { get; set; }

@@ -60,6 +60,7 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                 public Guid Id { get; set; }
                 public Guid OwnerId { get; set; }
                 public Guid ApprovedBy { get; set; }
+                public DateTimeOffset PublishedAt { get; set; }
 
                 public override string ToString()
                     => $"{nameof(ClassifiedAdPublished)}";

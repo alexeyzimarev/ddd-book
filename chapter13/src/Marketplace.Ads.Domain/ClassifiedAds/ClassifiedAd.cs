@@ -88,7 +88,8 @@ namespace Marketplace.Ads.Domain.ClassifiedAds
                 {
                     Id = Id,
                     ApprovedBy = userId,
-                    OwnerId = OwnerId
+                    OwnerId = OwnerId,
+                    PublishedAt = DateTimeOffset.Now
                 }
             );
 

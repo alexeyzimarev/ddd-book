@@ -1,20 +1,15 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Marketplace.EventStore;
 using Marketplace.PaidServices.ClassifiedAds;
 using Marketplace.PaidServices.Domain.Orders;
 using V1 = Marketplace.PaidServices.ClassifiedAds.Commands.V1;
 
 namespace Marketplace.PaidServices.Reactors
 {
-    public class OrderReactor : ReactorBase
+    public static class OrderReaction
     {
-        public OrderReactor(
-            ClassifiedAdCommandService service
-        ) : base(@event => React(service, @event)) { }
-
-        static Func<Task> React(
+        public static Func<Task> React(
             ClassifiedAdCommandService service,
             object @event
         )

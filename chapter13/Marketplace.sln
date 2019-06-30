@@ -30,6 +30,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.WebApi", "src\M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.Ads.Integration", "src\Marketplace.Ads.Integration\Marketplace.Ads.Integration.csproj", "{6B87B1F5-5E35-4522-99D6-705F2B0EA4CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.Ads.Queries", "src\Marketplace.Ads.Queries\Marketplace.Ads.Queries.csproj", "{BA4EB45F-2E69-4A7E-BEC6-04DEDFE21710}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.PaidServices.Integration", "src\Marketplace.PaidServices.Integration\Marketplace.PaidServices.Integration.csproj", "{5F9B5D9A-458D-4A9F-83A0-F239253315CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +92,14 @@ Global
 		{6B87B1F5-5E35-4522-99D6-705F2B0EA4CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B87B1F5-5E35-4522-99D6-705F2B0EA4CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B87B1F5-5E35-4522-99D6-705F2B0EA4CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA4EB45F-2E69-4A7E-BEC6-04DEDFE21710}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA4EB45F-2E69-4A7E-BEC6-04DEDFE21710}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA4EB45F-2E69-4A7E-BEC6-04DEDFE21710}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA4EB45F-2E69-4A7E-BEC6-04DEDFE21710}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F9B5D9A-458D-4A9F-83A0-F239253315CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F9B5D9A-458D-4A9F-83A0-F239253315CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F9B5D9A-458D-4A9F-83A0-F239253315CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F9B5D9A-458D-4A9F-83A0-F239253315CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F682B8F9-A43B-4D6D-BECE-4F45767A026A} = {11ACA044-780C-4C71-A6F7-ECFB6B26B9E7}

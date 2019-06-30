@@ -5,4 +5,10 @@
     <LangVersion>8</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Marketplace.Ads.Domain\Marketplace.Ads.Domain.csproj" />
+    <ProjectReference Include="..\Marketplace.Ads.Queries\Marketplace.Ads.Queries.csproj" />
+    <ProjectReference Include="..\Marketplace.EventSourcing\Marketplace.EventSourcing.csproj" />
+  </ItemGroup>
+
 </Project>
