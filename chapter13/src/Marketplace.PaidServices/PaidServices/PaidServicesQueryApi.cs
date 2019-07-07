@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Marketplace.PaidServices.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
+using static Marketplace.PaidServices.Domain.Services.PaidService;
+using static Marketplace.PaidServices.PaidServices.Models;
 
 namespace Marketplace.PaidServices.PaidServices
 {
@@ -9,11 +10,7 @@ namespace Marketplace.PaidServices.PaidServices
     public class PaidServicesQueryApi : ControllerBase
     {
         [HttpGet]
-        public ActionResult<IEnumerable<Models.PaidServiceItem>> Get()
-            => Ok(
-                PaidService.AvailableServices.Select(
-                    Models.PaidServiceItem.FromDomain
-                )
-            );
+        public ActionResult<IEnumerable<PaidServiceItem>> Get()
+            => Ok(AvailableServices.Select(PaidServiceItem.FromDomain));
     }
 }

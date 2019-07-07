@@ -3,14 +3,17 @@ using EventStore.ClientAPI;
 using Marketplace.EventSourcing;
 using Marketplace.EventStore;
 using Marketplace.PaidServices.ClassifiedAds;
+using Marketplace.PaidServices.Integration;
 using Marketplace.PaidServices.Orders;
-using Marketplace.PaidServices.Projections;
+using Marketplace.PaidServices.Queries.ClassifiedAds;
+using Marketplace.PaidServices.Queries.Orders;
 using Marketplace.PaidServices.Reactors;
 using Marketplace.RavenDb;
 using Microsoft.Extensions.DependencyInjection;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
-using static Marketplace.PaidServices.Projections.ReadModels;
+using static Marketplace.PaidServices.Queries.Orders.ReadModels;
+using ReadModels = Marketplace.PaidServices.Queries.ClassifiedAds.ReadModels;
 
 namespace Marketplace.PaidServices
 {
@@ -48,6 +51,7 @@ namespace Marketplace.PaidServices
                             GetSession, subscriptionName
                         ),
                         subscriptionName,
+                        StreamName.AllStream,
                         new RavenDbProjection<OrderDraft>(
                             GetSession,
                             DraftOrderProjection.GetHandler
@@ -55,6 +59,10 @@ namespace Marketplace.PaidServices
                         new RavenDbProjection<CompletedOrder>(
                             GetSession,
                             CompletedOrderProjection.GetHandler
+                        ),
+                        new RavenDbProjection<ReadModels.AdActiveServices>(
+                            GetSession,
+                            ActiveServicesProjection.GetHandler
                         )
                     );
                 }
@@ -74,6 +82,7 @@ namespace Marketplace.PaidServices
                         connection,
                         new EsCheckpointStore(connection, subscriptionName),
                         subscriptionName,
+                        StreamName.Custom(StreamNames.AdsIntegrationStream),
                         new EventStoreReactor(
                             x => OrderReaction.React(service, x)
                         )

@@ -59,6 +59,7 @@ namespace Marketplace.Users
                                 SubscriptionName
                             ),
                             SubscriptionName,
+                            StreamName.AllStream,
                             new RavenDbProjection<UserDetails>(
                                 () => getSession(),
                                 UserDetailsProjection.GetHandler

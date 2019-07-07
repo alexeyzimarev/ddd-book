@@ -13,20 +13,26 @@ namespace Marketplace.EventStore
 
         readonly ICheckpointStore _checkpointStore;
         readonly string _name;
+        readonly StreamName _streamName;
         readonly IEventStoreConnection _connection;
         readonly ISubscription[] _subscriptions;
-        EventStoreAllCatchUpSubscription _subscription;
+        EventStoreCatchUpSubscription _subscription;
+        bool _isAllStream;
 
         public SubscriptionManager(
             IEventStoreConnection connection,
             ICheckpointStore checkpointStore,
             string name,
-            params ISubscription[] subscriptions)
+            StreamName streamName,
+            params ISubscription[] subscriptions
+        )
         {
-            _connection = connection;
+            _connection      = connection;
             _checkpointStore = checkpointStore;
-            _name = name;
-            _subscriptions = subscriptions;
+            _name            = name;
+            _streamName      = streamName;
+            _subscriptions   = subscriptions;
+            _isAllStream     = streamName.IsAllStream;
         }
 
         public async Task Start()
@@ -42,22 +48,35 @@ namespace Marketplace.EventStore
             var position = await _checkpointStore.GetCheckpoint();
             Log.Debug("Retrieved the checkpoint: {checkpoint}", position);
 
-            _subscription = _connection.SubscribeToAllFrom(
-                GetPosition(),
-                settings, 
-                EventAppeared
-            );
+            _subscription = _isAllStream
+                ? (EventStoreCatchUpSubscription)
+                _connection.SubscribeToAllFrom(
+                    GetAllStreamPosition(),
+                    settings,
+                    EventAppeared
+                )
+                : _connection.SubscribeToStreamFrom(
+                    _streamName,
+                    GetStreamPosition(),
+                    settings,
+                    EventAppeared
+                );
+
             Log.Debug("Subscribed to $all stream");
 
-            Position? GetPosition()
+            Position? GetAllStreamPosition()
                 => position.HasValue
                     ? new Position(position.Value, position.Value)
                     : AllCheckpoint.AllStart;
+
+            long? GetStreamPosition()
+                => position ?? StreamCheckpoint.StreamStart;
         }
 
         async Task EventAppeared(
             EventStoreCatchUpSubscription _,
-            ResolvedEvent resolvedEvent)
+            ResolvedEvent resolvedEvent
+        )
         {
             if (resolvedEvent.Event.EventType.StartsWith("$")) return;
 
@@ -67,11 +86,15 @@ namespace Marketplace.EventStore
 
             try
             {
-                await Task.WhenAll(_subscriptions.Select(x => x.Project(@event)));
+                await Task.WhenAll(
+                    _subscriptions.Select(x => x.Project(@event))
+                );
 
                 await _checkpointStore.StoreCheckpoint(
                     // ReSharper disable once PossibleInvalidOperationException
-                    resolvedEvent.OriginalPosition.Value.CommitPosition
+                    _isAllStream
+                    ? resolvedEvent.OriginalPosition.Value.CommitPosition
+                    : resolvedEvent.Event.EventNumber
                 );
             }
             catch (Exception e)

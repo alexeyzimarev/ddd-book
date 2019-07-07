@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Marketplace.RavenDb;
 using Raven.Client.Documents.Session;
 using static Marketplace.PaidServices.Domain.Orders.Events;
-using static Marketplace.PaidServices.Projections.ReadModels;
+using static Marketplace.PaidServices.Queries.Orders.ReadModels;
 
-namespace Marketplace.PaidServices.Projections
+namespace Marketplace.PaidServices.Queries.Orders
 {
     public static class CompletedOrderProjection
     {

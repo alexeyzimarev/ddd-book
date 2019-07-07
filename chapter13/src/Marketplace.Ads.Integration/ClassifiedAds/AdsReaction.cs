@@ -5,7 +5,7 @@ using Marketplace.Ads.Queries;
 using Marketplace.EventSourcing;
 using Raven.Client.Documents.Session;
 using static Marketplace.Ads.Domain.ClassifiedAds.Events;
-using static Marketplace.Ads.Integration.StreamName;
+using static Marketplace.Ads.Integration.StreamNames;
 using static Marketplace.Ads.Queries.Projections.ReadModels;
 using static Marketplace.Ads.Queries.QueryModels;
 
@@ -20,11 +20,11 @@ namespace Marketplace.Ads.Integration.ClassifiedAds
         )
         {
             return @event switch
-                {
-                V1.ClassifiedAdPublished e =>
-                () => EmitPublishedAdEvent(e.Id, e.PublishedAt),
+            {
+                V1.ClassifiedAdPublished e => () 
+                    => EmitPublishedAdEvent(e.Id, e.PublishedAt),
                 _ => (Func<Task>) null
-                };
+            };
 
             async Task EmitPublishedAdEvent(Guid id, DateTimeOffset publishedAt)
             {

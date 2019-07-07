@@ -1,6 +1,6 @@
 using System;
 
-namespace Marketplace.Ads.Integration.ClassifiedAds
+namespace Marketplace.PaidServices.Integration.AdsIntegration
 {
     public static class Events
     {

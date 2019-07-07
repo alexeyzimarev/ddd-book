@@ -40,6 +40,7 @@ namespace Marketplace.Ads.Integration
                             connection, SubscriptionName
                         ),
                         SubscriptionName,
+                        StreamName.AllStream,
                         new EventStoreReactor(
                             e => AdsReaction.React(eventStore, GetSession, e)
                         )

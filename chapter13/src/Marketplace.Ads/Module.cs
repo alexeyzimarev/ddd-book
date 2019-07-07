@@ -51,6 +51,7 @@ namespace Marketplace.Ads
                             GetSession, SubscriptionName
                         ),
                         SubscriptionName,
+                        StreamName.AllStream,
                         new RavenDbProjection<ClassifiedAdDetails>(
                             GetSession,
                             ClassifiedAdDetailsProjection.GetHandler

@@ -1,7 +1,9 @@
 namespace Marketplace.PaidServices.Integration
 {
-    public static class StreamName
+    public static class StreamNames
     {
-        public const string PaidServices = "Integration-PaidServices";
+        public const string AdsIntegrationStream = "Integration-Ads";
+        
+        public const string IntegrationStream = "Integration-PaidServices";
     }
 }

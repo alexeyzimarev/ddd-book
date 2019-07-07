@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Marketplace.PaidServices.Domain.Orders;
 using Marketplace.RavenDb;
 using Raven.Client.Documents.Session;
-using static Marketplace.PaidServices.Domain.Orders.Events;
-using static Marketplace.PaidServices.Projections.ReadModels;
 
-namespace Marketplace.PaidServices.Projections
+namespace Marketplace.PaidServices.Queries.Orders
 {
     public static class DraftOrderProjection
     {
@@ -17,21 +16,21 @@ namespace Marketplace.PaidServices.Projections
         {
             return @event switch
             {
-                V1.OrderCreated e =>
-                    () => session.Create<OrderDraft>(
+                Events.V1.OrderCreated e =>
+                    () => session.Create<ReadModels.OrderDraft>(
                         x =>
                         {
                             x.Id = DbId(e.OrderId);
                             x.CustomerId = e.CustomerId.ToString();
                             x.ClassifiedAdId = e.ClassifiedAdId.ToString();
-                            x.Services = new List<OrderDraft.Service>();
+                            x.Services = new List<ReadModels.OrderDraft.Service>();
                         }
                     ),
-                V1.ServiceAddedToOrder e =>
-                    () => session.Update<OrderDraft>(
+                Events.V1.ServiceAddedToOrder e =>
+                    () => session.Update<ReadModels.OrderDraft>(
                         DbId(e.OrderId),
                         x => x.Services.Add(
-                            new OrderDraft.Service
+                            new ReadModels.OrderDraft.Service
                             {
                                 Type = e.ServiceType,
                                 Description = e.Description,
@@ -39,19 +38,19 @@ namespace Marketplace.PaidServices.Projections
                             }
                         )
                     ),
-                V1.ServiceRemovedFromOrder e =>
-                    () => session.Update<OrderDraft>(
+                Events.V1.ServiceRemovedFromOrder e =>
+                    () => session.Update<ReadModels.OrderDraft>(
                         DbId(e.OrderId),
                         x => x.Services.RemoveAll(s => s.Type == e.ServiceType)
                     ),
-                V1.OrderFulfilled e =>
+                Events.V1.OrderFulfilled e =>
                     () => session.Del(DbId(e.OrderId)),
-                V1.OrderDeleted e =>
+                Events.V1.OrderDeleted e =>
                     () => session.Del(DbId(e.OrderId)),
                 _ => (Func<Task>) null
             };
 
-            string DbId(Guid guid) => OrderDraft.GetDatabaseId(guid);
+            string DbId(Guid guid) => ReadModels.OrderDraft.GetDatabaseId(guid);
         }
     }
 }

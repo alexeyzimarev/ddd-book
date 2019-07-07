@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Marketplace.PaidServices.Projections
+namespace Marketplace.PaidServices.Queries.Orders
 {
     public static class ReadModels
     {
@@ -11,7 +11,7 @@ namespace Marketplace.PaidServices.Projections
             public string ClassifiedAdId { get; set; }
             public string CustomerId { get; set; }
             public double Total { get; set; }
-            public List<Service> Services { get; set; }
+            public List<Service> Services { get; set; } = new List<Service>();
 
             public class Service
             {
@@ -41,23 +41,6 @@ namespace Marketplace.PaidServices.Projections
             
             public static string GetDatabaseId(Guid id)
                 => $"CompletedOrder/{id}";
-        }
-
-        public class ClassifiedAdOrders
-        {
-            public string Id { get; set; }
-            public string CustomerId { get; set; }
-            public List<Order> Orders { get; set; }
-
-            public class Order
-            {
-                public string OrderId { get; set; }
-                public double Total { get; set; }
-                public DateTimeOffset FulfilledAt { get; set; }
-            }
-            
-            public static string GetDatabaseId(Guid id)
-                => $"ClassifiedAdOrders/{id}";
         }
     }
 }
