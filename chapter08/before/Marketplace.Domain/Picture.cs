@@ -32,7 +32,7 @@ namespace Marketplace.Domain
             {
                 PictureId = Id.Value,
                 ClassifiedAdId = ParentId.Value,
-                Height = newSize.Width,
+                Height = newSize.Height,
                 Width = newSize.Width
             });
 
