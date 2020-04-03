@@ -54,7 +54,7 @@ namespace Marketplace.Domain
         {
             Apply(new Events.PictureAddedToAClassifiedAd
             {
-                PictureId = new Guid(),
+                PictureId = Guid.NewGuid(),
                 ClassifiedAdId = Id,
                 Url = pictureUri.ToString(),
                 Height = size.Height,
