@@ -19,7 +19,7 @@ First four chapters of the book have no code.
 9. [CQRS - The Read Side](https://github.com/alexeyzimarev/ddd-book/tree/master/chapter09)
 10. [Event Sourcing](https://github.com/alexeyzimarev/ddd-book/tree/master/chapter10)
 11. [Projections and Queries](https://github.com/alexeyzimarev/ddd-book/tree/master/chapter11)
-12. [Bounded Context](https://github.com/alexeyzimarev/ddd-book/tree/master/chapter12)
+12. Bounded Context
 13. [Splitting the System](https://github.com/alexeyzimarev/ddd-book/tree/master/chapter13)
 
 ## Running the infrastructure
